@@ -7,27 +7,68 @@ struct polynomial {
     long* coeffs;
 };
 
-struct polynomial* derivative(struct polynomial* p) {
-    struct polynomial* d = malloc(sizeof(long) + sizeof(size_t));
+/* 
+Unary operations:
+1. Derivative
+2. Negative
+3. Print
+
+Binary Operations:
+1. Sum
+2. Product
+*/
+struct polynomial* der(struct polynomial* p) {
+    struct polynomial* d = (struct polynomial*) malloc(sizeof(long) + 
+            sizeof(size_t));
     d -> degree = p -> degree - 1;
-    d -> coeffs = malloc(((p -> degree) - 1)*sizeof(long));
+    d -> coeffs = (long*) malloc(((p -> degree) - 1)*sizeof(long));
     for (long i=0; i<(p -> degree); i++) {
         (d -> coeffs)[i] = (p -> coeffs)[i+1] * (i+1);
     }
     return d;
 }
 
+struct polynomial* neg(struct polynomial* p) {
+    struct polynomial* n = (struct polynomial*) malloc(sizeof(long) + 
+            sizeof(size_t));
+    n -> degree = p -> degree;
+    n -> coeffs = (long*) malloc((p -> degree)*sizeof(long));
+    for (long i=0; i<((n -> degree) + 1); i++) {
+        (n -> coeffs)[i] = -(p -> coeffs)[i];
+    }
+    return n;
+}
+
+void print(struct polynomial* p) {
+    for (long i=(p -> degree); i>1; i--) {
+        printf("%lix^%li + ", (p -> coeffs)[i], i);
+    }
+    printf("%lix + ", (p -> coeffs)[1]);
+    printf("%li\n", (p -> coeffs)[0]);
+}
+
 int main() {
-    struct polynomial p;
-    // Derivative of 2x^3 + 3x^2 + 11x + 1 is 6x^2 + 6x + 11
-    p.degree = 3;
-    long* coeffs = (long*) malloc((p.degree + 1)*sizeof(long));
-    coeffs[0] = 1;
-    coeffs[1] = 11;
-    coeffs[2] = 3;
-    coeffs[3] = 2;
-    p.coeffs = coeffs;
-    struct polynomial* d = derivative(&p);
-    printf("degree d: %li\n", d -> degree);
-    printf("d(x) = %lix^2 + %lix + %li\n", d -> coeffs[2], d -> coeffs[1], d-> coeffs[0]);
+    struct polynomial* p = (struct polynomial*) malloc(sizeof(long) + 
+            sizeof(size_t));
+    p -> degree = 3;
+    long* coeffs = (long*) malloc(((p -> degree) + 1)*sizeof(long));
+    coeffs[0] = 0;
+    coeffs[1] = 4;
+    coeffs[2] = -5;
+    coeffs[3] = 1;
+    p -> coeffs = coeffs;
+    struct polynomial* n = neg(p);
+    struct polynomial* d = der(p);
+    printf("p(x) = ");
+    print(p);
+    printf("-p(x) = ");
+    print(n);
+    printf("d/dx(p(x)) = ");
+    print(d);
+    free(n -> coeffs);
+    free(n);
+    free(p -> coeffs);
+    free(p);
+    free(d -> coeffs);
+    free(d);
 }
