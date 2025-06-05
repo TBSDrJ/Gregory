@@ -47,6 +47,26 @@ void print(struct polynomial* p) {
     printf("%li\n", (p -> coeffs)[0]);
 }
 
+struct polynomial* sum(struct polynomial* p, struct polynomial* q) {
+    // Make p be the one with greater degree if they are different.
+    if ((p -> degree) < (q -> degree)) {
+        struct polynomial* temp = p;
+        p = q;
+        q = temp;
+    }
+    struct polynomial* s = (struct polynomial*) malloc(sizeof(long) + 
+            sizeof(size_t));
+    s -> degree = p -> degree;
+    s -> coeffs = (long*) malloc(sizeof(long) * (p -> degree));
+    for (long i=0; i<=(q -> degree); i++) {
+        s -> coeffs[i] = (p -> coeffs[i]) + (q -> coeffs[i]);
+    }
+    for (long i=(q -> degree) + 1; i<=(p -> degree); i++) {
+        s -> coeffs[i] = p -> coeffs[i];
+    }
+    return s;
+}
+
 int main() {
     struct polynomial* p = (struct polynomial*) malloc(sizeof(long) + 
             sizeof(size_t));
@@ -65,6 +85,8 @@ int main() {
     print(n);
     printf("d/dx(p(x)) = ");
     print(d);
+    printf("p(x) + p'(x) = ");
+    print(sum(p, d));
     free(n -> coeffs);
     free(n);
     free(p -> coeffs);
