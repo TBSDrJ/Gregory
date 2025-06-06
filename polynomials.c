@@ -91,12 +91,25 @@ struct polynomial* sum(struct polynomial* p, struct polynomial* q) {
     return s;
 }
 
+struct polynomial* prod(struct polynomial* p, struct polynomial* q) {
+    struct polynomial* s = constructor((p -> degree) + (q -> degree));
+    for (long i=0; i<=(p -> degree); i++) {
+        for (long j=0; j<=(q -> degree); j++) {
+            s -> coeffs[i+j] += (p -> coeffs[i]) * (q -> coeffs[j]);
+        }
+    }
+    return s;
+}
+
 int main() {
     struct polynomial* p = constructor(3);
     p -> coeffs[0] = 0;
     p -> coeffs[1] = 4;
     p -> coeffs[2] = -5;
     p -> coeffs[3] = 1;
+    struct polynomial* q = constructor(1);
+    q -> coeffs[0] = 1;
+    q -> coeffs[1] = 1;
     struct polynomial* n = neg(p);
     struct polynomial* d = der(p);
     printf("p(x) = ");
@@ -107,10 +120,17 @@ int main() {
     print(d);
     printf("p(x) + p'(x) = ");
     print(sum(p, d));
-    free(n -> coeffs);
-    free(n);
-    free(p -> coeffs);
-    free(p);
-    free(d -> coeffs);
-    free(d);
+    printf("p(x) * p'(x) = ");
+    print(prod(p, d));
+    printf("q^n(x) = , n ∈ {1, ..., 16}\n");
+    struct polynomial* tmp = q;
+    for (long i=0; i<16; i++) {
+        tmp = prod(q, tmp);
+        print(tmp);
+    }
+    destructor(p);
+    destructor(q);
+    destructor(n);
+    destructor(d);
+    destructor(tmp);
 }
