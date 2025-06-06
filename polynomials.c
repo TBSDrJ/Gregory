@@ -1,5 +1,6 @@
 #include<stdlib.h>
 #include<stdio.h>
+#include<string.h>
 
 struct polynomial {
     long degree;
@@ -44,18 +45,34 @@ Unary operations:
 1. Derivative
 2. Negative
 3. Print
+4. Reduce (if highest deg coeff = 0, reduce degree)
 
 Binary Operations:
 1. Sum
 2. Product
 */
 
+struct polynomial* reduce(struct polynomial* p) {
+    long n = p -> degree;
+    while(p -> coeffs[n] == 0) {
+        n--;
+    }
+    if (n < p -> degree) {
+        p -> degree = n;
+        long* coeffs = malloc((n+1)*sizeof(long));
+        memcpy(coeffs, p -> coeffs, (n+1)*sizeof(long));
+        free(p -> coeffs);
+        p -> coeffs = coeffs;
+    }
+    return p;
+}
+
 struct polynomial* der(struct polynomial* p) {
     struct polynomial* d = constructor((p -> degree) - 1);
     for (long i=0; i<(p -> degree); i++) {
         (d -> coeffs)[i] = (p -> coeffs)[i+1] * (i+1);
     }
-    return d;
+    return reduce(d);
 }
 
 struct polynomial* neg(struct polynomial* p) {
@@ -63,10 +80,10 @@ struct polynomial* neg(struct polynomial* p) {
     for (long i=0; i<((n -> degree) + 1); i++) {
         (n -> coeffs)[i] = -(p -> coeffs)[i];
     }
-    return n;
+    return reduce(n);
 }
 
-void print(struct polynomial* p) {
+void print_poly(struct polynomial* p) {
     for (long i=(p -> degree); i>1; i--) {
         printf("%lix^%li + ", (p -> coeffs)[i], i);
     }
@@ -88,7 +105,7 @@ struct polynomial* sum(struct polynomial* p, struct polynomial* q) {
     for (long i=(q -> degree) + 1; i<=(p -> degree); i++) {
         s -> coeffs[i] = p -> coeffs[i];
     }
-    return s;
+    return reduce(s);
 }
 
 struct polynomial* prod(struct polynomial* p, struct polynomial* q) {
@@ -98,7 +115,7 @@ struct polynomial* prod(struct polynomial* p, struct polynomial* q) {
             s -> coeffs[i+j] += (p -> coeffs[i]) * (q -> coeffs[j]);
         }
     }
-    return s;
+    return reduce(s);
 }
 
 int main() {
@@ -107,26 +124,28 @@ int main() {
     p -> coeffs[1] = 4;
     p -> coeffs[2] = -5;
     p -> coeffs[3] = 1;
-    struct polynomial* q = constructor(1);
+    struct polynomial* q = constructor(2);
     q -> coeffs[0] = 1;
     q -> coeffs[1] = 1;
     struct polynomial* n = neg(p);
     struct polynomial* d = der(p);
     printf("p(x) = ");
-    print(p);
+    print_poly(p);
     printf("-p(x) = ");
-    print(n);
+    print_poly(n);
     printf("d/dx(p(x)) = ");
-    print(d);
+    print_poly(d);
     printf("p(x) + p'(x) = ");
-    print(sum(p, d));
+    print_poly(sum(p, d));
     printf("p(x) * p'(x) = ");
-    print(prod(p, d));
+    print_poly(prod(p, d));
+    printf("q(x) = ");
+    print_poly(q);
     printf("q^n(x) = , n ∈ {1, ..., 16}\n");
     struct polynomial* tmp = q;
     for (long i=0; i<16; i++) {
         tmp = prod(q, tmp);
-        print(tmp);
+        print_poly(tmp);
     }
     destructor(p);
     destructor(q);
