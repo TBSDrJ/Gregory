@@ -12,6 +12,9 @@ Looking back, that probably should have been obvious.
 
 struct Polynomial* construct_poly(long deg) {
     struct Polynomial* p = malloc(sizeof(struct Polynomial));
+    if (deg < 0) {
+        deg = 0;
+    }
     if (!p) {
         return NULL;
     }
