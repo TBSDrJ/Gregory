@@ -7,6 +7,7 @@
 I stumbled across this, which had some good suggestions about how to make a
 constructor of sorts, it makes things a little simpler than what I had:
 https://stackoverflow.com/questions/14768230/malloc-for-struct-and-pointer-in-c
+Looking back, that probably should have been obvious.
 */
 
 struct Polynomial* constructor(long deg) {
@@ -41,6 +42,7 @@ Unary operations:
 2. Reduce (if highest deg coeff = 0, reduce degree)
 3. Negative
 4. Derivative
+5. Substitute a value
 
 Binary Operations:
 1. Sum
@@ -52,7 +54,7 @@ void print_poly(struct Polynomial* p) {
         printf("%lix^%li + ", (p -> coeffs)[i], i);
     }
     printf("%lix + ", (p -> coeffs)[1]);
-    printf("%li\n", (p -> coeffs)[0]);
+    printf("%li", (p -> coeffs)[0]);
 }
 
 struct Polynomial* reduce(struct Polynomial* p) {
@@ -60,6 +62,7 @@ struct Polynomial* reduce(struct Polynomial* p) {
     while(p -> coeffs[n] == 0) {
         n--;
     }
+    if (n < 0) {n = 0;}
     if (n < p -> degree) {
         p -> degree = n;
         long* coeffs = malloc((n+1)*sizeof(long));
@@ -84,6 +87,22 @@ struct Polynomial* der(struct Polynomial* p) {
         (d -> coeffs)[i] = (p -> coeffs)[i+1] * (i+1);
     }
     return reduce(d);
+}
+
+long subs(struct Polynomial* p, long x) {
+    long y = 0, term;
+    if (x == 0) {
+        return p -> coeffs[0];
+    }
+    for (long i=0; i <= (p -> degree); i++) {
+        term = 1;
+        for (long j=0; j<i; j++) {
+            term *= x;
+        }
+        term *= p -> coeffs[i];
+        y += term;
+    }
+    return y;
 }
 
 struct Polynomial* sum(struct Polynomial* p, struct Polynomial* q) {
