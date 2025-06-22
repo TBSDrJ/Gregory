@@ -10,7 +10,7 @@ https://stackoverflow.com/questions/14768230/malloc-for-struct-and-pointer-in-c
 Looking back, that probably should have been obvious.
 */
 
-struct Polynomial* constructor(long deg) {
+struct Polynomial* construct_poly(long deg) {
     struct Polynomial* p = malloc(sizeof(struct Polynomial));
     if (!p) {
         return NULL;
@@ -29,7 +29,7 @@ struct Polynomial* constructor(long deg) {
     return p;
 }
 
-void destructor(struct Polynomial* p) {
+void destruct_poly(struct Polynomial* p) {
     if (!p) {
         free(p -> coeffs);
         free(p);
@@ -74,7 +74,7 @@ struct Polynomial* reduce(struct Polynomial* p) {
 }
 
 struct Polynomial* neg(struct Polynomial* p) {
-    struct Polynomial* n = constructor(p -> degree);
+    struct Polynomial* n = construct_poly(p -> degree);
     for (long i=0; i<((n -> degree) + 1); i++) {
         (n -> coeffs)[i] = -(p -> coeffs)[i];
     }
@@ -82,7 +82,7 @@ struct Polynomial* neg(struct Polynomial* p) {
 }
 
 struct Polynomial* der(struct Polynomial* p) {
-    struct Polynomial* d = constructor((p -> degree) - 1);
+    struct Polynomial* d = construct_poly((p -> degree) - 1);
     for (long i=0; i<(p -> degree); i++) {
         (d -> coeffs)[i] = (p -> coeffs)[i+1] * (i+1);
     }
@@ -112,7 +112,7 @@ struct Polynomial* sum(struct Polynomial* p, struct Polynomial* q) {
         p = q;
         q = temp;
     }
-    struct Polynomial* s = constructor(p -> degree);
+    struct Polynomial* s = construct_poly(p -> degree);
     for (long i=0; i<=(q -> degree); i++) {
         s -> coeffs[i] = (p -> coeffs[i]) + (q -> coeffs[i]);
     }
@@ -123,7 +123,7 @@ struct Polynomial* sum(struct Polynomial* p, struct Polynomial* q) {
 }
 
 struct Polynomial* prod(struct Polynomial* p, struct Polynomial* q) {
-    struct Polynomial* s = constructor((p -> degree) + (q -> degree));
+    struct Polynomial* s = construct_poly((p -> degree) + (q -> degree));
     for (long i=0; i<=(p -> degree); i++) {
         for (long j=0; j<=(q -> degree); j++) {
             s -> coeffs[i+j] += (p -> coeffs[i]) * (q -> coeffs[j]);

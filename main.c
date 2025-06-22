@@ -28,6 +28,13 @@ void cancel(struct Polynomial* p, struct Polynomial* q) {
     }
 }
 
+// This assumes that we have a(x)b(L) / c(x)d(L), where L = ln(x+1), and
+//    that we get 0/0 when we substitute x=0.
+long l_hôpitals (struct Polynomial* a, struct Polynomial* b, 
+        struct Polynomial* c, struct Polynomial* d) {
+    return 0;
+}
+
 int main() {
     // Initialize: a=x^n, b=1, c=1, d=x^n
     // a and c are polynomials in x
@@ -46,17 +53,17 @@ int main() {
     struct Polynomial* dc_1;
     struct Polynomial* dd_1;
     struct Polynomial* x_plus_1;
-    a = constructor(n);
+    a = construct_poly(n);
     a -> coeffs[n] = 1;
     for (int i=0; i<n; i++) {a -> coeffs[i] = 0;}
-    b = constructor(0);
+    b = construct_poly(0);
     b -> coeffs[0] = 1;
-    c = constructor(0);
+    c = construct_poly(0);
     c -> coeffs[0] = 1;
-    d = constructor(n);
+    d = construct_poly(n);
     d -> coeffs[n] = 1;
     for (int i=0; i<n; i++) {d -> coeffs[i] = 0;}
-    x_plus_1 = constructor(1);
+    x_plus_1 = construct_poly(1);
     x_plus_1 -> coeffs[0] = 1;
     x_plus_1 -> coeffs[1] = 1;
     // Calculate first derivative

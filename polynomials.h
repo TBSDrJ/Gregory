@@ -7,8 +7,8 @@ struct Polynomial {
     long* coeffs;
 };
 
-struct Polynomial* constructor(long deg);
-void destructor(struct Polynomial* p);
+struct Polynomial* construct_poly(long deg);
+void destruct_poly(struct Polynomial* p);
 
 /* 
 Unary operations:
