@@ -13,7 +13,7 @@ struct Bigint* construct_Bigint() {
 
 struct Bigint* destruct_Bigint(struct Bigint* b) {
     struct Entry_long* e = b -> head;
-    while (e) {e = destruct_entry_long(e);}
+    while (e) {e = destruct_Entry_long(e);}
     b -> head = NULL;
     b -> tail = NULL;
     b -> len = 0;
@@ -22,7 +22,7 @@ struct Bigint* destruct_Bigint(struct Bigint* b) {
 }
 
 void enqueue_to_Bigint(struct Bigint* b, unsigned long n) {
-    struct Entry_long* e = construct_entry_long(n);
+    struct Entry_long* e = construct_Entry_long(n);
     if (b -> tail) {
         b -> tail -> next = e;
         e -> prev = b -> tail;
@@ -76,31 +76,31 @@ struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b) {
     // We are now set up so that everything works as if a, b, c are positive.
     struct Entry_long* entry_a = a -> head;
     struct Entry_long* entry_b = b -> head;
-    unsigned long a_digit;
-    unsigned long b_digit;
+    unsigned long digit_a;
+    unsigned long digit_b;
     // Keep track of top digits to check for and deal with overflow
     unsigned long sum = 0, top_a, top_b, top_sum, tops;
     while ((entry_a) || (entry_b)) {
         if (entry_a) {
             // Separate top digit from rest of number
-            a_digit = entry_a -> content;
-            top_a = a_digit >> (sizeof(long)*8 - 1);
-            a_digit = a_digit << 1 >> 1;
+            digit_a = entry_a -> content;
+            top_a = digit_a >> (sizeof(long)*8 - 1);
+            digit_a = digit_a << 1 >> 1;
             entry_a = entry_a -> next;
         } else {
-            a_digit = 0;
+            digit_a = 0;
             top_a = 0;
         }
         if (entry_b) {
-            b_digit = entry_b -> content;            
-            top_b = b_digit >> (sizeof(long)*8 - 1);
-            b_digit = b_digit << 1 >> 1;
+            digit_b = entry_b -> content;            
+            top_b = digit_b >> (sizeof(long)*8 - 1);
+            digit_b = digit_b << 1 >> 1;
             entry_b = entry_b -> next;
         } else {
-            b_digit = 0;
+            digit_b = 0;
             top_b = 0;
         }
-        sum += a_digit + b_digit;
+        sum += digit_a + digit_b;
         top_sum = sum >> (sizeof(unsigned long)*8 - 1);
         tops = top_a + top_b + top_sum;
         if (tops > 1) {
@@ -285,7 +285,7 @@ void eliminate_zeros(struct Bigint* a) {
         if (e -> prev) {
             a -> tail = e -> prev;
             a -> tail -> next = NULL;
-            destruct_entry_long(e);
+            destruct_Entry_long(e);
             e = a -> tail;
         } else {
             break;
@@ -294,7 +294,7 @@ void eliminate_zeros(struct Bigint* a) {
 }
 
 // Functions for Entry_long
-struct Entry_long* construct_entry_long(unsigned long n) {
+struct Entry_long* construct_Entry_long(unsigned long n) {
     struct Entry_long* e = malloc(sizeof(struct Entry_long));
     e -> content = n;
     e -> next = NULL;
@@ -302,7 +302,7 @@ struct Entry_long* construct_entry_long(unsigned long n) {
     return e;
 }
 
-struct Entry_long* destruct_entry_long(struct Entry_long* e) {
+struct Entry_long* destruct_Entry_long(struct Entry_long* e) {
     struct Entry_long* next = e -> next;
     if (e) {free(e);}
     e = NULL;
@@ -325,7 +325,7 @@ int main() {
     unsigned long n = 37;
     enqueue_to_Bigint(a, 0);
     enqueue_to_Bigint(a, n);
-    enqueue_to_Bigint(b, n);
+    enqueue_to_Bigint(b, n << 32);
     enqueue_to_Bigint(b, n);
     struct Bigint* c = multiply_Bigints(a, b);
     printf("a: "); print_Bigint(a); printf("\n");

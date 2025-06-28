@@ -41,8 +41,8 @@ struct Entry_long {
     struct Entry_long* prev;
 };
 
-struct Entry_long* construct_entry_long(unsigned long n);
-struct Entry_long* destruct_entry_long(struct Entry_long* e);
+struct Entry_long* construct_Entry_long(unsigned long n);
+struct Entry_long* destruct_Entry_long(struct Entry_long* e);
 
 struct Fraction {
     struct Bigint* numerator;
