@@ -1,4 +1,3 @@
-#include<stdbool.h>
 #include"frac.h"
 
 // Functions for Bigint
@@ -294,6 +293,50 @@ void eliminate_zeros(struct Bigint* a) {
     }
 }
 
+bool equal_Bigint(struct Bigint* a, struct Bigint* b) {
+    if (!a || !(a -> head) || !b || !(b -> head)) {
+        printf("ERROR: Trying to determine equality with empty Bigint.\n");
+        return false;
+    }
+    eliminate_zeros(a);
+    eliminate_zeros(b);
+    if (a -> len != b -> len) {
+        return false;
+    }
+    struct Entry_long* entry_a = a -> head;
+    struct Entry_long* entry_b = b -> head;
+    while (entry_a && entry_b) {
+        if (entry_a -> content != entry_b -> content) {
+            return false;
+        }
+        entry_a = entry_a -> next;
+        entry_b = entry_b -> next;
+    }
+    return true;
+}
+
+bool lt_Bigint(struct Bigint* a, struct Bigint* b) {
+     if (!a || !(a -> head) || !b || !(b -> head)) {
+        return false;
+    }
+    eliminate_zeros(a);
+    eliminate_zeros(b);
+    
+}
+
+bool leq_Bigint(struct Bigint* a, struct Bigint* b) {
+
+}
+
+bool gt_Bigint(struct Bigint* a, struct Bigint* b) {
+
+}
+
+bool geq_Bigint(struct Bigint* a, struct Bigint* b) {
+
+}
+
+
 // Functions for Entry_long
 struct Entry_long* construct_Entry_long(unsigned long n) {
     struct Entry_long* e = malloc(sizeof(struct Entry_long));
@@ -328,10 +371,15 @@ int main() {
     enqueue_to_Bigint(a, n);
     enqueue_to_Bigint(b, n << 32);
     enqueue_to_Bigint(b, n);
-    struct Bigint* c = multiply_Bigints(a, b);
+    struct Bigint* c = construct_Bigint();
+    enqueue_to_Bigint(c, 0);
+    enqueue_to_Bigint(c, n);
+    enqueue_to_Bigint(c, 0);
+    printf("a == b: %i\n", equal_Bigint(a, b));
+    printf("a == c: %i\n", equal_Bigint(a, c));
     printf("a: "); print_Bigint(a); printf("\n");
     printf("b: "); print_Bigint(b); printf("\n");
-    printf("a*b: "); print_Bigint(c); printf("\n");
+    printf("c: "); print_Bigint(c); printf("\n");
     if (a) {a = destruct_Bigint(a);}
     if (b) {b = destruct_Bigint(b);}
     if (c) {c = destruct_Bigint(c);}

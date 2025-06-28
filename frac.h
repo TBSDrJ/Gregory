@@ -9,6 +9,7 @@ NB: This means that 'digits' are ordered from least significant to most.
 
 #include<stdlib.h>
 #include<stdio.h>
+#include<stdbool.h>
 
 // First the data types:
 struct Entry_long;
@@ -34,6 +35,11 @@ struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b);
 struct Bigint* bitshift_left_Bigint(struct Bigint* a, unsigned long n);
 struct Bigint* bitshift_right_Bigint(struct Bigint* a, unsigned long n);
 void eliminate_zeros(struct Bigint* a);
+bool equal_Bigint(struct Bigint* a, struct Bigint* b);
+bool lt_Bigint(struct Bigint* a, struct Bigint* b);
+bool leq_Bigint(struct Bigint* a, struct Bigint* b);
+bool gt_Bigint(struct Bigint* a, struct Bigint* b);
+bool geq_Bigint(struct Bigint* a, struct Bigint* b);
 
 struct Entry_long {
     unsigned long content;
