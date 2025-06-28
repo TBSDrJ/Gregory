@@ -286,6 +286,7 @@ void eliminate_zeros(struct Bigint* a) {
             a -> tail = e -> prev;
             a -> tail -> next = NULL;
             destruct_Entry_long(e);
+            a -> len--;
             e = a -> tail;
         } else {
             break;
