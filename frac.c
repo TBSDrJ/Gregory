@@ -316,24 +316,45 @@ bool equal_Bigint(struct Bigint* a, struct Bigint* b) {
 }
 
 bool lt_Bigint(struct Bigint* a, struct Bigint* b) {
-     if (!a || !(a -> head) || !b || !(b -> head)) {
+     if (!a || !(a -> tail) || !b || !(b -> tail)) {
         return false;
     }
     eliminate_zeros(a);
     eliminate_zeros(b);
-    
+    if (a -> len < b -> len) {
+        return true;
+    }
+    if (a -> len > b -> len) {
+        return false;
+    }
+    struct Entry_long* entry_a = a -> tail;
+    struct Entry_long* entry_b = b -> tail;
+    while (entry_a && entry_b) {
+        if (entry_a -> content < entry_b -> content) {
+            return true;
+        }
+        if (entry_a -> content > entry_b -> content) {
+            return false;
+        }
+        entry_a = entry_a -> prev;
+        entry_b = entry_b -> prev;
+    }
+    return false;
 }
 
 bool leq_Bigint(struct Bigint* a, struct Bigint* b) {
-
+    if (equal_Bigint(a, b) || lt_Bigint(a, b)) {
+        return true;
+    }
+    return false;
 }
 
 bool gt_Bigint(struct Bigint* a, struct Bigint* b) {
-
+    return lt_Bigint(b, a);
 }
 
 bool geq_Bigint(struct Bigint* a, struct Bigint* b) {
-
+    return leq_Bigint(b, a);
 }
 
 
@@ -375,8 +396,8 @@ int main() {
     enqueue_to_Bigint(c, 0);
     enqueue_to_Bigint(c, n);
     enqueue_to_Bigint(c, 0);
-    printf("a == b: %i\n", equal_Bigint(a, b));
-    printf("a == c: %i\n", equal_Bigint(a, c));
+    printf("a >= b: %i\n", geq_Bigint(a, b));
+    printf("a >= c: %i\n", geq_Bigint(a, c));
     printf("a: "); print_Bigint(a); printf("\n");
     printf("b: "); print_Bigint(b); printf("\n");
     printf("c: "); print_Bigint(c); printf("\n");
