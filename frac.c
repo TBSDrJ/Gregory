@@ -179,8 +179,8 @@ struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b) {
             digit_b = entry_b -> content;
             a_0 = digit_a << sizeof(long)*4 >> sizeof(long)*4;
             a_1 = digit_a >> sizeof(long)*4;
-            b_0 = digit_a << sizeof(long)*4 >> sizeof(long)*4;
-            b_1 = digit_a >> sizeof(long)*4;
+            b_0 = digit_b << sizeof(long)*4 >> sizeof(long)*4;
+            b_1 = digit_b >> sizeof(long)*4;
             prod_0 = a_0 * b_0;
             prod_1 = a_0 * b_1;
             prod_2 = a_1 * b_0;
