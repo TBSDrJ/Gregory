@@ -139,18 +139,82 @@ struct Bigint* neg_Bigint(struct Bigint* a) {
 
 struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b) {
        bool fail = false;
-    if (!(a -> head)) {
+    if (!a || !(a -> head)) {
         printf("ERROR: Trying to multiply empty Bigint, a from mul(a,b)\n");
         fail = true;
     } 
-    if (!(b -> head)) {
+    if (!b || !(b -> head)) {
         printf("ERROR: Trying to multiply empty Bigint, b from mul(a,b)\n");
         fail = true;
     }
     if (fail) {
         return NULL;
     } 
-    return NULL;
+    // So we know that a and b are not NULL and have at least one entry each.
+    struct Bigint* c = malloc(sizeof(struct Bigint));
+    c -> sign = (a -> sign) * (b -> sign);
+    enqueue_to_Bigint(c, 0);
+    /* The idea is that (n bits)*(n bits) has <= 2n bits.  So, break a and b
+    in half so that each product of two halves fits inside the data type. 
+    Do the 4 different multiplications of the halves, adjust them for place 
+    value, and add those up. */
+    unsigned long a_0, a_1, b_0, b_1, prod_0, prod_1, prod_2, prod_3, places=0;
+    struct Bigint* c_0 = construct_Bigint();
+    struct Bigint* c_1 = construct_Bigint();
+    struct Bigint* c_2 = construct_Bigint();
+    struct Bigint* c_3 = construct_Bigint();
+    struct Entry_long* entry_a = a -> head;
+    struct Entry_long* entry_b = b -> head;
+    while (entry_a || entry_b) {
+        a_0 = (entry_a -> content) << sizeof(long)*4 >> sizeof(long)*4;
+        a_1 = (entry_a -> content) >> sizeof(long)*4;
+        b_0 = (entry_b -> content) << sizeof(long)*4 >> sizeof(long)*4;
+        b_1 = (entry_b -> content) >> sizeof(long)*4;
+        prod_0 = a_0 * b_0;
+        prod_1 = a_0 * b_1;
+        prod_2 = a_1 * b_0;
+        prod_3 = a_1 * b_1;
+
+
+        places += sizeof(long)*8;
+    }
+    return c;
+}
+
+struct Bigint* bitshift_left_Bigint(struct Bigint* a, unsigned long n) {
+    struct Bigint* b = construct_Bigint();
+    if (!a || (!(a -> head))) {
+        printf("ERROR: Attempting to left bitshift empty Bigint\n");
+        return NULL;
+    }
+    struct Entry_long* e = a -> head;
+    unsigned long digits = n/64, bits = n%64;
+    unsigned long n_0, n_1 = 0;
+    for (long i=0; i<digits; i++) {
+        enqueue_to_Bigint(b, 0);
+    }
+    while (e) {
+        n_0 = (e -> content) << bits;
+        // n_0 should have all 0s wherever n_1 could have 1s.
+        n_0 |= n_1;
+        n_1 = (e -> content) >> (sizeof(long)*8 - bits);
+        enqueue_to_Bigint(b, n_0);
+        e = e -> next;
+    }
+    if (n_1) {
+        enqueue_to_Bigint(b, n_1);
+    }
+    return b;
+}
+
+struct Bigint* bitshift_right_Bigint(struct Bigint* a, unsigned long n) {
+    struct Bigint* b = malloc(sizeof(struct Bigint));
+    if (!a || (!(a -> head))) {
+        printf("ERROR: Attempting to left bitshift empty Bigint\n");
+        return NULL;
+    }
+    struct Entry_long* e = a -> head;
+    return b;
 }
 
 // Functions for Entry_long
@@ -179,21 +243,22 @@ struct Fraction* construct_frac() {
 }
 
 int main() {
-    struct Bigint* a = malloc(sizeof(struct Bigint));
-    struct Bigint* b = malloc(sizeof(struct Bigint));
+    struct Bigint* a = construct_Bigint();
+    struct Bigint* b = construct_Bigint();
     unsigned long n = 0;
     n -= 1;
-    enqueue_to_Bigint(a, (unsigned long) n);
-    enqueue_to_Bigint(a, (unsigned long) n);
-    enqueue_to_Bigint(a, (unsigned long) n);
-    enqueue_to_Bigint(b, (unsigned long) n);
-    enqueue_to_Bigint(b, (unsigned long) n);
-    if (a) {a = destruct_Bigint(a);}
-    struct Bigint* c = add_Bigints(a, b);
+    enqueue_to_Bigint(a, n);
+    printf("a: "); print_Bigint(a); printf("\n");
+    a = bitshift_left_Bigint(a, 32);
+    // enqueue_to_Bigint(a, (unsigned long) n);
+    // enqueue_to_Bigint(a, (unsigned long) n);
+    // enqueue_to_Bigint(b, (unsigned long) n);
+    // enqueue_to_Bigint(b, (unsigned long) n);
+    // struct Bigint* c = add_Bigints(a, b);
     printf("a: "); print_Bigint(a); printf("\n");
     printf("b: "); print_Bigint(b); printf("\n");
-    printf("a+b: "); print_Bigint(c); printf("\n");
+    // printf("a+b: "); print_Bigint(c); printf("\n");
     if (a) {a = destruct_Bigint(a);}
     if (b) {b = destruct_Bigint(b);}
-    if (c) {c = destruct_Bigint(c);}
+    // if (c) {c = destruct_Bigint(c);}
 }
