@@ -41,9 +41,10 @@ void print_Bigint(struct Bigint* b) {
     }
     struct Entry_long* e = b -> head;
     if (b -> sign == -1) {
-        printf("- ");}
+        printf("-");}
     while(e) {
-        printf("%lu, ", e -> content);
+        printf("%lu", e -> content);
+        if (e -> next) {printf(", ");}
         e = e -> next;
     }
 }
@@ -147,7 +148,11 @@ struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b) {
     } 
     // So we know that a and b are not NULL and have at least one entry each.
     struct Bigint* c = construct_Bigint();
-    c -> sign = (a -> sign) * (b -> sign);
+    long a_sign = a -> sign;
+    long b_sign = b -> sign;
+    long c_sign = (a -> sign) * (b -> sign);
+    a -> sign = 1;
+    b -> sign = 1;
     enqueue_to_Bigint(c, 0);
     /* The idea is that (n bits)*(n bits) has <= 2n bits.  So, break a and b
     in half so that each product of two halves fits inside the data type. 
@@ -155,10 +160,14 @@ struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b) {
     value, and add those up. */
     unsigned long a_0, a_1, b_0, b_1, prod_0, prod_1, prod_2, prod_3;
     unsigned long places_a = 0, places_b;
-    struct Bigint* c_0;
-    struct Bigint* c_1;
-    struct Bigint* c_2;
-    struct Bigint* c_3;
+    struct Bigint* c_0 = NULL;
+    struct Bigint* c_1 = NULL;
+    struct Bigint* c_2 = NULL;
+    struct Bigint* c_3 = NULL;
+    struct Bigint* d_0 = NULL;
+    struct Bigint* d_1 = NULL;
+    struct Bigint* d_2 = NULL;
+    struct Bigint* d_3 = NULL;
     struct Entry_long* entry_a = a -> head;
     struct Entry_long* entry_b = b -> head;
     unsigned long digit_a = 0, digit_b = 0;
@@ -180,40 +189,53 @@ struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b) {
             prod_2 = a_1 * b_0;
             prod_3 = a_1 * b_1;
             enqueue_to_Bigint(c_0, prod_0);
-            c_0 = bitshift_left_Bigint(c_0, places_a + places_b);
+            d_0 = bitshift_left_Bigint(c_0, places_a + places_b);
             enqueue_to_Bigint(c_1, prod_1);
-            c_1 = bitshift_left_Bigint(
+            d_1 = bitshift_left_Bigint(
                     c_1, sizeof(long)*4 + places_a + places_b);
             enqueue_to_Bigint(c_2, prod_2);
-            c_2 = bitshift_left_Bigint(
+            d_2 = bitshift_left_Bigint(
                     c_2, sizeof(long)*4 + places_a + places_b);
             enqueue_to_Bigint(c_3, prod_3);
-            c_3 = bitshift_left_Bigint(
+            d_3 = bitshift_left_Bigint(
                     c_3, sizeof(long)*8 + places_a + places_b);
-            c = add_Bigints(c, c_0);
-            c = add_Bigints(c, c_1);
-            c = add_Bigints(c, c_2);
-            c = add_Bigints(c, c_3);
+            c_0 = destruct_Bigint(c_0);
+            c_1 = destruct_Bigint(c_1);
+            c_2 = destruct_Bigint(c_2);
+            c_3 = destruct_Bigint(c_3);
+            c_0 = add_Bigints(c, d_0);
+            c_1 = add_Bigints(c_0, d_1);
+            c_2 = add_Bigints(c_1, d_2);
+            c_3 = add_Bigints(c_2, d_3);
+            c = destruct_Bigint(c);
+            c = c_3;
             entry_b = entry_b -> next;
             places_b += sizeof(long)*8;
             c_0 = destruct_Bigint(c_0);
             c_1 = destruct_Bigint(c_1);
             c_2 = destruct_Bigint(c_2);
-            c_3 = destruct_Bigint(c_3);
+            // Don't destroy c_3 because that is now c which we are keeping
+            d_0 = destruct_Bigint(d_0);
+            d_1 = destruct_Bigint(d_1);
+            d_2 = destruct_Bigint(d_2);
+            d_3 = destruct_Bigint(d_3);
         }
         entry_a = entry_a -> next;
         places_a += sizeof(long)*8;
         entry_b = b -> head;
     }
+    a -> sign = a_sign;
+    b -> sign = b_sign;
+    c -> sign = c_sign;
     return c;
 }
 
 struct Bigint* bitshift_left_Bigint(struct Bigint* a, unsigned long n) {
-    struct Bigint* b = construct_Bigint();
     if (!a || (!(a -> head))) {
         printf("ERROR: Attempting to left bitshift empty Bigint\n");
         return NULL;
     }
+    struct Bigint* b = construct_Bigint();
     struct Entry_long* e = a -> head;
     unsigned long digits = n/64, bits = n%64;
     unsigned long n_0, n_1 = 0;
@@ -389,7 +411,9 @@ struct Entry_long* construct_Entry_long(unsigned long n) {
 
 struct Entry_long* destruct_Entry_long(struct Entry_long* e) {
     struct Entry_long* next = e -> next;
-    if (e) {free(e);}
+    if (e) {
+        free(e);
+    }
     e = NULL;
     return next;
 }
@@ -412,19 +436,17 @@ int main() {
     enqueue_to_Bigint(a, n);
     enqueue_to_Bigint(b, n << 32);
     enqueue_to_Bigint(b, n);
-    struct Bigint* c = construct_Bigint();
-    enqueue_to_Bigint(c, 0);
-    enqueue_to_Bigint(c, n);
-    enqueue_to_Bigint(c, 0);
-    // a -> sign = -1;
-    // b -> sign = -1;
-    // c -> sign = -1;
-    printf("a = b: %i\n", equal_Bigint(a, b));
-    printf("a = c: %i\n", equal_Bigint(a, c));
+    struct Bigint* c = NULL;
+    struct Bigint* d = NULL;
+    c = add_Bigints(a, b);
+    a -> sign = -1;
+    d = multiply_Bigints(a, b);
     printf("a: "); print_Bigint(a); printf("\n");
     printf("b: "); print_Bigint(b); printf("\n");
-    printf("c: "); print_Bigint(c); printf("\n");
+    printf("|a|+b: "); print_Bigint(c); printf("\n");
+    printf("a*b: "); print_Bigint(d); printf("\n");
     if (a) {a = destruct_Bigint(a);}
     if (b) {b = destruct_Bigint(b);}
     if (c) {c = destruct_Bigint(c);}
+    if (d) {d = destruct_Bigint(d);}
 }
