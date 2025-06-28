@@ -125,8 +125,11 @@ struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b) {
 struct Bigint* neg_Bigint(struct Bigint* a) {
     struct Bigint* c = malloc(sizeof(struct Bigint));
     c -> sign = -1 * (a -> sign);
-    c -> head = a -> head;
-    c -> tail = a -> tail;
+    struct Entry_long* e = a -> head;
+    while (e) {
+        enqueue_to_Bigint(c, e -> content);
+        e = e -> next;
+    }
     return c;
 }
 
