@@ -60,15 +60,19 @@ struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b) {
         return NULL;
     }
     if ((a -> sign == -1) && (b -> sign == 1)) {
-        struct Bigint* neg_a = neg_Bigint(a);
-        // return subtract_Bigints(b, neg_a);
+        a -> sign = 1;
+        struct Bigint* c = subtract_Bigints(b, a);
+        a -> sign = -1;
+        // return c;
         return NULL;
     } else if ((a -> sign == 1) && (b -> sign == -1)) {
-        struct Bigint* neg_b = neg_Bigint(b);
-        // return subtract_Bigints(a, neg_b);
+        b -> sign = 1;
+        struct Bigint* c = subtract_Bigints(a, b);
+        b -> sign = -1;
+        // return c;
         return NULL;
     } 
-    struct Bigint* c = malloc(sizeof(struct Bigint));
+    struct Bigint* c = construct_Bigint();
     if ((a -> sign == -1) && (b -> sign == -1)) {
         c -> sign = -1;
     }
@@ -126,17 +130,6 @@ struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b) {
     return c;
 }
 
-struct Bigint* neg_Bigint(struct Bigint* a) {
-    struct Bigint* c = malloc(sizeof(struct Bigint));
-    c -> sign = -1 * (a -> sign);
-    struct Entry_long* e = a -> head;
-    while (e) {
-        enqueue_to_Bigint(c, e -> content);
-        e = e -> next;
-    }
-    return c;
-}
-
 struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b) {
        bool fail = false;
     if (!a || !(a -> head)) {
@@ -151,7 +144,7 @@ struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b) {
         return NULL;
     } 
     // So we know that a and b are not NULL and have at least one entry each.
-    struct Bigint* c = malloc(sizeof(struct Bigint));
+    struct Bigint* c = construct_Bigint();
     c -> sign = (a -> sign) * (b -> sign);
     enqueue_to_Bigint(c, 0);
     /* The idea is that (n bits)*(n bits) has <= 2n bits.  So, break a and b
@@ -247,7 +240,7 @@ struct Bigint* bitshift_left_Bigint(struct Bigint* a, unsigned long n) {
 }
 
 struct Bigint* bitshift_right_Bigint(struct Bigint* a, unsigned long n) {
-    struct Bigint* b = malloc(sizeof(struct Bigint));
+    struct Bigint* b = constuct_Bigint();
     if (!a || (!(a -> head))) {
         printf("ERROR: Attempting to right bitshift empty Bigint\n");
         return NULL;
