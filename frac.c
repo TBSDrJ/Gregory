@@ -25,6 +25,7 @@ void enqueue_to_Bigint(struct Bigint* b, unsigned long n) {
     struct Entry_long* e = construct_entry_long(n);
     if (b -> tail) {
         b -> tail -> next = e;
+        e -> prev = b -> tail;
         b -> tail = e;
         b -> len++;
     } else {
@@ -274,11 +275,16 @@ struct Bigint* bitshift_right_Bigint(struct Bigint* a, unsigned long n) {
     return b;
 }
 
+void eliminate_zeros(struct Bigint* a) {
+    
+}
+
 // Functions for Entry_long
 struct Entry_long* construct_entry_long(unsigned long n) {
     struct Entry_long* e = malloc(sizeof(struct Entry_long));
     e -> content = n;
     e -> next = NULL;
+    e -> prev = NULL;
     return e;
 }
 
