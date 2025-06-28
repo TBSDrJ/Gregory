@@ -211,6 +211,7 @@ struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b) {
         places_a += sizeof(long)*8;
         entry_b = b -> head;
     }
+    eliminate_zeros(c);
     return c;
 }
 
@@ -276,7 +277,20 @@ struct Bigint* bitshift_right_Bigint(struct Bigint* a, unsigned long n) {
 }
 
 void eliminate_zeros(struct Bigint* a) {
-    
+    if (!a || !(a -> tail)) {
+        return;
+    }
+    struct Entry_long* e = a -> tail;
+    while ((e -> content) == 0) {
+        if (e -> prev) {
+            a -> tail = e -> prev;
+            a -> tail -> next = NULL;
+            destruct_entry_long(e);
+            e = a -> tail;
+        } else {
+            break;
+        }
+    }
 }
 
 // Functions for Entry_long
