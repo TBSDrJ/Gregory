@@ -31,6 +31,8 @@ struct Bigint* subtract_Bigints(struct Bigint* a, struct Bigint* b);
 // Creates a copy of a with the same digits.  
 struct Bigint* neg_Bigint(struct Bigint* a);
 struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b);
+struct Bigint* bitshift_left_Bigint(struct Bigint* a, unsigned long n);
+struct Bigint* bitshift_right_Bigint(struct Bigint* a, unsigned long n);
 
 struct Entry_long {
     unsigned long content;

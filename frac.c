@@ -158,25 +158,57 @@ struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b) {
     in half so that each product of two halves fits inside the data type. 
     Do the 4 different multiplications of the halves, adjust them for place 
     value, and add those up. */
-    unsigned long a_0, a_1, b_0, b_1, prod_0, prod_1, prod_2, prod_3, places=0;
-    struct Bigint* c_0 = construct_Bigint();
-    struct Bigint* c_1 = construct_Bigint();
-    struct Bigint* c_2 = construct_Bigint();
-    struct Bigint* c_3 = construct_Bigint();
+    unsigned long a_0, a_1, b_0, b_1, prod_0, prod_1, prod_2, prod_3;
+    unsigned long places_a = 0, places_b;
+    struct Bigint* c_0;
+    struct Bigint* c_1;
+    struct Bigint* c_2;
+    struct Bigint* c_3;
     struct Entry_long* entry_a = a -> head;
     struct Entry_long* entry_b = b -> head;
-    while (entry_a || entry_b) {
-        a_0 = (entry_a -> content) << sizeof(long)*4 >> sizeof(long)*4;
-        a_1 = (entry_a -> content) >> sizeof(long)*4;
-        b_0 = (entry_b -> content) << sizeof(long)*4 >> sizeof(long)*4;
-        b_1 = (entry_b -> content) >> sizeof(long)*4;
-        prod_0 = a_0 * b_0;
-        prod_1 = a_0 * b_1;
-        prod_2 = a_1 * b_0;
-        prod_3 = a_1 * b_1;
-
-
-        places += sizeof(long)*8;
+    unsigned long digit_a = 0, digit_b = 0;
+    while (entry_a) {
+        digit_a = entry_a -> content;
+        places_b = 0;
+        while (entry_b) {
+            c_0 = construct_Bigint();
+            c_1 = construct_Bigint();
+            c_2 = construct_Bigint();
+            c_3 = construct_Bigint();
+            digit_b = entry_b -> content;
+            a_0 = digit_a << sizeof(long)*4 >> sizeof(long)*4;
+            a_1 = digit_a >> sizeof(long)*4;
+            b_0 = digit_a << sizeof(long)*4 >> sizeof(long)*4;
+            b_1 = digit_a >> sizeof(long)*4;
+            prod_0 = a_0 * b_0;
+            prod_1 = a_0 * b_1;
+            prod_2 = a_1 * b_0;
+            prod_3 = a_1 * b_1;
+            enqueue_to_Bigint(c_0, prod_0);
+            c_0 = bitshift_left_Bigint(c_0, places_a + places_b);
+            enqueue_to_Bigint(c_1, prod_1);
+            c_1 = bitshift_left_Bigint(
+                    c_1, sizeof(long)*4 + places_a + places_b);
+            enqueue_to_Bigint(c_2, prod_2);
+            c_2 = bitshift_left_Bigint(
+                    c_2, sizeof(long)*4 + places_a + places_b);
+            enqueue_to_Bigint(c_3, prod_3);
+            c_3 = bitshift_left_Bigint(
+                    c_3, sizeof(long)*8 + places_a + places_b);
+            c = add_Bigints(c, c_0);
+            c = add_Bigints(c, c_1);
+            c = add_Bigints(c, c_2);
+            c = add_Bigints(c, c_3);
+            entry_b = entry_b -> next;
+            places_b += sizeof(long)*8;
+            c_0 = destruct_Bigint(c_0);
+            c_1 = destruct_Bigint(c_1);
+            c_2 = destruct_Bigint(c_2);
+            c_3 = destruct_Bigint(c_3);
+        }
+        entry_a = entry_a -> next;
+        places_a += sizeof(long)*8;
+        entry_b = b -> head;
     }
     return c;
 }
@@ -197,7 +229,13 @@ struct Bigint* bitshift_left_Bigint(struct Bigint* a, unsigned long n) {
         n_0 = (e -> content) << bits;
         // n_0 should have all 0s wherever n_1 could have 1s and vice versa.
         n_0 |= n_1;
-        n_1 = (e -> content) >> (sizeof(long)*8 - bits);
+        // if bits == 0, no shift happens because the number of places is equal
+        //   to the size of the data type.
+        if (bits > 0) {
+            n_1 = ((e -> content) >> (sizeof(long)*8 - bits));
+        } else {
+            n_1 = 0;
+        }
         enqueue_to_Bigint(b, n_0);
         e = e -> next;
     }
@@ -264,23 +302,16 @@ struct Fraction* construct_frac() {
 int main() {
     struct Bigint* a = construct_Bigint();
     struct Bigint* b = construct_Bigint();
-    unsigned long n = 0;
-    n -= 1;
+    unsigned long n = 37;
+    enqueue_to_Bigint(a, 0);
     enqueue_to_Bigint(a, n);
-    enqueue_to_Bigint(a, n);
-    enqueue_to_Bigint(a, n);
-    printf("a: "); print_Bigint(a); printf("\n");
-    b = bitshift_right_Bigint(a, 1);
-    a = bitshift_right_Bigint(a, 96);
-    // enqueue_to_Bigint(a, (unsigned long) n);
-    // enqueue_to_Bigint(a, (unsigned long) n);
-    // enqueue_to_Bigint(b, (unsigned long) n);
-    // enqueue_to_Bigint(b, (unsigned long) n);
-    // struct Bigint* c = add_Bigints(a, b);
+    enqueue_to_Bigint(b, n);
+    enqueue_to_Bigint(b, n);
+    struct Bigint* c = multiply_Bigints(a, b);
     printf("a: "); print_Bigint(a); printf("\n");
     printf("b: "); print_Bigint(b); printf("\n");
-    // printf("a+b: "); print_Bigint(c); printf("\n");
+    printf("a*b: "); print_Bigint(c); printf("\n");
     if (a) {a = destruct_Bigint(a);}
     if (b) {b = destruct_Bigint(b);}
-    // if (c) {c = destruct_Bigint(c);}
+    if (c) {c = destruct_Bigint(c);}
 }
