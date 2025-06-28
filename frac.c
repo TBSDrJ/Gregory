@@ -195,7 +195,7 @@ struct Bigint* bitshift_left_Bigint(struct Bigint* a, unsigned long n) {
     }
     while (e) {
         n_0 = (e -> content) << bits;
-        // n_0 should have all 0s wherever n_1 could have 1s.
+        // n_0 should have all 0s wherever n_1 could have 1s and vice versa.
         n_0 |= n_1;
         n_1 = (e -> content) >> (sizeof(long)*8 - bits);
         enqueue_to_Bigint(b, n_0);
@@ -210,10 +210,29 @@ struct Bigint* bitshift_left_Bigint(struct Bigint* a, unsigned long n) {
 struct Bigint* bitshift_right_Bigint(struct Bigint* a, unsigned long n) {
     struct Bigint* b = malloc(sizeof(struct Bigint));
     if (!a || (!(a -> head))) {
-        printf("ERROR: Attempting to left bitshift empty Bigint\n");
+        printf("ERROR: Attempting to right bitshift empty Bigint\n");
         return NULL;
     }
     struct Entry_long* e = a -> head;
+    unsigned long digits = n/64, bits = n%64;
+    unsigned long n_0, n_1 = 0;
+    for (long i=0; i<digits; i++) {
+        e = e -> next;
+    }
+    while (e) {
+        n_0 = (e -> content) >> bits;
+        e = e -> next;
+        if (e) {
+            n_1 = (e -> content) << (sizeof(long)*8 - bits);
+        } else {
+            n_1 = 0;
+        }
+        enqueue_to_Bigint(b, n_0 | n_1);
+    }
+    if (!(b -> head)) {
+        // Make sure b is certain to be nonempty.
+        enqueue_to_Bigint(b, 0);
+    }
     return b;
 }
 
@@ -248,8 +267,11 @@ int main() {
     unsigned long n = 0;
     n -= 1;
     enqueue_to_Bigint(a, n);
+    enqueue_to_Bigint(a, n);
+    enqueue_to_Bigint(a, n);
     printf("a: "); print_Bigint(a); printf("\n");
-    a = bitshift_left_Bigint(a, 32);
+    b = bitshift_right_Bigint(a, 1);
+    a = bitshift_right_Bigint(a, 96);
     // enqueue_to_Bigint(a, (unsigned long) n);
     // enqueue_to_Bigint(a, (unsigned long) n);
     // enqueue_to_Bigint(b, (unsigned long) n);
