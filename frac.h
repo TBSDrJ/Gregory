@@ -23,13 +23,14 @@ struct Bigint {
 };
 
 struct Bigint* construct_Bigint();
-void destruct_Bigint(struct Bigint* b);
+struct Bigint* destruct_Bigint(struct Bigint* b);
 void enqueue_to_Bigint(struct Bigint* b, unsigned long n);
 void print_Bigint(struct Bigint* b);
 struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b);
 struct Bigint* subtract_Bigints(struct Bigint* a, struct Bigint* b);
 // NB: neg_Bigint points to a for its digits, so if a changes, so will its neg!
 struct Bigint* neg_Bigint(struct Bigint* a);
+struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b);
 
 struct Entry_long {
     unsigned long content;

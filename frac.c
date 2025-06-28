@@ -11,10 +11,14 @@ struct Bigint* construct_Bigint() {
     return b;
 }
 
-void destruct_Bigint(struct Bigint* b) {
+struct Bigint* destruct_Bigint(struct Bigint* b) {
     struct Entry_long* e = b -> head;
     while (e) {e = destruct_entry_long(e);}
+    b -> head = NULL;
+    b -> tail = NULL;
+    b -> len = 0;
     free(b);
+    return NULL;
 }
 
 void enqueue_to_Bigint(struct Bigint* b, unsigned long n) {
@@ -32,6 +36,7 @@ void enqueue_to_Bigint(struct Bigint* b, unsigned long n) {
 
 void print_Bigint(struct Bigint* b) {
     if (!b) {
+        printf("Trying to print empty Bigint");
         return;
     }
     struct Entry_long* e = b -> head;
@@ -39,16 +44,15 @@ void print_Bigint(struct Bigint* b) {
         printf("%lu, ", e -> content);
         e = e -> next;
     }
-    printf("\n");
 }
 
 struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b) {
     bool fail = false;
-    if (!(a -> head)) {
+    if (!a || !(a -> head)) {
         printf("ERROR: Trying to add empty Bigint, a from add(a,b)\n");
         fail = true;
     } 
-    if (!(b -> head)) {
+    if (!b || !(b -> head)) {
         printf("ERROR: Trying to add empty Bigint, b from add(a,b)\n");
         fail = true;
     }
@@ -94,12 +98,9 @@ struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b) {
             b_digit = 0;
             top_b = 0;
         }
-        printf("%lu %lu %lu ", a_digit, b_digit, sum);
         sum += a_digit + b_digit;
-        printf("%lu ", sum);
         top_sum = sum >> 63;
         tops = top_a + top_b + top_sum;
-        printf("%lu\n", tops);
         if (tops > 1) {
             if (tops == 2) {
                 // In this case, we have a 1 in the 64th bit, but that 1 is
@@ -129,6 +130,22 @@ struct Bigint* neg_Bigint(struct Bigint* a) {
     return c;
 }
 
+struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b) {
+       bool fail = false;
+    if (!(a -> head)) {
+        printf("ERROR: Trying to multiply empty Bigint, a from mul(a,b)\n");
+        fail = true;
+    } 
+    if (!(b -> head)) {
+        printf("ERROR: Trying to multiply empty Bigint, b from mul(a,b)\n");
+        fail = true;
+    }
+    if (fail) {
+        return NULL;
+    } 
+    return NULL;
+}
+
 // Functions for Entry_long
 struct Entry_long* construct_entry_long(unsigned long n) {
     struct Entry_long* e = malloc(sizeof(struct Entry_long));
@@ -140,6 +157,7 @@ struct Entry_long* construct_entry_long(unsigned long n) {
 struct Entry_long* destruct_entry_long(struct Entry_long* e) {
     struct Entry_long* next = e -> next;
     if (e) {free(e);}
+    e = NULL;
     return next;
 }
 
@@ -157,18 +175,18 @@ int main() {
     struct Bigint* a = malloc(sizeof(struct Bigint));
     struct Bigint* b = malloc(sizeof(struct Bigint));
     unsigned long n = 0;
-    for (int i=0; i<64; i++) {
-        n += (unsigned long) 1 << i;
-    }
-    printf("%lu\n", n);
+    n -= 1;
     enqueue_to_Bigint(a, (unsigned long) n);
     enqueue_to_Bigint(a, (unsigned long) n);
     enqueue_to_Bigint(a, (unsigned long) n);
     enqueue_to_Bigint(b, (unsigned long) n);
     enqueue_to_Bigint(b, (unsigned long) n);
+    if (a) {a = destruct_Bigint(a);}
     struct Bigint* c = add_Bigints(a, b);
-    print_Bigint(c);
-    if (a) {destruct_Bigint(a);}
-    if (b) {destruct_Bigint(b);}
-    if (c) {destruct_Bigint(c);}
+    printf("a: "); print_Bigint(a); printf("\n");
+    printf("b: "); print_Bigint(b); printf("\n");
+    printf("a+b: "); print_Bigint(c); printf("\n");
+    if (a) {a = destruct_Bigint(a);}
+    if (b) {b = destruct_Bigint(b);}
+    if (c) {c = destruct_Bigint(c);}
 }
