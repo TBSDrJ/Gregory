@@ -40,6 +40,8 @@ void print_Bigint(struct Bigint* b) {
         return;
     }
     struct Entry_long* e = b -> head;
+    if (b -> sign == -1) {
+        printf("- ");}
     while(e) {
         printf("%lu, ", e -> content);
         e = e -> next;
@@ -61,13 +63,13 @@ struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b) {
     }
     if ((a -> sign == -1) && (b -> sign == 1)) {
         a -> sign = 1;
-        struct Bigint* c = subtract_Bigints(b, a);
+        // struct Bigint* c = subtract_Bigints(b, a);
         a -> sign = -1;
         // return c;
         return NULL;
     } else if ((a -> sign == 1) && (b -> sign == -1)) {
         b -> sign = 1;
-        struct Bigint* c = subtract_Bigints(a, b);
+        // struct Bigint* c = subtract_Bigints(a, b);
         b -> sign = -1;
         // return c;
         return NULL;
@@ -240,7 +242,7 @@ struct Bigint* bitshift_left_Bigint(struct Bigint* a, unsigned long n) {
 }
 
 struct Bigint* bitshift_right_Bigint(struct Bigint* a, unsigned long n) {
-    struct Bigint* b = constuct_Bigint();
+    struct Bigint* b = construct_Bigint();
     if (!a || (!(a -> head))) {
         printf("ERROR: Attempting to right bitshift empty Bigint\n");
         return NULL;
@@ -291,6 +293,9 @@ bool equal_Bigint(struct Bigint* a, struct Bigint* b) {
         printf("ERROR: Trying to determine equality with empty Bigint.\n");
         return false;
     }
+    if (a -> sign != b -> sign) {
+        return false;
+    }
     eliminate_zeros(a);
     eliminate_zeros(b);
     if (a -> len != b -> len) {
@@ -312,22 +317,44 @@ bool lt_Bigint(struct Bigint* a, struct Bigint* b) {
      if (!a || !(a -> tail) || !b || !(b -> tail)) {
         return false;
     }
+    if (a -> sign == -1 && b -> sign == 1) {
+        return true;
+    }
+    if (a -> sign == 1 && b -> sign == -1) {
+        return false;
+    }
     eliminate_zeros(a);
     eliminate_zeros(b);
     if (a -> len < b -> len) {
-        return true;
+        if (a -> sign == 1) {
+            return true;
+        } else {
+            return false;
+        }
     }
     if (a -> len > b -> len) {
-        return false;
+        if (a -> sign == 1) {
+            return false;
+        } else {
+            return true;
+        }
     }
     struct Entry_long* entry_a = a -> tail;
     struct Entry_long* entry_b = b -> tail;
     while (entry_a && entry_b) {
         if (entry_a -> content < entry_b -> content) {
-            return true;
+            if (a -> sign == 1) {
+                return true;
+            } else {
+                return false;
+            }
         }
         if (entry_a -> content > entry_b -> content) {
-            return false;
+            if (a -> sign == 1) {
+                return false;
+            } else {
+                return true;
+            }
         }
         entry_a = entry_a -> prev;
         entry_b = entry_b -> prev;
@@ -389,8 +416,11 @@ int main() {
     enqueue_to_Bigint(c, 0);
     enqueue_to_Bigint(c, n);
     enqueue_to_Bigint(c, 0);
-    printf("a >= b: %i\n", geq_Bigint(a, b));
-    printf("a >= c: %i\n", geq_Bigint(a, c));
+    // a -> sign = -1;
+    // b -> sign = -1;
+    // c -> sign = -1;
+    printf("a = b: %i\n", equal_Bigint(a, b));
+    printf("a = c: %i\n", equal_Bigint(a, c));
     printf("a: "); print_Bigint(a); printf("\n");
     printf("b: "); print_Bigint(b); printf("\n");
     printf("c: "); print_Bigint(c); printf("\n");
