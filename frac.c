@@ -72,6 +72,7 @@ struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b) {
     if ((a -> sign == -1) && (b -> sign == -1)) {
         c -> sign = -1;
     }
+    // We are now set up so that everything works as if a, b, c are positive.
     struct Entry_long* entry_a = a -> head;
     struct Entry_long* entry_b = b -> head;
     unsigned long a_digit;
@@ -82,7 +83,7 @@ struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b) {
         if (entry_a) {
             // Separate top digit from rest of number
             a_digit = entry_a -> content;
-            top_a = a_digit >> 63;
+            top_a = a_digit >> (sizeof(long)*8 - 1);
             a_digit = a_digit << 1 >> 1;
             entry_a = entry_a -> next;
         } else {
@@ -91,7 +92,7 @@ struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b) {
         }
         if (entry_b) {
             b_digit = entry_b -> content;            
-            top_b = b_digit >> 63;
+            top_b = b_digit >> (sizeof(long)*8 - 1);
             b_digit = b_digit << 1 >> 1;
             entry_b = entry_b -> next;
         } else {
@@ -99,19 +100,22 @@ struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b) {
             top_b = 0;
         }
         sum += a_digit + b_digit;
-        top_sum = sum >> 63;
+        top_sum = sum >> (sizeof(unsigned long)*8 - 1);
         tops = top_a + top_b + top_sum;
         if (tops > 1) {
             if (tops == 2) {
-                // In this case, we have a 1 in the 64th bit, but that 1 is
-                //  already accounted for in tops.
+                // In this case, we have a 1 in the highest bit, but that 1 is
+                //    already accounted for in tops, so drop it.
                 sum = sum << 1 >> 1;
             }
+            // if (tops == 3), we need 1s in both the highest and 1st place of
+            //    the next 'digit' we leave the 1 that is in the highest place.
             enqueue_to_Bigint(c, sum);
-            // Start the next sum with the 1 that regroups up to the next place
+            // Start the next sum with the 1 that regroups up to the 1st place
+            //    of the next 'digit'
             sum = 1;
         } else {
-            sum += tops << 63;
+            sum += tops << (sizeof(unsigned long)*8 - 1);
             enqueue_to_Bigint(c, sum);
             sum = 0;
         }
