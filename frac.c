@@ -133,8 +133,85 @@ struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b) {
     return c;
 }
 
+struct Bigint* subtract_Bigints(struct Bigint* a, struct Bigint* b) {
+    bool fail = false;
+    if (!a || !(a -> head)) {
+        printf("ERROR: Trying to subtract empty Bigint, ");
+        printf("a from subtract(a,b)\n");
+        fail = true;
+    } 
+    if (!b || !(b -> head)) {
+        printf("ERROR: Trying to subtract empty Bigint, ");
+        printf("b from subtract(a,b)\n");
+        fail = true;
+    }
+    if (fail) {
+        return NULL;
+    } 
+    // So we know that a and b are not NULL and have at least one entry each.
+    if ((a -> sign == 1) && (b -> sign == -1)) {
+        b -> sign = 1;
+        struct Bigint* c = add_Bigints(a, b);
+        b -> sign = -1;
+        return c;
+    }
+    if ((a -> sign == -1) && (b -> sign == 1)) {
+        a -> sign = 1;
+        struct Bigint* c = add_Bigints(a, b);
+        a -> sign = -1;
+        c -> sign = -1;
+        return c;
+    }
+    // Now we know that a and b have the same sign
+    if (equal_Bigint(a, b)) {
+        struct Bigint* c = construct_Bigint();
+        enqueue_to_Bigint(c, 0);
+        return c;
+    }
+    if ((lt_Bigint(a, b) && (a -> sign == 1)) || 
+            (lt_Bigint(b, a) && (a -> sign == -1))) {
+        struct Bigint* c = subtract_Bigints(b, a);
+        c -> sign *= -1;
+        return c;
+    }
+    // So now we know that a and b have the same sign and |a| > |b|
+    struct Bigint* c = construct_Bigint();
+    c -> sign = a -> sign;
+    struct Entry_long* a_entry = a -> head;
+    struct Entry_long* b_entry = b -> head;
+    unsigned long regrouped_one = 0;
+    while (a_entry && b_entry) {
+        if (a_entry -> content < b_entry -> content) {
+            // Notice that -x is actually 2^(sizeof(unsigned long)) - x.
+            unsigned long n = -(b_entry -> content) + (a_entry -> content)
+                    - regrouped_one;
+            regrouped_one = 1;
+            enqueue_to_Bigint(c, n);
+        } else {
+            unsigned long n = (a_entry -> content) - (b_entry -> content)
+                    - regrouped_one;
+            regrouped_one = 0;
+            enqueue_to_Bigint(c, n);
+        }
+        a_entry = a_entry -> next;
+        b_entry = b_entry -> next;
+    }
+    // Since we know that |a| > |b|, if there are any entries remaining, they
+    //    are from a.  The only thing left to deal with is a regrouped 1.
+    while (a_entry && regrouped_one) {
+        if (a_entry -> content > 0) {
+            a_entry -> content--;
+            regrouped_one = 0;
+        } else {
+            a_entry = a_entry -> next;
+        }
+    }
+    eliminate_zeros(c);
+    return c;
+}
+
 struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b) {
-       bool fail = false;
+    bool fail = false;
     if (!a || !(a -> head)) {
         printf("ERROR: Trying to multiply empty Bigint, a from mul(a,b)\n");
         fail = true;
@@ -438,13 +515,14 @@ int main() {
     enqueue_to_Bigint(b, n);
     struct Bigint* c = NULL;
     struct Bigint* d = NULL;
-    c = add_Bigints(a, b);
     a -> sign = -1;
-    d = multiply_Bigints(a, b);
+    b -> sign = -1;
+    c = subtract_Bigints(a, b);
+    d = subtract_Bigints(b, a);
     printf("a: "); print_Bigint(a); printf("\n");
     printf("b: "); print_Bigint(b); printf("\n");
-    printf("|a|+b: "); print_Bigint(c); printf("\n");
-    printf("a*b: "); print_Bigint(d); printf("\n");
+    printf("a-b: "); print_Bigint(c); printf("\n");
+    printf("b-a: "); print_Bigint(d); printf("\n");
     if (a) {a = destruct_Bigint(a);}
     if (b) {b = destruct_Bigint(b);}
     if (c) {c = destruct_Bigint(c);}
