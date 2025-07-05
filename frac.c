@@ -1,46 +1,115 @@
 #include"frac.h"
 
+#define DEBUG 1
+
 // Functions for Bigint
 struct Bigint* construct_Bigint() {
-    struct Bigint* b = malloc(sizeof(struct Bigint));
-    b -> sign = 1;
-    b -> head = NULL;
-    b -> tail = NULL;
-    b -> len = 0;
-    return b;
+    struct Bigint* a = malloc(sizeof(struct Bigint));
+    a -> sign = 1;
+    a -> head = NULL;
+    a -> tail = NULL;
+    a -> len = 0;
+    return a;
 }
 
-struct Bigint* destruct_Bigint(struct Bigint* b) {
-    struct Entry_long* e = b -> head;
-    while (e) {e = destruct_Entry_long(e);}
-    b -> head = NULL;
-    b -> tail = NULL;
-    b -> len = 0;
-    free(b);
+/* This represents the contract for just about all of the functions -- 
+    the Bigint struct exists, has len at least 1, a nonzero sign, and that
+    an Entry is attached. We don't check for content because it could be 0, 
+    and we don't check for next/prev in the Entry because these are NULL if 
+    there is only one Entry. 
+    if DEBUG is on, we check that each Entry is well-formed also. */
+bool check_Bigint_isok(struct Bigint* a) {
+    if (!a || !(a -> len) || !(a -> sign) || !(a -> head) || !(a -> tail)) {
+        return false;
+    }
+    if (DEBUG) {
+        if (a -> len == 1) {
+            if ((a -> head -> prev) || (a -> head -> next) || 
+                    (a -> head != a -> tail)) {
+                return false;
+            }
+        } else {
+            struct Entry_long* e = a -> head;
+            if ((e -> prev) || !(e -> next) || (e != e -> next -> prev)) {
+                return false;
+            }
+            e = e -> next;
+            while(e != a -> tail) {
+                if (!(e -> prev) || !(e -> next) || (e != e -> next -> prev)) {
+                    return false;
+                }
+                e = e -> next;
+            }
+            if (!(e -> prev) || (e -> next)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+/* We don't use the contract so we can destruct even ill-formed structs, and
+    so we can use this in a 'just in case it's still around' case with no
+    ill effects. */
+struct Bigint* destruct_Bigint(struct Bigint* a) {
+    if (a) {
+        if (a -> head) {
+            struct Entry_long* e = a -> head;
+            a -> head = NULL;
+            while (e) {
+                if (e == a -> tail) {
+                    a -> tail = NULL;
+                }
+                e = destruct_Entry_long(e);
+            }
+        }
+        if (a -> tail) {
+            struct Entry_long* e = a -> tail;
+            struct Entry_long* f = e;
+            while (f) {
+                if (e -> prev) {f = e -> prev;}
+                destruct_Entry_long(e);
+            }
+        }
+        a -> head = NULL;
+        a -> tail = NULL;
+        a -> len = 0;
+        free(a);
+    }
     return NULL;
 }
 
-void enqueue_to_Bigint(struct Bigint* b, unsigned long n) {
-    struct Entry_long* e = construct_Entry_long(n);
-    if (b -> tail) {
-        b -> tail -> next = e;
-        e -> prev = b -> tail;
-        b -> tail = e;
-        b -> len++;
-    } else {
-        b -> head = e;
-        b -> tail = e;
-        b -> len = 1;
+/* We don't use the full contract at the start because this can be used to 
+    insert the very first Entry, and that test would fail then. */
+void enqueue_to_Bigint(struct Bigint* a, unsigned long n) {
+    if (a) {
+        if (DEBUG && !(a -> sign)) {
+            printf("ERROR: Failed contract, enqueue, sign is zero\n");
+        }
+        struct Entry_long* e = construct_Entry_long(n);
+        if (a -> tail) {
+            a -> tail -> next = e;
+            e -> prev = a -> tail;
+            a -> tail = e;
+            a -> len++;
+        } else {
+            a -> head = e;
+            a -> tail = e;
+            a -> len = 1;
+        }
+    } else if (DEBUG) {printf("ERROR: Failed contract, enqueue, a is NULL\n");}
+    if (!check_Bigint_isok(a)) {
+        if (DEBUG) {printf("ERROR: Failed contract, end of enqueue\n");}
     }
 }
 
-void print_Bigint(struct Bigint* b) {
-    if (!b) {
-        printf("Trying to print empty Bigint");
+void print_Bigint(struct Bigint* a) {
+    if (!check_Bigint_isok(a)) {
+        if (DEBUG) {printf("ERROR: Failed contract, print\n");}
         return;
     }
-    struct Entry_long* e = b -> head;
-    if (b -> sign == -1) {
+    struct Entry_long* e = a -> head;
+    if (a -> sign == -1) {
         printf("-");}
     while(e) {
         printf("%lu", e -> content);
@@ -50,18 +119,11 @@ void print_Bigint(struct Bigint* b) {
 }
 
 struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b) {
-    bool fail = false;
-    if (!a || !(a -> head)) {
-        printf("ERROR: Trying to add empty Bigint, a from add(a,b)\n");
-        fail = true;
-    } 
-    if (!b || !(b -> head)) {
-        printf("ERROR: Trying to add empty Bigint, b from add(a,b)\n");
-        fail = true;
-    }
-    if (fail) {
-        return NULL;
-    }
+    bool a_ok = check_Bigint_isok(a);
+    bool b_ok = check_Bigint_isok(b);
+    if (!a_ok && DEBUG) {printf("ERROR: Failed contract, add, a\n");} 
+    if (!b_ok && DEBUG) {printf("ERROR: Failed contract, add, b\n");}
+    if (!a_ok || !b_ok) {return NULL;}
     if ((a -> sign == -1) && (b -> sign == 1)) {
         a -> sign = 1;
         // struct Bigint* c = subtract_Bigints(b, a);
@@ -134,20 +196,11 @@ struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b) {
 }
 
 struct Bigint* subtract_Bigints(struct Bigint* a, struct Bigint* b) {
-    bool fail = false;
-    if (!a || !(a -> head)) {
-        printf("ERROR: Trying to subtract empty Bigint, ");
-        printf("a from subtract(a,b)\n");
-        fail = true;
-    } 
-    if (!b || !(b -> head)) {
-        printf("ERROR: Trying to subtract empty Bigint, ");
-        printf("b from subtract(a,b)\n");
-        fail = true;
-    }
-    if (fail) {
-        return NULL;
-    } 
+    bool a_ok = check_Bigint_isok(a);
+    bool b_ok = check_Bigint_isok(b);
+    if (!a_ok && DEBUG) {printf("ERROR: Failed contract, subtract, a\n");}
+    if (!b_ok && DEBUG) {printf("ERROR: Failed contract, subtract, a\n");}
+    if (!a_ok || !b_ok) {return NULL;}
     // So we know that a and b are not NULL and have at least one entry each.
     if ((a -> sign == 1) && (b -> sign == -1)) {
         b -> sign = 1;
@@ -211,19 +264,11 @@ struct Bigint* subtract_Bigints(struct Bigint* a, struct Bigint* b) {
 }
 
 struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b) {
-    bool fail = false;
-    if (!a || !(a -> head)) {
-        printf("ERROR: Trying to multiply empty Bigint, a from mul(a,b)\n");
-        fail = true;
-    } 
-    if (!b || !(b -> head)) {
-        printf("ERROR: Trying to multiply empty Bigint, b from mul(a,b)\n");
-        fail = true;
-    }
-    if (fail) {
-        return NULL;
-    } 
-    // So we know that a and b are not NULL and have at least one entry each.
+    bool a_ok = check_Bigint_isok(a);
+    bool b_ok = check_Bigint_isok(b);
+    if (!a_ok && DEBUG) {printf("ERROR: Failed contract, mulitply, a\n");}
+    if (!b_ok && DEBUG) {printf("ERROR: Failed contract, multiply, b\n");}
+    if (!a_ok || !b_ok) {return NULL;}
     struct Bigint* c = construct_Bigint();
     long a_sign = a -> sign;
     long b_sign = b -> sign;
@@ -308,69 +353,86 @@ struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b) {
 }
 
 struct Bigint* bitshift_left_Bigint(struct Bigint* a, unsigned long n) {
-    if (!a || (!(a -> head))) {
-        printf("ERROR: Attempting to left bitshift empty Bigint\n");
+    if (!check_Bigint_isok(a)) {
+        if (DEBUG) {printf("ERROR: Failed contract, bitshift_left, a\n");}
         return NULL;
     }
     struct Bigint* b = construct_Bigint();
     struct Entry_long* e = a -> head;
-    unsigned long digits = n/64, bits = n%64;
-    unsigned long n_0, n_1 = 0;
-    for (long i=0; i<digits; i++) {
-        enqueue_to_Bigint(b, 0);
-    }
-    while (e) {
-        n_0 = (e -> content) << bits;
-        // n_0 should have all 0s wherever n_1 could have 1s and vice versa.
-        n_0 |= n_1;
-        // if bits == 0, no shift happens because the number of places is equal
-        //   to the size of the data type.
-        if (bits > 0) {
-            n_1 = ((e -> content) >> (sizeof(long)*8 - bits));
-        } else {
-            n_1 = 0;
+    if (n == 0) {
+        // This does come up, so let's speed things up for when it does
+        while (e) {
+            enqueue_to_Bigint(b, e -> content);
+            e = e -> next;
         }
-        enqueue_to_Bigint(b, n_0);
-        e = e -> next;
+    } else {
+        unsigned long digits = n/64, bits = n%64;
+        unsigned long n_0, n_1 = 0;
+        for (long i=0; i<digits; i++) {
+            enqueue_to_Bigint(b, 0);
+        }
+        while (e) {
+            n_0 = (e -> content) << bits;
+            // n_0 should have all 0s wherever n_1 could have 1s and vice versa.
+            n_0 |= n_1;
+            // if bits == 0, no shift happens because the number of places is equal
+            //   to the size of the data type.
+            if (bits > 0) {
+                n_1 = ((e -> content) >> (sizeof(long)*8 - bits));
+            } else {
+                n_1 = 0;
+            }
+            enqueue_to_Bigint(b, n_0);
+            e = e -> next;
+        }
+        if (n_1) {
+            enqueue_to_Bigint(b, n_1);
+        }
+        eliminate_zeros(b);
     }
-    if (n_1) {
-        enqueue_to_Bigint(b, n_1);
-    }
-    eliminate_zeros(b);
     return b;
 }
 
 struct Bigint* bitshift_right_Bigint(struct Bigint* a, unsigned long n) {
-    struct Bigint* b = construct_Bigint();
-    if (!a || (!(a -> head))) {
-        printf("ERROR: Attempting to right bitshift empty Bigint\n");
+    if (!check_Bigint_isok(a)) {
+        if (DEBUG) {printf("ERROR: Failed contract, bitshift_right, a\n");}
         return NULL;
     }
+    struct Bigint* b = construct_Bigint();
     struct Entry_long* e = a -> head;
-    unsigned long digits = n/64, bits = n%64;
-    unsigned long n_0, n_1 = 0;
-    for (long i=0; i<digits; i++) {
-        e = e -> next;
-    }
-    while (e) {
-        n_0 = (e -> content) >> bits;
-        e = e -> next;
-        if (e) {
-            n_1 = (e -> content) << (sizeof(long)*8 - bits);
-        } else {
-            n_1 = 0;
+    if (n == 0) {
+        // This does come up, so let's speed things up for when it does
+        while (e) {
+            enqueue_to_Bigint(b, e -> content);
+            e = e -> next;
         }
-        enqueue_to_Bigint(b, n_0 | n_1);
-    }
-    if (!(b -> head)) {
-        // Make sure b is certain to be nonempty.
-        enqueue_to_Bigint(b, 0);
+    } else {
+        unsigned long digits = n/64, bits = n%64;
+        unsigned long n_0, n_1 = 0;
+        for (long i=0; i<digits; i++) {
+            e = e -> next;
+        }
+        while (e) {
+            n_0 = (e -> content) >> bits;
+            e = e -> next;
+            if (e) {
+                n_1 = (e -> content) << (sizeof(long)*8 - bits);
+            } else {
+                n_1 = 0;
+            }
+            enqueue_to_Bigint(b, n_0 | n_1);
+        }
+        if (!(b -> head)) {
+            // Make sure b is certain to be nonempty.
+            enqueue_to_Bigint(b, 0);
+        }
     }
     return b;
 }
 
 void eliminate_zeros(struct Bigint* a) {
-    if (!a || !(a -> tail)) {
+    if (!check_Bigint_isok(a)) {
+        if (DEBUG) {printf("ERROR: Failed contract, eliminate_zeros, a\n");}
         return;
     }
     struct Entry_long* e = a -> tail;
@@ -388,10 +450,11 @@ void eliminate_zeros(struct Bigint* a) {
 }
 
 bool equal_Bigint(struct Bigint* a, struct Bigint* b) {
-    if (!a || !(a -> head) || !b || !(b -> head)) {
-        printf("ERROR: Trying to determine equality with empty Bigint.\n");
-        return false;
-    }
+    bool a_ok = check_Bigint_isok(a);
+    bool b_ok = check_Bigint_isok(b);
+    if (!a_ok && DEBUG) {printf("ERROR: Failed contract, equal, a\n");}
+    if (!b_ok && DEBUG) {printf("ERROR: Failed contract, equal, b\n");}
+    if (!a_ok || !b_ok) {return false;}
     if (a -> sign != b -> sign) {
         return false;
     }
@@ -413,9 +476,11 @@ bool equal_Bigint(struct Bigint* a, struct Bigint* b) {
 }
 
 bool lt_Bigint(struct Bigint* a, struct Bigint* b) {
-     if (!a || !(a -> tail) || !b || !(b -> tail)) {
-        return false;
-    }
+    bool a_ok = check_Bigint_isok(a);
+    bool b_ok = check_Bigint_isok(b);
+    if (!a_ok && DEBUG) {printf("ERROR: Failed contract, lt, a\n");}
+    if (!b_ok && DEBUG) {printf("ERROR: Failed contract, lt, b\n");}
+    if (!a_ok || !b_ok) {return false;}
     if (a -> sign == -1 && b -> sign == 1) {
         return true;
     }
@@ -487,8 +552,9 @@ struct Entry_long* construct_Entry_long(unsigned long n) {
 }
 
 struct Entry_long* destruct_Entry_long(struct Entry_long* e) {
-    struct Entry_long* next = e -> next;
+    struct Entry_long* next = NULL;
     if (e) {
+        next = e -> next;
         free(e);
     }
     e = NULL;

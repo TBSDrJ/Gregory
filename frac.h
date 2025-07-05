@@ -24,6 +24,8 @@ struct Bigint {
 };
 
 struct Bigint* construct_Bigint();
+// This next function represents the contract for most functions.
+bool check_Bigint_isok(struct Bigint* a);
 struct Bigint* destruct_Bigint(struct Bigint* b);
 void enqueue_to_Bigint(struct Bigint* b, unsigned long n);
 void print_Bigint(struct Bigint* b);
