@@ -352,6 +352,20 @@ struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b) {
     return c;
 }
 
+struct Bigint* divmod_Bigint(struct Bigint* a, struct Bigint* b) {
+    bool a_ok = check_Bigint_isok(a);
+    bool b_ok = check_Bigint_isok(b);
+    if (!a_ok && DEBUG) {printf("ERROR: Failed contract, divide, a\n");}
+    if (!b_ok && DEBUG) {printf("ERROR: Failed contract, divide, b\n");}
+    if (!a_ok || !b_ok) {return NULL;}
+    struct Bigint* e[2];
+    e[0] = construct_Bigint();
+    e[1] = construct_Bigint();
+    enqueue_to_Bigint(e[0], 0);
+    enqueue_to_Bigint(e[1], 0);
+    return e[0];
+}
+
 struct Bigint* bitshift_left_Bigint(struct Bigint* a, unsigned long n) {
     if (!check_Bigint_isok(a)) {
         if (DEBUG) {printf("ERROR: Failed contract, bitshift_left, a\n");}
@@ -575,22 +589,29 @@ int main() {
     struct Bigint* a = construct_Bigint();
     struct Bigint* b = construct_Bigint();
     unsigned long n = 37;
-    enqueue_to_Bigint(a, 0);
     enqueue_to_Bigint(a, n);
     enqueue_to_Bigint(b, n << 32);
     enqueue_to_Bigint(b, n);
     struct Bigint* c = NULL;
     struct Bigint* d = NULL;
-    a -> sign = -1;
-    b -> sign = -1;
-    c = subtract_Bigints(a, b);
-    d = subtract_Bigints(b, a);
+    struct Bigint* e = NULL;
+    struct Bigint* f = NULL;
+    // a -> sign = -1;
+    // b -> sign = -1;
+    c = divmod_Bigint(a, b);
+    e = c + 1;
+    d = divmod_Bigint(b, a);
+    f = d + 1;
     printf("a: "); print_Bigint(a); printf("\n");
     printf("b: "); print_Bigint(b); printf("\n");
-    printf("a-b: "); print_Bigint(c); printf("\n");
-    printf("b-a: "); print_Bigint(d); printf("\n");
-    if (a) {a = destruct_Bigint(a);}
-    if (b) {b = destruct_Bigint(b);}
-    if (c) {c = destruct_Bigint(c);}
-    if (d) {d = destruct_Bigint(d);}
+    printf("a/b: "); print_Bigint(c); printf("\n");
+    printf("a%%b: "); print_Bigint(e); printf("\n");
+    printf("b/a: "); print_Bigint(d); printf("\n");
+    printf("b%%a: "); print_Bigint(f); printf("\n");
+    a = destruct_Bigint(a);
+    b = destruct_Bigint(b);
+    c = destruct_Bigint(c);
+    d = destruct_Bigint(d);
+    e = destruct_Bigint(e);
+    f = destruct_Bigint(f);
 }
