@@ -362,11 +362,13 @@ struct Bigint** divmod_Bigints(struct Bigint* a, struct Bigint* b) {
         if (DEBUG) {printf("ERROR: Division by zero in divmod.\n");}
     }
     if (!a_ok || !b_ok) {return NULL;}
+    long a_sign = a -> sign;
+    long b_sign = b -> sign;
+    a -> sign = 1;
+    b -> sign = 1;
     struct Bigint* quotient = construct_Bigint();
     enqueue_to_Bigint(quotient, 0);
     struct Bigint* residue = construct_Bigint();
-    printf("Addr of quotient at const: %lu\n", (unsigned long) quotient);
-    printf("Addr of residue at const: %lu\n", (unsigned long) residue);
     struct Bigint* one = construct_Bigint();
     enqueue_to_Bigint(one, 1);
     struct Bigint* partial_a = a;
@@ -385,7 +387,6 @@ struct Bigint** divmod_Bigints(struct Bigint* a, struct Bigint* b) {
     } else {
         lnb_a = largest_nonzero_bit(a);
         lnb_b = largest_nonzero_bit(b);
-        // while (lnb_a - lnb_b > 0) {
         while (lnb_b < lnb_a) {
             tmp = shifted_b;
             shifted_b = bitshift_left_Bigint(b, lnb_a - lnb_b);
@@ -407,7 +408,9 @@ struct Bigint** divmod_Bigints(struct Bigint* a, struct Bigint* b) {
         }
         if (leq_Bigint(b, partial_a)) {
             residue = subtract_Bigints(partial_a, b);
-            add_Bigints(quotient, one);
+            tmp = quotient;
+            quotient = add_Bigints(quotient, one);
+            destruct_Bigint(tmp);
             destruct_Bigint(partial_a);
         } else {
             residue = partial_a;
@@ -415,10 +418,10 @@ struct Bigint** divmod_Bigints(struct Bigint* a, struct Bigint* b) {
         shifted_b = destruct_Bigint(shifted_b);
         one = destruct_Bigint(one);
     }
-    printf("quotient: "); print_Bigint(quotient); printf("  residue: ");
-            print_Bigint(residue); printf("\n");
-    printf("Addr of quotient before return: %lu\n", (unsigned long) quotient);
-    printf("Addr of residue before return: %lu\n", (unsigned long) residue);
+    a -> sign = a_sign;
+    b -> sign = b_sign;
+    quotient -> sign = (a -> sign) * (b -> sign);
+    residue -> sign = a -> sign;
     struct Bigint** quot_res = malloc(2*sizeof(struct Bigint*));
     quot_res[0] = quotient;
     quot_res[1] = residue;
@@ -665,45 +668,59 @@ struct Fraction* construct_frac() {
 int main() {
     struct Bigint* a = construct_Bigint();
     struct Bigint* b = construct_Bigint();
-    unsigned long n = 37;
-    enqueue_to_Bigint(a, n);
-    enqueue_to_Bigint(b, n << 32);
-    enqueue_to_Bigint(b, n);
-    struct Bigint* c = b;
-    b = bitshift_right_Bigint(b, 2);
-    destruct_Bigint(c);
+    enqueue_to_Bigint(a, 37);
+    enqueue_to_Bigint(b, 5);
+    struct Bigint* c = NULL;
     struct Bigint* d = NULL;
     struct Bigint* e = NULL;
     struct Bigint* f = NULL;
-    struct Bigint* g = construct_Bigint();
-    enqueue_to_Bigint(g, ((unsigned long) 1 << 30) + ((unsigned long) 1 << 62));
-    printf("2^{30} + 2^{62}: "); print_Bigint(g); printf("\n");
-    // a -> sign = -1;
-    // b -> sign = -1;
     struct Bigint** x = divmod_Bigints(a, b);
     c = x[0];
-    e = x[1];
+    d = x[1];
     free(x); x = NULL;
-    printf("addr of c: %lu\n", (unsigned long) c);
-    printf("addr of e: %lu\n", (unsigned long) e);
-    x = divmod_Bigints(b, a);
-    d = x[0];
-    f = x[1];
-    free(x); x = NULL;
-    printf("addr of d: %lu\n", (unsigned long) d);
-    printf("addr of f: %lu\n", (unsigned long) f);
     printf("a: "); print_Bigint(a); printf("\n");
-    a = destruct_Bigint(a);
     printf("b: "); print_Bigint(b); printf("\n");
-    b = destruct_Bigint(b);
     printf("a/b: "); print_Bigint(c); printf("\n");
+    printf("a%%b: "); print_Bigint(d); printf("\n");
+    a -> sign = -1;
+    x = divmod_Bigints(a, b);
+    c = x[0];
+    d = x[1];
+    free(x); x = NULL;
+    printf("a: "); print_Bigint(a); printf("\n");
+    printf("b: "); print_Bigint(b); printf("\n");
+    printf("a/b: "); print_Bigint(c); printf("\n");
+    printf("a%%b: "); print_Bigint(d); printf("\n");
+    a -> sign = 1;
+    b -> sign = -1;
+    x = divmod_Bigints(a, b);
+    c = x[0];
+    d = x[1];
+    free(x); x = NULL;
+    printf("a: "); print_Bigint(a); printf("\n");
+    printf("b: "); print_Bigint(b); printf("\n");
+    printf("a/b: "); print_Bigint(c); printf("\n");
+    printf("a%%b: "); print_Bigint(d); printf("\n");
+    a -> sign = -1;
+    b -> sign = -1;
+    x = divmod_Bigints(a, b);
+    c = x[0];
+    d = x[1];
+    free(x); x = NULL;
+    printf("a: "); print_Bigint(a); printf("\n");
+    printf("b: "); print_Bigint(b); printf("\n");
+    printf("a/b: "); print_Bigint(c); printf("\n");
+    printf("a%%b: "); print_Bigint(d); printf("\n");
+    a = destruct_Bigint(a);
+    b = destruct_Bigint(b);
     c = destruct_Bigint(c);
-    printf("a%%b: "); print_Bigint(e); printf("\n");
-    e = destruct_Bigint(e);
-    printf("b/a: "); print_Bigint(d); printf("\n");
     d = destruct_Bigint(d);
-    printf("b%%a: "); print_Bigint(f); printf("\n");
-    f = destruct_Bigint(f);
-    printf("g\n");
-    g = destruct_Bigint(g);
-}
+    printf("37/5: %i\n", 37/5);
+    printf("37%%5: %i\n", 37%5);
+    printf("-37/5: %i\n", -37/5);
+    printf("-37%%5: %i\n", -37%5);
+    printf("37/-5: %i\n", 37/-5);
+    printf("37%%-5: %i\n", 37%-5);
+    printf("-37/-5: %i\n", -37/-5);
+    printf("-37%%-5: %i\n", -37%-5);
+} 
