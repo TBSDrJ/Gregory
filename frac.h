@@ -32,8 +32,9 @@ void print_Bigint(struct Bigint* b);
 struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b);
 struct Bigint* subtract_Bigints(struct Bigint* a, struct Bigint* b);
 struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b);
-// This function returns a/b at the return value, and a%b at the next address.
-struct Bigint* divmod_Bigint(struct Bigint* a, struct Bigint* b);
+// Notice different return type. This array of pointers needs to be freed.
+// This function returns ptr to a/b at return[0], and ptr to a%b at return[1].
+struct Bigint** divmod_Bigints(struct Bigint* a, struct Bigint* b);
 // Returns location of -1 if (a == 0)
 long largest_nonzero_bit(struct Bigint* a);
 struct Bigint* bitshift_left_Bigint(struct Bigint* a, unsigned long n);
