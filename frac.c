@@ -357,13 +357,39 @@ struct Bigint* divmod_Bigint(struct Bigint* a, struct Bigint* b) {
     bool b_ok = check_Bigint_isok(b);
     if (!a_ok && DEBUG) {printf("ERROR: Failed contract, divide, a\n");}
     if (!b_ok && DEBUG) {printf("ERROR: Failed contract, divide, b\n");}
+    if ((b -> len == 1) && (b -> head -> content == 0)) {
+        b_ok = false;
+        if (DEBUG) {printf("ERROR: Division by zero in divmod.\n");}
+    }
     if (!a_ok || !b_ok) {return NULL;}
     struct Bigint* e[2];
     e[0] = construct_Bigint();
     e[1] = construct_Bigint();
-    enqueue_to_Bigint(e[0], 0);
-    enqueue_to_Bigint(e[1], 0);
+    if ((a -> len == 1) && (a -> head -> content == 0)) {
+        enqueue_to_Bigint(e[0], 0);
+        enqueue_to_Bigint(e[1], 0);
+    } else {
+
+    }
     return e[0];
+}
+
+long largest_nonzero_bit(struct Bigint* a) {
+    if (!check_Bigint_isok(a)) {
+        if (DEBUG) {printf("ERROR: Failed contract, largest nonzero bit\n");}
+        return 0;
+    }
+    eliminate_zeros(a);
+    if ((a -> len == 1) && (a -> head -> content == 0)) {
+        return -1;
+    }
+    /* Now we know that there is a 1 somewhere in the largest 'digit' of a. */
+    struct Entry_long* e = a -> tail;
+    long e_largest = e -> content;
+    long n = sizeof(long) * 8 * ((a -> len) - 1);
+    unsigned char loc = sizeof(long) * 8 - 1;
+    while (!(e_largest >> loc)) {loc--;}
+    return n + loc;
 }
 
 struct Bigint* bitshift_left_Bigint(struct Bigint* a, unsigned long n) {
@@ -389,8 +415,8 @@ struct Bigint* bitshift_left_Bigint(struct Bigint* a, unsigned long n) {
             n_0 = (e -> content) << bits;
             // n_0 should have all 0s wherever n_1 could have 1s and vice versa.
             n_0 |= n_1;
-            // if bits == 0, no shift happens because the number of places is equal
-            //   to the size of the data type.
+            // if bits == 0, no shift happens because the number of places is 
+            //   equal to the size of the data type.
             if (bits > 0) {
                 n_1 = ((e -> content) >> (sizeof(long)*8 - bits));
             } else {
