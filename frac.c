@@ -366,10 +366,10 @@ struct Bigint** divmod_Bigints(struct Bigint* a, struct Bigint* b) {
     long b_sign = b -> sign;
     a -> sign = 1;
     b -> sign = 1;
-    struct Bigint* quotient = construct_Bigint();
+    struct Bigint* quotient = construct_Bigint(); 
     enqueue_to_Bigint(quotient, 0);
-    struct Bigint* residue = construct_Bigint();
-    struct Bigint* one = construct_Bigint();
+    struct Bigint* residue = construct_Bigint(); 
+    struct Bigint* one = construct_Bigint(); 
     enqueue_to_Bigint(one, 1);
     struct Bigint* partial_a = a;
     struct Bigint* shifted_b = NULL;
@@ -390,11 +390,11 @@ struct Bigint** divmod_Bigints(struct Bigint* a, struct Bigint* b) {
         lnb_b = largest_nonzero_bit(b);
         while (lnb_b < lnb_a) {
             tmp_0 = shifted_b;
-            shifted_b = bitshift_left_Bigint(b, lnb_a - lnb_b);
+            shifted_b = bitshift_left_Bigint(b, lnb_a - lnb_b); 
             tmp_0 = destruct_Bigint(tmp_0);
             if (!leq_Bigint(shifted_b, partial_a)) {
                 tmp_0 = shifted_b;
-                shifted_b = bitshift_right_Bigint(shifted_b, 1);
+                shifted_b = bitshift_right_Bigint(shifted_b, 1); 
                 tmp_0 = destruct_Bigint(tmp_0);
                 lnb_a--;
             }
@@ -433,6 +433,49 @@ struct Bigint** divmod_Bigints(struct Bigint* a, struct Bigint* b) {
     quot_res[0] = quotient;
     quot_res[1] = residue;
     return quot_res;
+}
+
+// Still a Memory leak in GCD.  Def none in divmod.
+struct Bigint* gcd_Bigints(struct Bigint* a, struct Bigint* b) {
+    bool a_ok = check_Bigint_isok(a); //printf("440 CONSTRUCT:A %lu\n", (unsigned long) a);
+    bool b_ok = check_Bigint_isok(b); //printf("440 CONSTRUCT:B %lu\n", (unsigned long) b);
+    if (!a_ok && DEBUG) {printf("ERROR: Failed contract, gcd, a\n");}
+    if (!b_ok && DEBUG) {printf("ERROR: Failed contract, gcd, b\n");}
+    if (!a_ok || !b_ok) {return NULL;}
+    if (lt_Bigint(a, b)) {return gcd_Bigints(b, a);}
+    struct Bigint** divmod = divmod_Bigints(a, b); //printf("446 CONSTRUCT %lu\n", (unsigned long) divmod);
+    struct Bigint* quotient = divmod[0]; //printf("447 CONSTRUCT %lu\n", (unsigned long) quotient);
+    struct Bigint* residue = divmod[1]; //printf("448 CONSTRUCT %lu\n", (unsigned long) residue);
+    // printf("\t449 DESTRUCT %lu\n", (unsigned long) divmod); 
+    free(divmod); divmod = NULL; 
+    struct Bigint* zero = construct_Bigint(); //printf("450 CONSTRUCT %lu\n", (unsigned long) zero);
+    enqueue_to_Bigint(zero, 0);
+    struct Bigint* tmp = NULL;
+    struct Bigint* prev_b = b;
+    while (gt_Bigint(residue, zero)) {
+        if (tmp != b) {//printf("\t455 DESTRUCT %lu\n", (unsigned long) tmp); 
+            tmp = destruct_Bigint(tmp);}
+        divmod = divmod_Bigints(prev_b, residue); //printf("456 CONSTRUCT %lu\n", (unsigned long) divmod);
+        tmp = quotient;
+        quotient = divmod[0]; //printf("458 CONSTRUCT %lu\n", (unsigned long) divmod[0]);
+        //printf("\t459 DESTRUCT %lu\n", (unsigned long) tmp); 
+        tmp = destruct_Bigint(tmp);
+        tmp = prev_b;
+        prev_b = residue;
+        if (tmp != b) {//printf("\t462 DESTRUCT %lu\n", (unsigned long) tmp); 
+        tmp = destruct_Bigint(tmp);}
+        residue = divmod[1]; //printf("463 CONSTRUCT %lu\n", (unsigned long) divmod[1]);
+        //printf("\t464 DESTRUCT %lu\n", (unsigned long) divmod); 
+        free(divmod); divmod = NULL;
+    }
+    // printf("466 DESTRUCT %lu\n", (unsigned long) zero); 
+    zero = destruct_Bigint(zero); 
+    // printf("467 DESTRUCT %lu\n", (unsigned long) quotient); 
+    quotient = destruct_Bigint(quotient);
+    // printf("468 DESTRUCT %lu\n", (unsigned long) residue); 
+    residue = destruct_Bigint(residue);
+    // printf("469 KEEP %lu\n", (unsigned long) prev_b);
+    return prev_b;
 }
 
 long largest_nonzero_bit(struct Bigint* a) {
@@ -675,59 +718,26 @@ struct Fraction* construct_frac() {
 int main() {
     struct Bigint* a = construct_Bigint();
     struct Bigint* b = construct_Bigint();
-    enqueue_to_Bigint(a, 37);
-    enqueue_to_Bigint(b, 5);
+    enqueue_to_Bigint(a, (unsigned long) 1375747077639718046);
+    enqueue_to_Bigint(a, (unsigned long) 35971873);
+    enqueue_to_Bigint(b, (unsigned long) 2044235926460639054);
+    enqueue_to_Bigint(b, (unsigned long) 34468510);
     struct Bigint* c = NULL;
     struct Bigint* d = NULL;
     struct Bigint* e = NULL;
     struct Bigint* f = NULL;
-    struct Bigint** x = divmod_Bigints(a, b);
-    c = x[0];
-    d = x[1];
-    free(x); x = NULL;
+    for (long i=0; i<1 << 20; i++) {
+        c = gcd_Bigints(a, b);
+        c = destruct_Bigint(c);
+    }
+    c = gcd_Bigints(a, b);
     printf("a: "); print_Bigint(a); printf("\n");
     printf("b: "); print_Bigint(b); printf("\n");
-    printf("a/b: "); print_Bigint(c); printf("\n");
-    printf("a%%b: "); print_Bigint(d); printf("\n");
-    a -> sign = -1;
-    x = divmod_Bigints(a, b);
-    c = x[0];
-    d = x[1];
-    free(x); x = NULL;
-    printf("a: "); print_Bigint(a); printf("\n");
-    printf("b: "); print_Bigint(b); printf("\n");
-    printf("a/b: "); print_Bigint(c); printf("\n");
-    printf("a%%b: "); print_Bigint(d); printf("\n");
-    a -> sign = 1;
-    b -> sign = -1;
-    x = divmod_Bigints(a, b);
-    c = x[0];
-    d = x[1];
-    free(x); x = NULL;
-    printf("a: "); print_Bigint(a); printf("\n");
-    printf("b: "); print_Bigint(b); printf("\n");
-    printf("a/b: "); print_Bigint(c); printf("\n");
-    printf("a%%b: "); print_Bigint(d); printf("\n");
-    a -> sign = -1;
-    b -> sign = -1;
-    x = divmod_Bigints(a, b);
-    c = x[0];
-    d = x[1];
-    free(x); x = NULL;
-    printf("a: "); print_Bigint(a); printf("\n");
-    printf("b: "); print_Bigint(b); printf("\n");
-    printf("a/b: "); print_Bigint(c); printf("\n");
-    printf("a%%b: "); print_Bigint(d); printf("\n");
+    printf("gcd(a,b): "); print_Bigint(c); printf("\n");
     a = destruct_Bigint(a);
     b = destruct_Bigint(b);
     c = destruct_Bigint(c);
     d = destruct_Bigint(d);
-    printf("37/5: %i\n", 37/5);
-    printf("37%%5: %i\n", 37%5);
-    printf("-37/5: %i\n", -37/5);
-    printf("-37%%5: %i\n", -37%5);
-    printf("37/-5: %i\n", 37/-5);
-    printf("37%%-5: %i\n", 37%-5);
-    printf("-37/-5: %i\n", -37/-5);
-    printf("-37%%-5: %i\n", -37%-5);
+    e = destruct_Bigint(e);
+    f = destruct_Bigint(f);
 } 
