@@ -373,7 +373,8 @@ struct Bigint** divmod_Bigints(struct Bigint* a, struct Bigint* b) {
     enqueue_to_Bigint(one, 1);
     struct Bigint* partial_a = a;
     struct Bigint* shifted_b = NULL;
-    struct Bigint* tmp = NULL;
+    struct Bigint* tmp_0 = NULL;
+    struct Bigint* tmp_1 = NULL;
     // largest nonzero bit
     long lnb_a, lnb_b;
     if ((a -> len == 1) && (a -> head -> content == 0)) {
@@ -388,32 +389,38 @@ struct Bigint** divmod_Bigints(struct Bigint* a, struct Bigint* b) {
         lnb_a = largest_nonzero_bit(a);
         lnb_b = largest_nonzero_bit(b);
         while (lnb_b < lnb_a) {
-            tmp = shifted_b;
+            tmp_0 = shifted_b;
             shifted_b = bitshift_left_Bigint(b, lnb_a - lnb_b);
-            destruct_Bigint(tmp);
+            tmp_0 = destruct_Bigint(tmp_0);
             if (!leq_Bigint(shifted_b, partial_a)) {
-                tmp = shifted_b;
+                tmp_0 = shifted_b;
                 shifted_b = bitshift_right_Bigint(shifted_b, 1);
-                tmp = destruct_Bigint(tmp);
+                tmp_0 = destruct_Bigint(tmp_0);
                 lnb_a--;
             }
-            tmp = bitshift_left_Bigint(one, lnb_a - lnb_b);
-            quotient = add_Bigints(quotient, tmp);
-            tmp = destruct_Bigint(tmp);
-            tmp = partial_a;
+            tmp_0 = bitshift_left_Bigint(one, lnb_a - lnb_b);
+            tmp_1 = quotient;
+            quotient = add_Bigints(quotient, tmp_1);
+            tmp_0 = destruct_Bigint(tmp_0);
+            tmp_1 = destruct_Bigint(tmp_1);
+            tmp_0 = partial_a;
             partial_a = subtract_Bigints(partial_a, shifted_b);
-            if (tmp != a) {tmp = destruct_Bigint(tmp);}
+            if (tmp_0 != a) {tmp_0 = destruct_Bigint(tmp_0);}
             // Notice that largest_nonzero_bit includes eliminate_zeros()
             lnb_a = largest_nonzero_bit(partial_a);
         }
         if (leq_Bigint(b, partial_a)) {
+            tmp_0 = residue;
             residue = subtract_Bigints(partial_a, b);
-            tmp = quotient;
+            tmp_0 = destruct_Bigint(tmp_0);
+            tmp_0 = quotient;
             quotient = add_Bigints(quotient, one);
-            destruct_Bigint(tmp);
-            destruct_Bigint(partial_a);
+            tmp_0 = destruct_Bigint(tmp_0);
+            if (partial_a != a) {partial_a = destruct_Bigint(partial_a);}
         } else {
+            tmp_0 = residue;
             residue = partial_a;
+            tmp_0 = destruct_Bigint(tmp_0);
         }
         shifted_b = destruct_Bigint(shifted_b);
         one = destruct_Bigint(one);
