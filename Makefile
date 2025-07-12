@@ -61,6 +61,10 @@ bigint-mac:
 	gcc main.c -o main.out -L. -lpolynomials -lqueue_2 -lbigint
 	./main.out
 
+myint-mac:
+	gcc myint.c -L. -lbigint -o myint.out
+	./myint.out
+
 all-mac:
 	gcc -c -fPIC polynomials.c -o polynomials.o
 	gcc -shared polynomials.o -o libpolynomials.dylib
