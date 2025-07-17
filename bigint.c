@@ -169,7 +169,7 @@ struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b) {
             top_b = 0;
         }
         sum += digit_a + digit_b;
-        top_sum = sum >> (sizeof(unsigned long)*8 - 1);
+                top_sum = sum >> (sizeof(unsigned long)*8 - 1);
         tops = top_a + top_b + top_sum;
         if (tops > 1) {
             if (tops == 2) {
@@ -258,6 +258,10 @@ struct Bigint* subtract_Bigints(struct Bigint* a, struct Bigint* b) {
         } else {
             a_entry = a_entry -> next;
         }
+    }
+    while (a_entry) {
+        enqueue_to_Bigint(c, a_entry -> content);
+        a_entry = a_entry -> next;
     }
     eliminate_zeros(c);
     return c;
