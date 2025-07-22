@@ -24,10 +24,18 @@ struct Myint* destruct_Myint(struct Myint* a) {
 }
 
 bool contract_Myint(struct Myint* a) {
-    if ((a -> int_type > 1) || (a -> int_type < 0) || 
-            (a -> sign == 0) || (a -> sign > 1) || (a -> sign < -1) || 
-            ((a -> int_type == BIGINT) && !(a -> bigint))) {
-        return false;
+    if (a -> int_type > 1) 
+        {printf("Contract fails at int_type > 1\n"); return false;}
+    else if (a -> int_type < 0) 
+        {printf("Contract fails at int_type < 0\n"); return false;}
+    else if (a -> sign == 0) 
+        {printf("Contract fails at sign == 0\n"); return false;}
+    else if (a -> sign > 1) 
+        {printf("Contract fails at sign > 0\n"); return false;}
+    else if (a -> sign < -1) 
+        {printf("Contract fails at sign < 0\n"); return false;}
+    else if ((a -> int_type == BIGINT) && !(a -> bigint)) {
+        printf("Contract fails at BIGINT.\n"); return false;
     }
     if (a -> bigint) {
         return check_Bigint_isok(a -> bigint);
@@ -46,6 +54,14 @@ void print_Myint(struct Myint* a) {
     } else {
         print_Bigint(a -> bigint);
     }
+}
+
+void promote_Bigint(struct Myint* a) {
+    a -> int_type = BIGINT;
+    a -> bigint = construct_Bigint();
+    enqueue_to_Bigint(a -> bigint, a -> my_long);
+    a -> my_long = 0;
+    a -> bigint -> sign = a -> sign;
 }
 
 void reduce_Myint(struct Myint* a) {
@@ -95,7 +111,7 @@ struct Myint* add_Myints(struct Myint* a, struct Myint* b) {
     if (fail) {return NULL;}
     struct Myint* c = construct_Myint();
     if ((a -> int_type == LONG) && (b -> int_type == LONG) && 
-            (intlog2(a) < 63) && (intlog2(b) < 63)) {
+            (intlog2_Myint(a) < 63) && (intlog2_Myint(b) < 63)) {
         if (a -> sign == b -> sign) {
             c -> my_long = (a -> my_long) + (b -> my_long);
             c -> sign = a -> sign;
@@ -111,18 +127,10 @@ struct Myint* add_Myints(struct Myint* a, struct Myint* b) {
     } else {
         c -> int_type = BIGINT;
         if (a -> int_type == LONG) {
-            a -> int_type = BIGINT;
-            a -> bigint = construct_Bigint();
-            enqueue_to_Bigint(a -> bigint, a -> my_long);
-            a -> my_long = 0;
-            a -> bigint -> sign = a -> sign;
+            promote_Bigint(a);
         }
         if (b -> int_type == LONG) {
-            b -> int_type = BIGINT;
-            b -> bigint = construct_Bigint();
-            enqueue_to_Bigint(b -> bigint, b -> my_long);
-            b -> my_long = 0;
-            b -> bigint -> sign = b -> sign;
+            promote_Bigint(b);
         }
         c -> bigint = add_Bigints(a -> bigint, b -> bigint);
         reduce_Myint(a);
@@ -145,7 +153,7 @@ struct Myint* subtract_Myints(struct Myint* a, struct Myint* b) {
     if (fail) {return NULL;}
     struct Myint* c = construct_Myint();
     if ((a -> int_type == LONG) && (b -> int_type == LONG) && 
-            (intlog2(a) < 63) && (intlog2(b) < 63)) {
+            (intlog2_Myint(a) < 63) && (intlog2_Myint(b) < 63)) {
         if (a -> sign == b -> sign) {
             if (a -> my_long > b -> my_long) {
                 c -> my_long = (a -> my_long) - (b -> my_long);
@@ -161,20 +169,12 @@ struct Myint* subtract_Myints(struct Myint* a, struct Myint* b) {
     } else {
         c -> int_type = BIGINT;
         if (a -> int_type == LONG) {
-            a -> int_type = BIGINT;
-            a -> bigint = construct_Bigint();
-            enqueue_to_Bigint(a -> bigint, a -> my_long);
-            a -> my_long = 0;
-            a -> bigint -> sign = a -> sign;
+            promote_Bigint(a);
         }
         if (b -> int_type == LONG) {
-            b -> int_type = BIGINT;
-            b -> bigint = construct_Bigint();
-            enqueue_to_Bigint(b -> bigint, b -> my_long);
-            b -> my_long = 0;
-            b -> bigint -> sign = b -> sign;
+            promote_Bigint(b);
         }
-        c -> bigint = add_Bigints(a -> bigint, b -> bigint);
+        c -> bigint = subtract_Bigints(a -> bigint, b -> bigint);
         reduce_Myint(a);
         reduce_Myint(b);
     }
@@ -195,19 +195,15 @@ struct Myint* multiply_Myints(struct Myint* a, struct Myint* b) {
     if (fail) {return NULL;}
     struct Myint* c = construct_Myint();
     if ((a -> int_type == LONG) && (b -> int_type == LONG) && 
-            (intlog2(a) + intlog2(b) < 63)) {
+            (intlog2_Myint(a) + intlog2_Myint(b) < 63)) {
         c -> my_long = (a -> my_long) * (b -> my_long);
     } else {
         c -> int_type = BIGINT;
         if (a -> int_type == LONG) {
-            a -> bigint = construct_Bigint();
-            enqueue_to_Bigint(a -> bigint, a -> my_long);
-            a -> my_long = 0;
+            promote_Bigint(a);
         }
         if (b -> int_type == LONG) {
-            b -> bigint = construct_Bigint();
-            enqueue_to_Bigint(b -> bigint, b -> my_long);
-            b -> my_long = 0;
+            promote_Bigint(b);
         }
         c -> bigint = multiply_Bigints(a -> bigint, b -> bigint);
         reduce_Myint(a);
@@ -221,13 +217,23 @@ struct Myint* multiply_Myints(struct Myint* a, struct Myint* b) {
 int main() {
     struct Myint* a = construct_Myint();
     struct Myint* b = construct_Myint();
-    struct Myint* c;
+    struct Myint* c = construct_Myint();
+    struct Myint* d = construct_Myint();
     a -> my_long = 5;
-    b -> my_long = 8;
-    a -> sign = -1;
+    b -> my_long = (unsigned long) 1 << 63;
+    c -> my_long = 2048;
+    printf("  b: "); print_Myint(b); printf("\n");
+    b = multiply_Myints(b, b);
+    b = multiply_Myints(b, c);
+    printf("  b: "); print_Myint(b); printf("\n");
+    // a -> sign = -1;
     b -> sign = -1;
+    printf("  b: "); print_Myint(b); printf("\n");
     c = subtract_Myints(a, b);
+    printf("  b: "); print_Myint(b); printf("\n");
+    d = subtract_Myints(b, a);
     printf("  a: "); print_Myint(a); printf("\n");
     printf("  b: "); print_Myint(b); printf("\n");
     printf("a-b: "); print_Myint(c); printf("\n");
+    printf("b-a: "); print_Myint(d); printf("\n");
 }

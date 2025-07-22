@@ -11,6 +11,7 @@ struct Myint* construct_Myint();
 struct Myint* destruct_Myint(struct Myint* a);
 bool contract_Myint(struct Myint* a);
 void print_Myint(struct Myint* a);
+void promote_Bigint(struct Myint* a);
 void reduce_Myint(struct Myint* a);
 long intlog2(struct Myint* a);
 struct Myint* add_Myints(struct Myint* a, struct Myint* b);
