@@ -56,7 +56,7 @@ void print_Myint(struct Myint* a) {
     }
 }
 
-void promote_Bigint(struct Myint* a) {
+void promote_Myint(struct Myint* a) {
     a -> int_type = BIGINT;
     a -> bigint = construct_Bigint();
     enqueue_to_Bigint(a -> bigint, a -> my_long);
@@ -127,10 +127,10 @@ struct Myint* add_Myints(struct Myint* a, struct Myint* b) {
     } else {
         c -> int_type = BIGINT;
         if (a -> int_type == LONG) {
-            promote_Bigint(a);
+            promote_Myint(a);
         }
         if (b -> int_type == LONG) {
-            promote_Bigint(b);
+            promote_Myint(b);
         }
         c -> bigint = add_Bigints(a -> bigint, b -> bigint);
         reduce_Myint(a);
@@ -169,10 +169,10 @@ struct Myint* subtract_Myints(struct Myint* a, struct Myint* b) {
     } else {
         c -> int_type = BIGINT;
         if (a -> int_type == LONG) {
-            promote_Bigint(a);
+            promote_Myint(a);
         }
         if (b -> int_type == LONG) {
-            promote_Bigint(b);
+            promote_Myint(b);
         }
         c -> bigint = subtract_Bigints(a -> bigint, b -> bigint);
         reduce_Myint(a);
@@ -200,10 +200,10 @@ struct Myint* multiply_Myints(struct Myint* a, struct Myint* b) {
     } else {
         c -> int_type = BIGINT;
         if (a -> int_type == LONG) {
-            promote_Bigint(a);
+            promote_Myint(a);
         }
         if (b -> int_type == LONG) {
-            promote_Bigint(b);
+            promote_Myint(b);
         }
         c -> bigint = multiply_Bigints(a -> bigint, b -> bigint);
         reduce_Myint(a);
@@ -214,26 +214,60 @@ struct Myint* multiply_Myints(struct Myint* a, struct Myint* b) {
     return c;
 }
 
+struct Myint** divmod_Myints(struct Myint* a, struct Myint* b) {
+    bool fail = false;
+    if (!contract_Myint(a)) {
+        printf("ERROR: Failed contract, a from divmod_Myints\n");
+        fail = true;
+    }
+    if (!contract_Myint(b)) {
+        printf("ERROR: Failed contract, b from divmod_Myints\n");
+        fail = true;
+    }
+    if (fail) {return NULL;}
+    struct Myint* div = construct_Myint();
+    struct Myint* mod = construct_Myint();
+    if ((a -> int_type == LONG) && (b -> int_type == LONG)) {
+        div -> my_long = (a -> my_long) / (b -> my_long);
+        mod -> my_long = (a -> my_long) % (b -> my_long);
+    } else {
+        div -> int_type = BIGINT;
+        mod -> int_type = BIGINT;
+        if (a -> int_type == LONG) {
+            promote_Myint(a);
+        }
+        if (b -> int_type == LONG) {
+            promote_Myint(b);
+        }
+        struct Bigint** dm = divmod_Bigints(a -> bigint, b -> bigint);
+        div -> bigint = dm[0];
+        mod -> bigint = dm[1];
+        free(dm); dm = NULL;
+        reduce_Myint(a);
+        reduce_Myint(b);
+        reduce_Myint(div);
+        reduce_Myint(mod);
+    }
+    struct Myint** divmod = malloc(2*sizeof(struct Myint*));
+    divmod[0] = div;
+    divmod[1] = mod;
+    return divmod;
+}
+
 int main() {
     struct Myint* a = construct_Myint();
     struct Myint* b = construct_Myint();
     struct Myint* c = construct_Myint();
     struct Myint* d = construct_Myint();
     a -> my_long = 5;
-    b -> my_long = (unsigned long) 1 << 63;
-    c -> my_long = 2048;
-    printf("  b: "); print_Myint(b); printf("\n");
-    b = multiply_Myints(b, b);
-    b = multiply_Myints(b, c);
-    printf("  b: "); print_Myint(b); printf("\n");
-    // a -> sign = -1;
+    b -> my_long = 2048;
+    a -> sign = -1;
     b -> sign = -1;
-    printf("  b: "); print_Myint(b); printf("\n");
-    c = subtract_Myints(a, b);
-    printf("  b: "); print_Myint(b); printf("\n");
-    d = subtract_Myints(b, a);
+    struct Myint** dm = divmod_Myints(b, a);
+    c = dm[0];
+    d = dm[1];
     printf("  a: "); print_Myint(a); printf("\n");
     printf("  b: "); print_Myint(b); printf("\n");
-    printf("a-b: "); print_Myint(c); printf("\n");
-    printf("b-a: "); print_Myint(d); printf("\n");
+    printf("a/b: "); print_Myint(c); printf("\n");
+    printf("a%%b: "); print_Myint(d); printf("\n");
 }
