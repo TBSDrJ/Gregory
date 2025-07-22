@@ -3,7 +3,7 @@
 #define DEBUG 1
 
 // Functions for Bigint
-struct Bigint* construct_Bigint() {
+struct Bigint* Bigint_constructor() {
     struct Bigint* a = malloc(sizeof(struct Bigint));
     a -> sign = 1;
     a -> head = NULL;
@@ -18,7 +18,7 @@ struct Bigint* construct_Bigint() {
     and we don't check for next/prev in the Entry because these are NULL if 
     there is only one Entry. 
     if DEBUG is on, we check that each Entry is well-formed also. */
-bool check_Bigint_isok(struct Bigint* a) {
+bool Bigint_contract(struct Bigint* a) {
     if (!a || !(a -> len) || !(a -> sign) || !(a -> head) || !(a -> tail)) {
         return false;
     }
@@ -51,7 +51,7 @@ bool check_Bigint_isok(struct Bigint* a) {
 /* We don't use the contract so we can destruct even ill-formed structs, and
     so we can use this in a 'just in case it's still around' case with no
     ill effects. */
-struct Bigint* destruct_Bigint(struct Bigint* a) {
+struct Bigint* Bigint_destructor(struct Bigint* a) {
     if (a) {
         if (a -> head) {
             struct Entry_long* e = a -> head;
@@ -60,7 +60,7 @@ struct Bigint* destruct_Bigint(struct Bigint* a) {
                 if (e == a -> tail) {
                     a -> tail = NULL;
                 }
-                e = destruct_Entry_long(e);
+                e = Entry_long_destructor(e);
             }
         }
         if (a -> tail) {
@@ -68,7 +68,7 @@ struct Bigint* destruct_Bigint(struct Bigint* a) {
             struct Entry_long* f = e;
             while (f) {
                 if (e -> prev) {f = e -> prev;}
-                destruct_Entry_long(e);
+                Entry_long_destructor(e);
             }
         }
         a -> head = NULL;
@@ -81,12 +81,12 @@ struct Bigint* destruct_Bigint(struct Bigint* a) {
 
 /* We don't use the full contract at the start because this can be used to 
     insert the very first Entry, and that test would fail then. */
-void enqueue_to_Bigint(struct Bigint* a, unsigned long n) {
+void Bigint_enqueue(struct Bigint* a, unsigned long n) {
     if (a) {
         if (DEBUG && !(a -> sign)) {
             printf("ERROR: Failed contract, enqueue, sign is zero\n");
         }
-        struct Entry_long* e = construct_Entry_long(n);
+        struct Entry_long* e = Entry_long_constructor(n);
         if (a -> tail) {
             a -> tail -> next = e;
             e -> prev = a -> tail;
@@ -98,13 +98,13 @@ void enqueue_to_Bigint(struct Bigint* a, unsigned long n) {
             a -> len = 1;
         }
     } else if (DEBUG) {printf("ERROR: Failed contract, enqueue, a is NULL\n");}
-    if (!check_Bigint_isok(a)) {
+    if (!Bigint_contract(a)) {
         if (DEBUG) {printf("ERROR: Failed contract, end of enqueue\n");}
     }
 }
 
-void print_Bigint(struct Bigint* a) {
-    if (!check_Bigint_isok(a)) {
+void Bigint_print(struct Bigint* a) {
+    if (!Bigint_contract(a)) {
         if (DEBUG) {printf("ERROR: Failed contract, print\n");}
         return;
     }
@@ -118,26 +118,26 @@ void print_Bigint(struct Bigint* a) {
     }
 }
 
-struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b) {
-    bool a_ok = check_Bigint_isok(a);
-    bool b_ok = check_Bigint_isok(b);
+struct Bigint* Bigint_add(struct Bigint* a, struct Bigint* b) {
+    bool a_ok = Bigint_contract(a);
+    bool b_ok = Bigint_contract(b);
     if (!a_ok && DEBUG) {printf("ERROR: Failed contract, add, a\n");} 
     if (!b_ok && DEBUG) {printf("ERROR: Failed contract, add, b\n");}
     if (!a_ok || !b_ok) {return NULL;}
     if ((a -> sign == -1) && (b -> sign == 1)) {
         a -> sign = 1;
-        struct Bigint* c = subtract_Bigints(b, a);
+        struct Bigint* c = Bigint_subtract(b, a);
         a -> sign = -1;
         return c;
         return NULL;
     } else if ((a -> sign == 1) && (b -> sign == -1)) {
         b -> sign = 1;
-        struct Bigint* c = subtract_Bigints(a, b);
+        struct Bigint* c = Bigint_subtract(a, b);
         b -> sign = -1;
         return c;
         return NULL;
     } 
-    struct Bigint* c = construct_Bigint();
+    struct Bigint* c = Bigint_constructor();
     if ((a -> sign == -1) && (b -> sign == -1)) {
         c -> sign = -1;
     }
@@ -179,57 +179,57 @@ struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b) {
             }
             // if (tops == 3), we need 1s in both the highest and 1st place of
             //    the next 'digit' we leave the 1 that is in the highest place.
-            enqueue_to_Bigint(c, sum);
+            Bigint_enqueue(c, sum);
             // Start the next sum with the 1 that regroups up to the 1st place
             //    of the next 'digit'
             sum = 1;
         } else {
             if (top_sum != 1) {
                 sum += tops << (sizeof(unsigned long)*8 - 1);}
-            enqueue_to_Bigint(c, sum);
+            Bigint_enqueue(c, sum);
             sum = 0;
         }
     }
     if (sum == 1) {
-        enqueue_to_Bigint(c, 1);
+        Bigint_enqueue(c, 1);
     }
     return c;
 }
 
-struct Bigint* subtract_Bigints(struct Bigint* a, struct Bigint* b) {
-    bool a_ok = check_Bigint_isok(a);
-    bool b_ok = check_Bigint_isok(b);
+struct Bigint* Bigint_subtract(struct Bigint* a, struct Bigint* b) {
+    bool a_ok = Bigint_contract(a);
+    bool b_ok = Bigint_contract(b);
     if (!a_ok && DEBUG) {printf("ERROR: Failed contract, subtract, a\n");}
     if (!b_ok && DEBUG) {printf("ERROR: Failed contract, subtract, a\n");}
     if (!a_ok || !b_ok) {return NULL;}
     // So we know that a and b are not NULL and have at least one entry each.
     if ((a -> sign == 1) && (b -> sign == -1)) {
         b -> sign = 1;
-        struct Bigint* c = add_Bigints(a, b);
+        struct Bigint* c = Bigint_add(a, b);
         b -> sign = -1;
         return c;
     }
     if ((a -> sign == -1) && (b -> sign == 1)) {
         a -> sign = 1;
-        struct Bigint* c = add_Bigints(a, b);
+        struct Bigint* c = Bigint_add(a, b);
         a -> sign = -1;
         c -> sign = -1;
         return c;
     }
     // Now we know that a and b have the same sign
-    if (equal_Bigint(a, b)) {
-        struct Bigint* c = construct_Bigint();
-        enqueue_to_Bigint(c, 0);
+    if (Bigint_equal(a, b)) {
+        struct Bigint* c = Bigint_constructor();
+        Bigint_enqueue(c, 0);
         return c;
     }
-    if ((lt_Bigint(a, b) && (a -> sign == 1)) || 
-            (lt_Bigint(b, a) && (a -> sign == -1))) {
-        struct Bigint* c = subtract_Bigints(b, a);
+    if ((Bigint_lt(a, b) && (a -> sign == 1)) || 
+            (Bigint_lt(b, a) && (a -> sign == -1))) {
+        struct Bigint* c = Bigint_subtract(b, a);
         c -> sign *= -1;
         return c;
     }
     // So now we know that a and b have the same sign and |a| > |b|
-    struct Bigint* c = construct_Bigint();
+    struct Bigint* c = Bigint_constructor();
     c -> sign = a -> sign;
     struct Entry_long* a_entry = a -> head;
     struct Entry_long* b_entry = b -> head;
@@ -240,12 +240,12 @@ struct Bigint* subtract_Bigints(struct Bigint* a, struct Bigint* b) {
             unsigned long n = -(b_entry -> content) + (a_entry -> content)
                     - regrouped_one;
             regrouped_one = 1;
-            enqueue_to_Bigint(c, n);
+            Bigint_enqueue(c, n);
         } else {
             unsigned long n = (a_entry -> content) - (b_entry -> content)
                     - regrouped_one;
             regrouped_one = 0;
-            enqueue_to_Bigint(c, n);
+            Bigint_enqueue(c, n);
         }
         a_entry = a_entry -> next;
         b_entry = b_entry -> next;
@@ -254,35 +254,35 @@ struct Bigint* subtract_Bigints(struct Bigint* a, struct Bigint* b) {
     //    are from a.  The only thing left to deal with is a regrouped 1.
     while (a_entry && regrouped_one) {
         if (a_entry -> content > 0) {
-            enqueue_to_Bigint(c, a_entry -> content - 1);
+            Bigint_enqueue(c, a_entry -> content - 1);
             regrouped_one = 0;
             a_entry = a_entry -> next;
         } else {
             a_entry = a_entry -> next;
-            enqueue_to_Bigint(c, -1);
+            Bigint_enqueue(c, -1);
         }
     }
     while (a_entry) {
-        enqueue_to_Bigint(c, a_entry -> content);
+        Bigint_enqueue(c, a_entry -> content);
         a_entry = a_entry -> next;
     }
-    eliminate_zeros(c);
+    Bigint_eliminate_zeros(c);
     return c;
 }
 
-struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b) {
-    bool a_ok = check_Bigint_isok(a);
-    bool b_ok = check_Bigint_isok(b);
+struct Bigint* Bigint_multiply(struct Bigint* a, struct Bigint* b) {
+    bool a_ok = Bigint_contract(a);
+    bool b_ok = Bigint_contract(b);
     if (!a_ok && DEBUG) {printf("ERROR: Failed contract, mulitply, a\n");}
     if (!b_ok && DEBUG) {printf("ERROR: Failed contract, multiply, b\n");}
     if (!a_ok || !b_ok) {return NULL;}
-    struct Bigint* c = construct_Bigint();
+    struct Bigint* c = Bigint_constructor();
     long a_sign = a -> sign;
     long b_sign = b -> sign;
     long c_sign = (a -> sign) * (b -> sign);
     a -> sign = 1;
     b -> sign = 1;
-    enqueue_to_Bigint(c, 0);
+    Bigint_enqueue(c, 0);
     /* The idea is that (n bits)*(n bits) has <= 2n bits.  So, break a and b
     in half so that each product of two halves fits inside the data type. 
     Do the 4 different multiplications of the halves, adjust them for place 
@@ -304,10 +304,10 @@ struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b) {
         digit_a = entry_a -> content;
         places_b = 0;
         while (entry_b) {
-            c_0 = construct_Bigint();
-            c_1 = construct_Bigint();
-            c_2 = construct_Bigint();
-            c_3 = construct_Bigint();
+            c_0 = Bigint_constructor();
+            c_1 = Bigint_constructor();
+            c_2 = Bigint_constructor();
+            c_3 = Bigint_constructor();
             digit_b = entry_b -> content;
             a_0 = digit_a << sizeof(long)*4 >> sizeof(long)*4;
             a_1 = digit_a >> sizeof(long)*4;
@@ -317,37 +317,37 @@ struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b) {
             prod_1 = a_0 * b_1;
             prod_2 = a_1 * b_0;
             prod_3 = a_1 * b_1;
-            enqueue_to_Bigint(c_0, prod_0);
-            d_0 = bitshift_left_Bigint(c_0, places_a + places_b);
-            enqueue_to_Bigint(c_1, prod_1);
-            d_1 = bitshift_left_Bigint(
+            Bigint_enqueue(c_0, prod_0);
+            d_0 = Bigint_bitshift_left(c_0, places_a + places_b);
+            Bigint_enqueue(c_1, prod_1);
+            d_1 = Bigint_bitshift_left(
                     c_1, sizeof(long)*4 + places_a + places_b);
-            enqueue_to_Bigint(c_2, prod_2);
-            d_2 = bitshift_left_Bigint(
+            Bigint_enqueue(c_2, prod_2);
+            d_2 = Bigint_bitshift_left(
                     c_2, sizeof(long)*4 + places_a + places_b);
-            enqueue_to_Bigint(c_3, prod_3);
-            d_3 = bitshift_left_Bigint(
+            Bigint_enqueue(c_3, prod_3);
+            d_3 = Bigint_bitshift_left(
                     c_3, sizeof(long)*8 + places_a + places_b);
-            c_0 = destruct_Bigint(c_0);
-            c_1 = destruct_Bigint(c_1);
-            c_2 = destruct_Bigint(c_2);
-            c_3 = destruct_Bigint(c_3);
-            c_0 = add_Bigints(c, d_0);
-            c_1 = add_Bigints(c_0, d_1);
-            c_2 = add_Bigints(c_1, d_2);
-            c_3 = add_Bigints(c_2, d_3);
-            c = destruct_Bigint(c);
+            c_0 = Bigint_destructor(c_0);
+            c_1 = Bigint_destructor(c_1);
+            c_2 = Bigint_destructor(c_2);
+            c_3 = Bigint_destructor(c_3);
+            c_0 = Bigint_add(c, d_0);
+            c_1 = Bigint_add(c_0, d_1);
+            c_2 = Bigint_add(c_1, d_2);
+            c_3 = Bigint_add(c_2, d_3);
+            c = Bigint_destructor(c);
             c = c_3;
             entry_b = entry_b -> next;
             places_b += sizeof(long)*8;
-            c_0 = destruct_Bigint(c_0);
-            c_1 = destruct_Bigint(c_1);
-            c_2 = destruct_Bigint(c_2);
+            c_0 = Bigint_destructor(c_0);
+            c_1 = Bigint_destructor(c_1);
+            c_2 = Bigint_destructor(c_2);
             // Don't destroy c_3 because that is now c which we are keeping
-            d_0 = destruct_Bigint(d_0);
-            d_1 = destruct_Bigint(d_1);
-            d_2 = destruct_Bigint(d_2);
-            d_3 = destruct_Bigint(d_3);
+            d_0 = Bigint_destructor(d_0);
+            d_1 = Bigint_destructor(d_1);
+            d_2 = Bigint_destructor(d_2);
+            d_3 = Bigint_destructor(d_3);
         }
         entry_a = entry_a -> next;
         places_a += sizeof(long)*8;
@@ -359,9 +359,9 @@ struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b) {
     return c;
 }
 
-struct Bigint** divmod_Bigints(struct Bigint* a, struct Bigint* b) {
-    bool a_ok = check_Bigint_isok(a);
-    bool b_ok = check_Bigint_isok(b);
+struct Bigint** Bigint_divmod(struct Bigint* a, struct Bigint* b) {
+    bool a_ok = Bigint_contract(a);
+    bool b_ok = Bigint_contract(b);
     if (!a_ok && DEBUG) {printf("ERROR: Failed contract, divide, a\n");}
     if (!b_ok && DEBUG) {printf("ERROR: Failed contract, divide, b\n");}
     if ((b -> len == 1) && (b -> head -> content == 0)) {
@@ -373,11 +373,11 @@ struct Bigint** divmod_Bigints(struct Bigint* a, struct Bigint* b) {
     long b_sign = b -> sign;
     a -> sign = 1;
     b -> sign = 1;
-    struct Bigint* quotient = construct_Bigint(); 
-    enqueue_to_Bigint(quotient, 0);
-    struct Bigint* residue = construct_Bigint(); 
-    struct Bigint* one = construct_Bigint(); 
-    enqueue_to_Bigint(one, 1);
+    struct Bigint* quotient = Bigint_constructor(); 
+    Bigint_enqueue(quotient, 0);
+    struct Bigint* residue = Bigint_constructor(); 
+    struct Bigint* one = Bigint_constructor(); 
+    Bigint_enqueue(one, 1);
     struct Bigint* partial_a = a;
     struct Bigint* shifted_b = NULL;
     struct Bigint* tmp_0 = NULL;
@@ -385,52 +385,52 @@ struct Bigint** divmod_Bigints(struct Bigint* a, struct Bigint* b) {
     // lnb = location of largest nonzero bit
     long lnb_a, lnb_b;
     if ((a -> len == 1) && (a -> head -> content == 0)) {
-        enqueue_to_Bigint(residue, 0);
-    } else if (lt_Bigint(a, b)) {
+        Bigint_enqueue(residue, 0);
+    } else if (Bigint_lt(a, b)) {
         struct Entry_long* e = a -> head;
         while (e) {
-            enqueue_to_Bigint(residue, e -> content); 
+            Bigint_enqueue(residue, e -> content); 
             e = e -> next;
         }
     } else {
-        lnb_a = largest_nonzero_bit(a);
-        lnb_b = largest_nonzero_bit(b);
+        lnb_a = Bigint_intlog2(a);
+        lnb_b = Bigint_intlog2(b);
         while (lnb_b < lnb_a) {
             tmp_0 = shifted_b;
-            shifted_b = bitshift_left_Bigint(b, lnb_a - lnb_b); 
-            tmp_0 = destruct_Bigint(tmp_0);
-            if (!leq_Bigint(shifted_b, partial_a)) {
+            shifted_b = Bigint_bitshift_left(b, lnb_a - lnb_b); 
+            tmp_0 = Bigint_destructor(tmp_0);
+            if (!Bigint_leq(shifted_b, partial_a)) {
                 tmp_0 = shifted_b;
-                shifted_b = bitshift_right_Bigint(shifted_b, 1); 
-                tmp_0 = destruct_Bigint(tmp_0);
+                shifted_b = Bigint_bitshift_right(shifted_b, 1); 
+                tmp_0 = Bigint_destructor(tmp_0);
                 lnb_a--;
             }
-            tmp_0 = bitshift_left_Bigint(one, lnb_a - lnb_b);
+            tmp_0 = Bigint_bitshift_left(one, lnb_a - lnb_b);
             tmp_1 = quotient;
-            quotient = add_Bigints(quotient, tmp_0);
-            tmp_0 = destruct_Bigint(tmp_0);
-            tmp_1 = destruct_Bigint(tmp_1);
+            quotient = Bigint_add(quotient, tmp_0);
+            tmp_0 = Bigint_destructor(tmp_0);
+            tmp_1 = Bigint_destructor(tmp_1);
             tmp_0 = partial_a;
-            partial_a = subtract_Bigints(partial_a, shifted_b);
-            if (tmp_0 != a) {tmp_0 = destruct_Bigint(tmp_0);}
-            // Notice that largest_nonzero_bit includes eliminate_zeros()
-            lnb_a = largest_nonzero_bit(partial_a);
+            partial_a = Bigint_subtract(partial_a, shifted_b);
+            if (tmp_0 != a) {tmp_0 = Bigint_destructor(tmp_0);}
+            // Notice that Bigint_intlog2 includes Bigint_eliminate_zeros()
+            lnb_a = Bigint_intlog2(partial_a);
         }
-        if (leq_Bigint(b, partial_a)) {
+        if (Bigint_leq(b, partial_a)) {
             tmp_0 = residue;
-            residue = subtract_Bigints(partial_a, b);
-            tmp_0 = destruct_Bigint(tmp_0);
+            residue = Bigint_subtract(partial_a, b);
+            tmp_0 = Bigint_destructor(tmp_0);
             tmp_0 = quotient;
-            quotient = add_Bigints(quotient, one);
-            tmp_0 = destruct_Bigint(tmp_0);
-            if (partial_a != a) {partial_a = destruct_Bigint(partial_a);}
+            quotient = Bigint_add(quotient, one);
+            tmp_0 = Bigint_destructor(tmp_0);
+            if (partial_a != a) {partial_a = Bigint_destructor(partial_a);}
         } else {
             tmp_0 = residue;
             residue = partial_a;
-            tmp_0 = destruct_Bigint(tmp_0);
+            tmp_0 = Bigint_destructor(tmp_0);
         }
-        shifted_b = destruct_Bigint(shifted_b);
-        one = destruct_Bigint(one);
+        shifted_b = Bigint_destructor(shifted_b);
+        one = Bigint_destructor(one);
     }
     a -> sign = a_sign;
     b -> sign = b_sign;
@@ -443,57 +443,57 @@ struct Bigint** divmod_Bigints(struct Bigint* a, struct Bigint* b) {
 }
 
 // Still a small memory leak in gcd
-struct Bigint* gcd_Bigints(struct Bigint* a, struct Bigint* b) {
-    bool a_ok = check_Bigint_isok(a); //printf("440 CONSTRUCT:A %lu\n", (unsigned long) a);
-    bool b_ok = check_Bigint_isok(b); //printf("440 CONSTRUCT:B %lu\n", (unsigned long) b);
+struct Bigint* Bigint_gcd(struct Bigint* a, struct Bigint* b) {
+    bool a_ok = Bigint_contract(a); //printf("440 CONSTRUCT:A %lu\n", (unsigned long) a);
+    bool b_ok = Bigint_contract(b); //printf("440 CONSTRUCT:B %lu\n", (unsigned long) b);
     if (!a_ok && DEBUG) {printf("ERROR: Failed contract, gcd, a\n");}
     if (!b_ok && DEBUG) {printf("ERROR: Failed contract, gcd, b\n");}
     if (!a_ok || !b_ok) {return NULL;}
     long a_sign = a -> sign, b_sign = b -> sign;
     a -> sign = 1; b -> sign = 1;
-    if (lt_Bigint(a, b)) {return gcd_Bigints(b, a);}
-    struct Bigint** divmod = divmod_Bigints(a, b); //printf("446 CONSTRUCT %lu\n", (unsigned long) divmod);
+    if (Bigint_lt(a, b)) {return Bigint_gcd(b, a);}
+    struct Bigint** divmod = Bigint_divmod(a, b); //printf("446 CONSTRUCT %lu\n", (unsigned long) divmod);
     struct Bigint* quotient = divmod[0]; //printf("447 CONSTRUCT %lu\n", (unsigned long) quotient);
     struct Bigint* residue = divmod[1]; //printf("448 CONSTRUCT %lu\n", (unsigned long) residue);
     // printf("\t449 DESTRUCT %lu\n", (unsigned long) divmod); 
     free(divmod); divmod = NULL; 
-    struct Bigint* zero = construct_Bigint(); //printf("450 CONSTRUCT %lu\n", (unsigned long) zero);
-    enqueue_to_Bigint(zero, 0);
+    struct Bigint* zero = Bigint_constructor(); //printf("450 CONSTRUCT %lu\n", (unsigned long) zero);
+    Bigint_enqueue(zero, 0);
     struct Bigint* tmp = NULL;
     struct Bigint* prev_b = b;
-    while (gt_Bigint(residue, zero)) {
+    while (Bigint_gt(residue, zero)) {
         if (tmp != b) {//printf("\t455 DESTRUCT %lu\n", (unsigned long) tmp); 
-            tmp = destruct_Bigint(tmp);}
-        divmod = divmod_Bigints(prev_b, residue); //printf("456 CONSTRUCT %lu\n", (unsigned long) divmod);
+            tmp = Bigint_destructor(tmp);}
+        divmod = Bigint_divmod(prev_b, residue); //printf("456 CONSTRUCT %lu\n", (unsigned long) divmod);
         tmp = quotient;
         quotient = divmod[0]; //printf("458 CONSTRUCT %lu\n", (unsigned long) divmod[0]);
         //printf("\t459 DESTRUCT %lu\n", (unsigned long) tmp); 
-        tmp = destruct_Bigint(tmp);
+        tmp = Bigint_destructor(tmp);
         tmp = prev_b;
         prev_b = residue;
         if (tmp != b) {//printf("\t462 DESTRUCT %lu\n", (unsigned long) tmp); 
-        tmp = destruct_Bigint(tmp);}
+        tmp = Bigint_destructor(tmp);}
         residue = divmod[1]; //printf("463 CONSTRUCT %lu\n", (unsigned long) divmod[1]);
         //printf("\t464 DESTRUCT %lu\n", (unsigned long) divmod); 
         free(divmod); divmod = NULL;
     }
     // printf("466 DESTRUCT %lu\n", (unsigned long) zero); 
-    zero = destruct_Bigint(zero); 
+    zero = Bigint_destructor(zero); 
     // printf("467 DESTRUCT %lu\n", (unsigned long) quotient); 
-    quotient = destruct_Bigint(quotient);
+    quotient = Bigint_destructor(quotient);
     // printf("468 DESTRUCT %lu\n", (unsigned long) residue); 
-    residue = destruct_Bigint(residue);
+    residue = Bigint_destructor(residue);
     // printf("469 KEEP %lu\n", (unsigned long) prev_b);
     a -> sign = a_sign; b -> sign = b_sign;
     return prev_b;
 }
 
-long largest_nonzero_bit(struct Bigint* a) {
-    if (!check_Bigint_isok(a)) {
+long Bigint_intlog2(struct Bigint* a) {
+    if (!Bigint_contract(a)) {
         if (DEBUG) {printf("ERROR: Failed contract, largest nonzero bit\n");}
         return 0;
     }
-    eliminate_zeros(a);
+    Bigint_eliminate_zeros(a);
     if ((a -> len == 1) && (a -> head -> content == 0)) {
         return -1;
     }
@@ -506,24 +506,24 @@ long largest_nonzero_bit(struct Bigint* a) {
     return n + loc;
 }
 
-struct Bigint* bitshift_left_Bigint(struct Bigint* a, unsigned long n) {
-    if (!check_Bigint_isok(a)) {
+struct Bigint* Bigint_bitshift_left(struct Bigint* a, unsigned long n) {
+    if (!Bigint_contract(a)) {
         if (DEBUG) {printf("ERROR: Failed contract, bitshift_left, a\n");}
         return NULL;
     }
-    struct Bigint* b = construct_Bigint();
+    struct Bigint* b = Bigint_constructor();
     struct Entry_long* e = a -> head;
     if (n == 0) {
         // This does come up, so let's speed things up for when it does
         while (e) {
-            enqueue_to_Bigint(b, e -> content);
+            Bigint_enqueue(b, e -> content);
             e = e -> next;
         }
     } else {
         unsigned long digits = n/64, bits = n%64;
         unsigned long n_0, n_1 = 0;
         for (long i=0; i<digits; i++) {
-            enqueue_to_Bigint(b, 0);
+            Bigint_enqueue(b, 0);
         }
         while (e) {
             n_0 = (e -> content) << bits;
@@ -536,28 +536,28 @@ struct Bigint* bitshift_left_Bigint(struct Bigint* a, unsigned long n) {
             } else {
                 n_1 = 0;
             }
-            enqueue_to_Bigint(b, n_0);
+            Bigint_enqueue(b, n_0);
             e = e -> next;
         }
         if (n_1) {
-            enqueue_to_Bigint(b, n_1);
+            Bigint_enqueue(b, n_1);
         }
-        eliminate_zeros(b);
+        Bigint_eliminate_zeros(b);
     }
     return b;
 }
 
-struct Bigint* bitshift_right_Bigint(struct Bigint* a, unsigned long n) {
-    if (!check_Bigint_isok(a)) {
+struct Bigint* Bigint_bitshift_right(struct Bigint* a, unsigned long n) {
+    if (!Bigint_contract(a)) {
         if (DEBUG) {printf("ERROR: Failed contract, bitshift_right, a\n");}
         return NULL;
     }
-    struct Bigint* b = construct_Bigint();
+    struct Bigint* b = Bigint_constructor();
     struct Entry_long* e = a -> head;
     if (n == 0) {
         // This does come up, so let's speed things up for when it does
         while (e) {
-            enqueue_to_Bigint(b, e -> content);
+            Bigint_enqueue(b, e -> content);
             e = e -> next;
         }
     } else {
@@ -574,19 +574,21 @@ struct Bigint* bitshift_right_Bigint(struct Bigint* a, unsigned long n) {
             } else {
                 n_1 = 0;
             }
-            enqueue_to_Bigint(b, n_0 | n_1);
+            Bigint_enqueue(b, n_0 | n_1);
         }
         if (!(b -> head)) {
             // Make sure b is certain to be nonempty.
-            enqueue_to_Bigint(b, 0);
+            Bigint_enqueue(b, 0);
         }
     }
     return b;
 }
 
-void eliminate_zeros(struct Bigint* a) {
-    if (!check_Bigint_isok(a)) {
-        if (DEBUG) {printf("ERROR: Failed contract, eliminate_zeros, a\n");}
+void Bigint_eliminate_zeros(struct Bigint* a) {
+    if (!Bigint_contract(a)) {
+        if (DEBUG) {
+            printf("ERROR: Failed contract, Bigint_eliminate_zeros, a\n");
+        }
         return;
     }
     struct Entry_long* e = a -> tail;
@@ -594,7 +596,7 @@ void eliminate_zeros(struct Bigint* a) {
         if (e -> prev) {
             a -> tail = e -> prev;
             a -> tail -> next = NULL;
-            destruct_Entry_long(e);
+            Entry_long_destructor(e);
             a -> len--;
             e = a -> tail;
         } else {
@@ -603,17 +605,17 @@ void eliminate_zeros(struct Bigint* a) {
     }
 }
 
-bool equal_Bigint(struct Bigint* a, struct Bigint* b) {
-    bool a_ok = check_Bigint_isok(a);
-    bool b_ok = check_Bigint_isok(b);
+bool Bigint_equal(struct Bigint* a, struct Bigint* b) {
+    bool a_ok = Bigint_contract(a);
+    bool b_ok = Bigint_contract(b);
     if (!a_ok && DEBUG) {printf("ERROR: Failed contract, equal, a\n");}
     if (!b_ok && DEBUG) {printf("ERROR: Failed contract, equal, b\n");}
     if (!a_ok || !b_ok) {return false;}
     if (a -> sign != b -> sign) {
         return false;
     }
-    eliminate_zeros(a);
-    eliminate_zeros(b);
+    Bigint_eliminate_zeros(a);
+    Bigint_eliminate_zeros(b);
     if (a -> len != b -> len) {
         return false;
     }
@@ -629,9 +631,9 @@ bool equal_Bigint(struct Bigint* a, struct Bigint* b) {
     return true;
 }
 
-bool lt_Bigint(struct Bigint* a, struct Bigint* b) {
-    bool a_ok = check_Bigint_isok(a);
-    bool b_ok = check_Bigint_isok(b);
+bool Bigint_lt(struct Bigint* a, struct Bigint* b) {
+    bool a_ok = Bigint_contract(a);
+    bool b_ok = Bigint_contract(b);
     if (!a_ok && DEBUG) {printf("ERROR: Failed contract, lt, a\n");}
     if (!b_ok && DEBUG) {printf("ERROR: Failed contract, lt, b\n");}
     if (!a_ok || !b_ok) {return false;}
@@ -641,8 +643,8 @@ bool lt_Bigint(struct Bigint* a, struct Bigint* b) {
     if (a -> sign == 1 && b -> sign == -1) {
         return false;
     }
-    eliminate_zeros(a);
-    eliminate_zeros(b);
+    Bigint_eliminate_zeros(a);
+    Bigint_eliminate_zeros(b);
     if (a -> len < b -> len) {
         if (a -> sign == 1) {
             return true;
@@ -680,24 +682,24 @@ bool lt_Bigint(struct Bigint* a, struct Bigint* b) {
     return false;
 }
 
-bool leq_Bigint(struct Bigint* a, struct Bigint* b) {
-    if (equal_Bigint(a, b) || lt_Bigint(a, b)) {
+bool Bigint_leq(struct Bigint* a, struct Bigint* b) {
+    if (Bigint_equal(a, b) || Bigint_lt(a, b)) {
         return true;
     }
     return false;
 }
 
-bool gt_Bigint(struct Bigint* a, struct Bigint* b) {
-    return lt_Bigint(b, a);
+bool Bigint_gt(struct Bigint* a, struct Bigint* b) {
+    return Bigint_lt(b, a);
 }
 
-bool geq_Bigint(struct Bigint* a, struct Bigint* b) {
-    return leq_Bigint(b, a);
+bool Bigint_geq(struct Bigint* a, struct Bigint* b) {
+    return Bigint_leq(b, a);
 }
 
 
 // Functions for Entry_long
-struct Entry_long* construct_Entry_long(unsigned long n) {
+struct Entry_long* Entry_long_constructor(unsigned long n) {
     struct Entry_long* e = malloc(sizeof(struct Entry_long));
     e -> content = n;
     e -> next = NULL;
@@ -705,7 +707,7 @@ struct Entry_long* construct_Entry_long(unsigned long n) {
     return e;
 }
 
-struct Entry_long* destruct_Entry_long(struct Entry_long* e) {
+struct Entry_long* Entry_long_destructor(struct Entry_long* e) {
     struct Entry_long* next = NULL;
     if (e) {
         next = e -> next;

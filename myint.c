@@ -3,7 +3,7 @@
 #include"bigint.h"
 #include"myint.h"
 
-struct Myint* construct_Myint() {
+struct Myint* Myint_constructor() {
     struct Myint* a = malloc(sizeof(struct Myint));
     a -> int_type = LONG;
     a -> sign = 1;
@@ -12,7 +12,7 @@ struct Myint* construct_Myint() {
     return a;
 }
 
-struct Myint* destruct_Myint(struct Myint* a) {
+struct Myint* Myint_destructor(struct Myint* a) {
     // A couple of changes that will make the contract fail
     a -> int_type = -2;
     a -> sign = 0;
@@ -23,7 +23,7 @@ struct Myint* destruct_Myint(struct Myint* a) {
     return NULL;
 }
 
-bool contract_Myint(struct Myint* a) {
+bool Myint_contract(struct Myint* a) {
     if (a -> int_type > 1) 
         {printf("Contract fails at int_type > 1\n"); return false;}
     else if (a -> int_type < 0) 
@@ -43,9 +43,9 @@ bool contract_Myint(struct Myint* a) {
     return true;
 }
 
-void print_Myint(struct Myint* a) {
-    if (!contract_Myint(a)) {
-        printf("ERROR: Failed contract, print_Myint\n");
+void Myint_print(struct Myint* a) {
+    if (!Myint_contract(a)) {
+        printf("ERROR: Failed contract, Myint_print\n");
         return;
     }
     if (a -> int_type == LONG) {
@@ -56,7 +56,7 @@ void print_Myint(struct Myint* a) {
     }
 }
 
-void promote_Myint(struct Myint* a) {
+void Myint_promote(struct Myint* a) {
     a -> int_type = BIGINT;
     a -> bigint = construct_Bigint();
     enqueue_to_Bigint(a -> bigint, a -> my_long);
@@ -64,9 +64,9 @@ void promote_Myint(struct Myint* a) {
     a -> bigint -> sign = a -> sign;
 }
 
-void reduce_Myint(struct Myint* a) {
-    if (!contract_Myint(a)) {
-        printf("ERROR: Failed contract, reduce_Myint\n");
+void Myint_reduce(struct Myint* a) {
+    if (!Myint_contract(a)) {
+        printf("ERROR: Failed contract, Myint_reduce\n");
         return;
     }
     if (a -> bigint) {
@@ -79,9 +79,9 @@ void reduce_Myint(struct Myint* a) {
     }
 }
 
-long intlog2_Myint(struct Myint* a) {
-    if (!contract_Myint(a)) {
-        printf("ERROR: Failed contract, intlog2_Myint\n");
+long Myint_intlog2(struct Myint* a) {
+    if (!Myint_contract(a)) {
+        printf("ERROR: Failed contract, Myint_intlog2\n");
         return -2;
     }
     if (a -> int_type == LONG) {
@@ -98,20 +98,20 @@ long intlog2_Myint(struct Myint* a) {
     return -2; // error, should never reach this.
 }
 
-struct Myint* add_Myints(struct Myint* a, struct Myint* b) {
+struct Myint* Myint_add(struct Myint* a, struct Myint* b) {
     bool fail = false;
-    if (!contract_Myint(a)) {
-        printf("ERROR: Failed contract, a from add_Myints\n");
+    if (!Myint_contract(a)) {
+        printf("ERROR: Failed contract, a from Myint_add\n");
         fail = true;
     }
-    if (!contract_Myint(b)) {
-        printf("ERROR: Failed contract, b from add_Myints\n");
+    if (!Myint_contract(b)) {
+        printf("ERROR: Failed contract, b from Myint_add\n");
         fail = true;
     }
     if (fail) {return NULL;}
-    struct Myint* c = construct_Myint();
+    struct Myint* c = Myint_constructor();
     if ((a -> int_type == LONG) && (b -> int_type == LONG) && 
-            (intlog2_Myint(a) < 63) && (intlog2_Myint(b) < 63)) {
+            (Myint_intlog2(a) < 63) && (Myint_intlog2(b) < 63)) {
         if (a -> sign == b -> sign) {
             c -> my_long = (a -> my_long) + (b -> my_long);
             c -> sign = a -> sign;
@@ -127,33 +127,33 @@ struct Myint* add_Myints(struct Myint* a, struct Myint* b) {
     } else {
         c -> int_type = BIGINT;
         if (a -> int_type == LONG) {
-            promote_Myint(a);
+            Myint_promote(a);
         }
         if (b -> int_type == LONG) {
-            promote_Myint(b);
+            Myint_promote(b);
         }
         c -> bigint = add_Bigints(a -> bigint, b -> bigint);
-        reduce_Myint(a);
-        reduce_Myint(b);
+        Myint_reduce(a);
+        Myint_reduce(b);
     }
-    reduce_Myint(c);
+    Myint_reduce(c);
     return c;
 }
 
-struct Myint* subtract_Myints(struct Myint* a, struct Myint* b) {
+struct Myint* Myint_subtract(struct Myint* a, struct Myint* b) {
     bool fail = false;
-    if (!contract_Myint(a)) {
-        printf("ERROR: Failed contract, a from subtract_Myints\n");
+    if (!Myint_contract(a)) {
+        printf("ERROR: Failed contract, a from Myint_subtract\n");
         fail = true;
     }
-    if (!contract_Myint(b)) {
-        printf("ERROR: Failed contract, b from subtract_Myints\n");
+    if (!Myint_contract(b)) {
+        printf("ERROR: Failed contract, b from Myint_subtract\n");
         fail = true;
     }
     if (fail) {return NULL;}
-    struct Myint* c = construct_Myint();
+    struct Myint* c = Myint_constructor();
     if ((a -> int_type == LONG) && (b -> int_type == LONG) && 
-            (intlog2_Myint(a) < 63) && (intlog2_Myint(b) < 63)) {
+            (Myint_intlog2(a) < 63) && (Myint_intlog2(b) < 63)) {
         if (a -> sign == b -> sign) {
             if (a -> my_long > b -> my_long) {
                 c -> my_long = (a -> my_long) - (b -> my_long);
@@ -169,64 +169,64 @@ struct Myint* subtract_Myints(struct Myint* a, struct Myint* b) {
     } else {
         c -> int_type = BIGINT;
         if (a -> int_type == LONG) {
-            promote_Myint(a);
+            Myint_promote(a);
         }
         if (b -> int_type == LONG) {
-            promote_Myint(b);
+            Myint_promote(b);
         }
         c -> bigint = subtract_Bigints(a -> bigint, b -> bigint);
-        reduce_Myint(a);
-        reduce_Myint(b);
+        Myint_reduce(a);
+        Myint_reduce(b);
     }
-    reduce_Myint(c);
+    Myint_reduce(c);
     return c;
 }
 
-struct Myint* multiply_Myints(struct Myint* a, struct Myint* b) {
+struct Myint* Myint_multiply(struct Myint* a, struct Myint* b) {
     bool fail = false;
-    if (!contract_Myint(a)) {
-        printf("ERROR: Failed contract, a from multiply_Myints\n");
+    if (!Myint_contract(a)) {
+        printf("ERROR: Failed contract, a from Myint_multiply\n");
         fail = true;
     }
-    if (!contract_Myint(b)) {
-        printf("ERROR: Failed contract, b from multiply_Myints\n");
+    if (!Myint_contract(b)) {
+        printf("ERROR: Failed contract, b from Myint_multiply\n");
         fail = true;
     }
     if (fail) {return NULL;}
-    struct Myint* c = construct_Myint();
+    struct Myint* c = Myint_constructor();
     if ((a -> int_type == LONG) && (b -> int_type == LONG) && 
-            (intlog2_Myint(a) + intlog2_Myint(b) < 63)) {
+            (Myint_intlog2(a) + Myint_intlog2(b) < 63)) {
         c -> my_long = (a -> my_long) * (b -> my_long);
     } else {
         c -> int_type = BIGINT;
         if (a -> int_type == LONG) {
-            promote_Myint(a);
+            Myint_promote(a);
         }
         if (b -> int_type == LONG) {
-            promote_Myint(b);
+            Myint_promote(b);
         }
         c -> bigint = multiply_Bigints(a -> bigint, b -> bigint);
-        reduce_Myint(a);
-        reduce_Myint(b);
+        Myint_reduce(a);
+        Myint_reduce(b);
     }
-    reduce_Myint(c);
+    Myint_reduce(c);
     c -> sign = (a -> sign) * (b -> sign);
     return c;
 }
 
-struct Myint** divmod_Myints(struct Myint* a, struct Myint* b) {
+struct Myint** Myint_divmod(struct Myint* a, struct Myint* b) {
     bool fail = false;
-    if (!contract_Myint(a)) {
-        printf("ERROR: Failed contract, a from divmod_Myints\n");
+    if (!Myint_contract(a)) {
+        printf("ERROR: Failed contract, a from Myint_divmod\n");
         fail = true;
     }
-    if (!contract_Myint(b)) {
-        printf("ERROR: Failed contract, b from divmod_Myints\n");
+    if (!Myint_contract(b)) {
+        printf("ERROR: Failed contract, b from Myint_divmod\n");
         fail = true;
     }
     if (fail) {return NULL;}
-    struct Myint* div = construct_Myint();
-    struct Myint* mod = construct_Myint();
+    struct Myint* div = Myint_constructor();
+    struct Myint* mod = Myint_constructor();
     if ((a -> int_type == LONG) && (b -> int_type == LONG)) {
         div -> my_long = (a -> my_long) / (b -> my_long);
         mod -> my_long = (a -> my_long) % (b -> my_long);
@@ -234,19 +234,19 @@ struct Myint** divmod_Myints(struct Myint* a, struct Myint* b) {
         div -> int_type = BIGINT;
         mod -> int_type = BIGINT;
         if (a -> int_type == LONG) {
-            promote_Myint(a);
+            Myint_promote(a);
         }
         if (b -> int_type == LONG) {
-            promote_Myint(b);
+            Myint_promote(b);
         }
         struct Bigint** dm = divmod_Bigints(a -> bigint, b -> bigint);
         div -> bigint = dm[0];
         mod -> bigint = dm[1];
         free(dm); dm = NULL;
-        reduce_Myint(a);
-        reduce_Myint(b);
-        reduce_Myint(div);
-        reduce_Myint(mod);
+        Myint_reduce(a);
+        Myint_reduce(b);
+        Myint_reduce(div);
+        Myint_reduce(mod);
     }
     struct Myint** divmod = malloc(2*sizeof(struct Myint*));
     divmod[0] = div;
@@ -254,20 +254,22 @@ struct Myint** divmod_Myints(struct Myint* a, struct Myint* b) {
     return divmod;
 }
 
+
+
 int main() {
-    struct Myint* a = construct_Myint();
-    struct Myint* b = construct_Myint();
-    struct Myint* c = construct_Myint();
-    struct Myint* d = construct_Myint();
+    struct Myint* a = Myint_constructor();
+    struct Myint* b = Myint_constructor();
+    struct Myint* c = Myint_constructor();
+    struct Myint* d = Myint_constructor();
     a -> my_long = 5;
     b -> my_long = 2048;
     a -> sign = -1;
     b -> sign = -1;
-    struct Myint** dm = divmod_Myints(b, a);
+    struct Myint** dm = Myint_divmod(b, a);
     c = dm[0];
     d = dm[1];
-    printf("  a: "); print_Myint(a); printf("\n");
-    printf("  b: "); print_Myint(b); printf("\n");
-    printf("a/b: "); print_Myint(c); printf("\n");
-    printf("a%%b: "); print_Myint(d); printf("\n");
+    printf("  a: "); Myint_print(a); printf("\n");
+    printf("  b: "); Myint_print(b); printf("\n");
+    printf("a/b: "); Myint_print(c); printf("\n");
+    printf("a%%b: "); Myint_print(d); printf("\n");
 }

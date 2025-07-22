@@ -1,7 +1,10 @@
 /*
 This constructs an arbitrary-precision integer arithmetic library.  
-We use a queue of 64-bit unsigned integers to represent 'digits' base 2^64,
+We use a queue of unsigned long integers to represent 'digits' base 2^64,
 so the i-th entry, n_i, in the queue has value n_i * (2^64)^i, for i>=0.
+While this documentation assumes that an unsigned long is 64 bits, I believe
+that the code does not assume this, and will just use digits of size equal
+to sizeof(unsigned long), whatever that size is, but I have not tested this.
 NB: This means that 'digits' are ordered from least significant to most.
 */
 #ifndef BIGINT_H
@@ -23,29 +26,29 @@ struct Bigint {
     unsigned long len;
 };
 
-struct Bigint* construct_Bigint();
+struct Bigint* Bigint_constructor();
+struct Bigint* Bigint_destructor(struct Bigint* b);
 // This next function represents the contract for most functions.
-bool check_Bigint_isok(struct Bigint* a);
-struct Bigint* destruct_Bigint(struct Bigint* b);
-void enqueue_to_Bigint(struct Bigint* b, unsigned long n);
-void print_Bigint(struct Bigint* b);
-struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b);
-struct Bigint* subtract_Bigints(struct Bigint* a, struct Bigint* b);
-struct Bigint* multiply_Bigints(struct Bigint* a, struct Bigint* b);
+bool Bigint_contract(struct Bigint* a);
+void Bigint_enqueue(struct Bigint* b, unsigned long n);
+void Bigint_print(struct Bigint* b);
+struct Bigint* Bigint_add(struct Bigint* a, struct Bigint* b);
+struct Bigint* Bigint_subtract(struct Bigint* a, struct Bigint* b);
+struct Bigint* Bigint_multiply(struct Bigint* a, struct Bigint* b);
 // Notice different return type. This array of pointers needs to be freed.
 // This function returns ptr to a/b at return[0], and ptr to a%b at return[1].
-struct Bigint** divmod_Bigints(struct Bigint* a, struct Bigint* b);
-struct Bigint* gcd_Bigints(struct Bigint* a, struct Bigint* b);
+struct Bigint** Bigint_divmod(struct Bigint* a, struct Bigint* b);
+struct Bigint* Bigint_gcd(struct Bigint* a, struct Bigint* b);
 // Returns location of -1 if (a == 0)
-long largest_nonzero_bit(struct Bigint* a);
-struct Bigint* bitshift_left_Bigint(struct Bigint* a, unsigned long n);
-struct Bigint* bitshift_right_Bigint(struct Bigint* a, unsigned long n);
-void eliminate_zeros(struct Bigint* a);
-bool equal_Bigint(struct Bigint* a, struct Bigint* b);
-bool lt_Bigint(struct Bigint* a, struct Bigint* b);
-bool leq_Bigint(struct Bigint* a, struct Bigint* b);
-bool gt_Bigint(struct Bigint* a, struct Bigint* b);
-bool geq_Bigint(struct Bigint* a, struct Bigint* b);
+long Bigint_intlog2(struct Bigint* a);
+struct Bigint* Bigint_bitshift_left(struct Bigint* a, unsigned long n);
+struct Bigint* Bigint_bitshift_right(struct Bigint* a, unsigned long n);
+void Bigint_eliminate_zeros(struct Bigint* a);
+bool Bigint_equal(struct Bigint* a, struct Bigint* b);
+bool Bigint_lt(struct Bigint* a, struct Bigint* b);
+bool Bigint_leq(struct Bigint* a, struct Bigint* b);
+bool Bigint_gt(struct Bigint* a, struct Bigint* b);
+bool Bigint_geq(struct Bigint* a, struct Bigint* b);
 
 struct Entry_long {
     unsigned long content;
@@ -53,7 +56,7 @@ struct Entry_long {
     struct Entry_long* prev;
 };
 
-struct Entry_long* construct_Entry_long(unsigned long n);
-struct Entry_long* destruct_Entry_long(struct Entry_long* e);
+struct Entry_long* Entry_long_constructor(unsigned long n);
+struct Entry_long* Entry_long_destructor(struct Entry_long* e);
 
 #endif
