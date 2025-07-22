@@ -126,15 +126,15 @@ struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b) {
     if (!a_ok || !b_ok) {return NULL;}
     if ((a -> sign == -1) && (b -> sign == 1)) {
         a -> sign = 1;
-        // struct Bigint* c = subtract_Bigints(b, a);
+        struct Bigint* c = subtract_Bigints(b, a);
         a -> sign = -1;
-        // return c;
+        return c;
         return NULL;
     } else if ((a -> sign == 1) && (b -> sign == -1)) {
         b -> sign = 1;
-        // struct Bigint* c = subtract_Bigints(a, b);
+        struct Bigint* c = subtract_Bigints(a, b);
         b -> sign = -1;
-        // return c;
+        return c;
         return NULL;
     } 
     struct Bigint* c = construct_Bigint();
@@ -184,7 +184,8 @@ struct Bigint* add_Bigints(struct Bigint* a, struct Bigint* b) {
             //    of the next 'digit'
             sum = 1;
         } else {
-            sum += tops << (sizeof(unsigned long)*8 - 1);
+            if (top_sum != 1) {
+                sum += tops << (sizeof(unsigned long)*8 - 1);}
             enqueue_to_Bigint(c, sum);
             sum = 0;
         }
@@ -253,10 +254,12 @@ struct Bigint* subtract_Bigints(struct Bigint* a, struct Bigint* b) {
     //    are from a.  The only thing left to deal with is a regrouped 1.
     while (a_entry && regrouped_one) {
         if (a_entry -> content > 0) {
-            a_entry -> content--;
+            enqueue_to_Bigint(c, a_entry -> content - 1);
             regrouped_one = 0;
+            a_entry = a_entry -> next;
         } else {
             a_entry = a_entry -> next;
+            enqueue_to_Bigint(c, -1);
         }
     }
     while (a_entry) {
@@ -379,7 +382,7 @@ struct Bigint** divmod_Bigints(struct Bigint* a, struct Bigint* b) {
     struct Bigint* shifted_b = NULL;
     struct Bigint* tmp_0 = NULL;
     struct Bigint* tmp_1 = NULL;
-    // largest nonzero bit
+    // lnb = location of largest nonzero bit
     long lnb_a, lnb_b;
     if ((a -> len == 1) && (a -> head -> content == 0)) {
         enqueue_to_Bigint(residue, 0);
@@ -404,7 +407,7 @@ struct Bigint** divmod_Bigints(struct Bigint* a, struct Bigint* b) {
             }
             tmp_0 = bitshift_left_Bigint(one, lnb_a - lnb_b);
             tmp_1 = quotient;
-            quotient = add_Bigints(quotient, tmp_1);
+            quotient = add_Bigints(quotient, tmp_0);
             tmp_0 = destruct_Bigint(tmp_0);
             tmp_1 = destruct_Bigint(tmp_1);
             tmp_0 = partial_a;
@@ -439,13 +442,15 @@ struct Bigint** divmod_Bigints(struct Bigint* a, struct Bigint* b) {
     return quot_res;
 }
 
-// Still a Memory leak in GCD.  Def none in divmod.
+// Still a small memory leak in gcd
 struct Bigint* gcd_Bigints(struct Bigint* a, struct Bigint* b) {
     bool a_ok = check_Bigint_isok(a); //printf("440 CONSTRUCT:A %lu\n", (unsigned long) a);
     bool b_ok = check_Bigint_isok(b); //printf("440 CONSTRUCT:B %lu\n", (unsigned long) b);
     if (!a_ok && DEBUG) {printf("ERROR: Failed contract, gcd, a\n");}
     if (!b_ok && DEBUG) {printf("ERROR: Failed contract, gcd, b\n");}
     if (!a_ok || !b_ok) {return NULL;}
+    long a_sign = a -> sign, b_sign = b -> sign;
+    a -> sign = 1; b -> sign = 1;
     if (lt_Bigint(a, b)) {return gcd_Bigints(b, a);}
     struct Bigint** divmod = divmod_Bigints(a, b); //printf("446 CONSTRUCT %lu\n", (unsigned long) divmod);
     struct Bigint* quotient = divmod[0]; //printf("447 CONSTRUCT %lu\n", (unsigned long) quotient);
@@ -479,6 +484,7 @@ struct Bigint* gcd_Bigints(struct Bigint* a, struct Bigint* b) {
     // printf("468 DESTRUCT %lu\n", (unsigned long) residue); 
     residue = destruct_Bigint(residue);
     // printf("469 KEEP %lu\n", (unsigned long) prev_b);
+    a -> sign = a_sign; b -> sign = b_sign;
     return prev_b;
 }
 
