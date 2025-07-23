@@ -19,25 +19,25 @@ struct Myint {
 };
 
 struct Myint* Myint_constructor();
-struct Myint* destruct_Myint(struct Myint* a);
-bool contract_Myint(struct Myint* a);
-void print_Myint(struct Myint* a);
-void promote_Myint(struct Myint* a);
-void reduce_Myint(struct Myint* a);
+struct Myint* Myint_destructor(struct Myint* a);
+bool Myint_contract(struct Myint* a);
+void Myint_print(struct Myint* a);
+void Myint_promote(struct Myint* a);
+void Myint_reduce(struct Myint* a);
 // intlog2 is equivalent to finding the largest nonzero bit of a.
-long intlog2_Myint(struct Myint* a);
-struct Myint* add_Myints(struct Myint* a, struct Myint* b);
-struct Myint* subtract_Myints(struct Myint* a, struct Myint* b);
-struct Myint* multiply_Myints(struct Myint* a, struct Myint* b);
+long Myint_intlog2(struct Myint* a);
+struct Myint* Myint_add(struct Myint* a, struct Myint* b);
+struct Myint* Myint_subtract(struct Myint* a, struct Myint* b);
+struct Myint* Myint_Multiply(struct Myint* a, struct Myint* b);
 // divmod returns a/b as [0] entry and a%b as [1] entry.
-struct Myint** divmod_Myints(struct Myint* a, struct Myint* b);
-struct Myint* gcd_Myints(struct Myint* a, struct Myint* b);
-struct Myint* bitshift_left_Myint(struct Myint* a, unsigned long n);
-struct Myint* bitshift_right_Myint(struct Myint* a, unsigned long n);
-bool equal_Myint(struct Myint* a, struct Myint* b);
-bool lt_Myint(struct Myint* a, struct Myint* b);
-bool leq_Myint(struct Myint* a, struct Myint* b);
-bool gt_Myint(struct Myint* a, struct Myint* b);
-bool geq_Myint(struct Myint* a, struct Myint* b);
+struct Myint** Myint_divmod(struct Myint* a, struct Myint* b);
+struct Myint* Myint_gcd(struct Myint* a, struct Myint* b);
+struct Myint* Myint_bitshift_left(struct Myint* a, unsigned long n);
+struct Myint* Myint_bitshift_right(struct Myint* a, unsigned long n);
+bool Myint_equal(struct Myint* a, struct Myint* b);
+bool Myint_lt(struct Myint* a, struct Myint* b);
+bool Myint_leq(struct Myint* a, struct Myint* b);
+bool Myint_gt(struct Myint* a, struct Myint* b);
+bool Myint_geq(struct Myint* a, struct Myint* b);
 
 #endif MYINT_H
