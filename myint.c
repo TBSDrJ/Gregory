@@ -307,7 +307,6 @@ struct Myint* Myint_bitshift_left(struct Myint* a, unsigned long n) {
     if ((a -> int_type == LONG) && (dig + n < 64)) {
         b -> my_long = a -> my_long << n;
     } else {
-        printf("promote\n");
         if (a -> int_type == LONG) {
             Myint_promote(a);
         }
