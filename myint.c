@@ -348,7 +348,7 @@ bool Myint_equal(struct Myint* a, struct Myint* b) {
         printf("ERROR: Failed contract, b from Myint_equal\n");
         fail = true;
     }
-    if (fail) {return NULL;}
+    if (fail) {return false;}
     Myint_reduce(a);
     Myint_reduce(b);
     if ((a -> int_type == LONG) && (b -> int_type == LONG)) {
@@ -361,17 +361,69 @@ bool Myint_equal(struct Myint* a, struct Myint* b) {
     return false;
 }
 
+bool Myint_lt(struct Myint* a, struct Myint* b) {
+    bool fail = false;
+    if (!Myint_contract(a)) {
+        printf("ERROR: Failed contract, a from Myint_lt\n");
+        fail = true;
+    }
+    if (!Myint_contract(b)) {
+        printf("ERROR: Failed contract, b from Myint_lt\n");
+        fail = true;
+    }
+    if (fail) {return false;}
+    Myint_reduce(a);
+    Myint_reduce(b);
+    if ((a -> sign > 0) && (b -> sign < 0)) {
+        return false;
+    } else if ((a -> sign < 0) && (b -> sign > 0)) {
+        return true;
+    } else if ((a -> int_type == LONG) && (b -> int_type == LONG)) {
+        if (a -> sign > 0) {
+            return a -> my_long < b -> my_long;
+        } else {
+            return a -> my_long > b -> my_long;
+        }
+    } else {
+        if (a -> int_type == LONG) {
+            Myint_promote(a);
+        } else if (b -> int_type == LONG) {
+            Myint_promote(b);
+        }
+        bool lt = Bigint_lt(a -> bigint, b -> bigint);
+        Myint_reduce(a);
+        Myint_reduce(b);
+        return lt;
+    }
+}
+
+bool Myint_leq(struct Myint* a, struct Myint* b) {
+    if (Myint_lt(a, b) || Myint_equal(a, b)) {
+        return true;
+    }
+    return false;
+}
+
+bool Myint_gt(struct Myint* a, struct Myint* b) {
+    return Myint_lt(b, a);
+}
+
+bool Myint_geq(struct Myint* a, struct Myint* b) {
+    return Myint_leq(b, a);
+}
+
 int main() {
     struct Myint* a = Myint_constructor();
     struct Myint* b = Myint_constructor();
     struct Myint* c = Myint_constructor();
     struct Myint* d = Myint_constructor();
     a -> my_long = 1234567890123456789;
-    b -> my_long = 1234567890123456789;
-    Myint_promote(b);
-    // a -> sign = -1;
+    b -> my_long = 1234567890123456;
+    a -> sign = -1;
     // b -> sign = -1;
+    Myint_promote(b);
     printf("  a: "); Myint_print(a); printf("\n");
     printf("  b: "); Myint_print(b); printf("\n");
-    printf("%d\n", Myint_equal(a,b));
+    printf("%d\n", Myint_gt(a,b));
+    printf("%d\n", Myint_gt(b,a));
 }
