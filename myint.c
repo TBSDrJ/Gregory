@@ -255,7 +255,7 @@ struct Myint** Myint_divmod(struct Myint* a, struct Myint* b) {
 }
 
 struct Myint* Myint_gcd(struct Myint* a, struct Myint* b) {
-        bool fail = false;
+    bool fail = false;
     if (!Myint_contract(a)) {
         printf("ERROR: Failed contract, a from Myint_gcd\n");
         fail = true;
@@ -297,21 +297,40 @@ struct Myint* Myint_gcd(struct Myint* a, struct Myint* b) {
     return gcd;
 }
 
+struct Myint* Myint_bitshift_left(struct Myint* a, unsigned long n) {
+    if (!Myint_contract(a)) {
+        printf("ERROR: Failed contract, a from Myint_bitshift_left\n");
+        return NULL;
+    }
+    struct Myint* b = Myint_constructor();
+    long dig = Myint_intlog2(a);
+    if ((a -> int_type == LONG) && (dig + n < 64)) {
+        b -> my_long = a -> my_long << n;
+    } else {
+        printf("promote\n");
+        if (a -> int_type == LONG) {
+            Myint_promote(a);
+        }
+        b -> int_type = BIGINT;
+        b -> bigint = Bigint_bitshift_left(a -> bigint, n);
+        Myint_reduce(a);
+        Myint_reduce(b);
+    }
+    return b;
+}
+
 int main() {
     struct Myint* a = Myint_constructor();
     struct Myint* b = Myint_constructor();
     struct Myint* c = Myint_constructor();
     struct Myint* d = Myint_constructor();
     a -> my_long = 45;
-    b -> int_type = BIGINT;
-    b -> bigint = Bigint_constructor();
-    Bigint_enqueue(b -> bigint, 0);
-    Bigint_enqueue(b -> bigint, 0);
-    Bigint_enqueue(b -> bigint, 2046);
     // a -> sign = -1;
     // b -> sign = -1;
-    c = Myint_gcd(a, b);
     printf("  a: "); Myint_print(a); printf("\n");
-    printf("  b: "); Myint_print(b); printf("\n");
-    printf("gcd(a,b): "); Myint_print(c); printf("\n");
+    b = a;
+    for (long i=0; i<60; i++) {
+        b = Myint_bitshift_left(b, 1);
+        printf("  b: "); Myint_print(b); printf("\n");
+    }
 }
