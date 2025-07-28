@@ -318,18 +318,43 @@ struct Myint* Myint_bitshift_left(struct Myint* a, unsigned long n) {
     return b;
 }
 
+struct Myint* Myint_bitshift_right(struct Myint* a, unsigned long n) {
+    if (!Myint_contract(a)) {
+        printf("ERROR: Failed contract, a from Myint_bitshift_right\n");
+        return NULL;
+    }
+    struct Myint* b = Myint_constructor();
+    long dig = Myint_intlog2(a);
+    if (n > dig) {
+        return b;
+    }
+    if (a -> int_type == LONG) {
+        b -> my_long = a -> my_long >> n;
+    } else {
+        b -> int_type = BIGINT;
+        b -> bigint = Bigint_bitshift_right(a -> bigint, n);
+        Myint_reduce(b);
+    }
+    return b;
+}
+
 int main() {
     struct Myint* a = Myint_constructor();
     struct Myint* b = Myint_constructor();
     struct Myint* c = Myint_constructor();
     struct Myint* d = Myint_constructor();
-    a -> my_long = 45;
+    a -> my_long = 1234567890123456789;
     // a -> sign = -1;
     // b -> sign = -1;
     printf("  a: "); Myint_print(a); printf("\n");
     b = a;
-    for (long i=0; i<60; i++) {
-        b = Myint_bitshift_left(b, 1);
+    for (long i=0; i<64; i++) {
+        b = Myint_bitshift_right(b, 1);
         printf("  b: "); Myint_print(b); printf("\n");
     }
+    b = Myint_bitshift_right(a, 66);
+    printf("  b: "); Myint_print(b); printf("\n");
+    c -> my_long = 31;
+    c = Myint_bitshift_right(c, 66);
+    printf("  c: "); Myint_print(c); printf("\n");
 }
