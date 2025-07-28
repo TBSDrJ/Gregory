@@ -254,22 +254,64 @@ struct Myint** Myint_divmod(struct Myint* a, struct Myint* b) {
     return divmod;
 }
 
-
+struct Myint* Myint_gcd(struct Myint* a, struct Myint* b) {
+        bool fail = false;
+    if (!Myint_contract(a)) {
+        printf("ERROR: Failed contract, a from Myint_divmod\n");
+        fail = true;
+    }
+    if (!Myint_contract(b)) {
+        printf("ERROR: Failed contract, b from Myint_divmod\n");
+        fail = true;
+    }
+    if (fail) {return NULL;}
+    struct Myint* gcd = Myint_constructor();
+    long a_sign = a -> sign, b_sign = b -> sign;
+    a -> sign = 1; b -> sign = 1;
+    if ((a -> int_type == LONG) && (b -> int_type == LONG)) {
+        long next_a = 0;
+        long next_b = b -> my_long;
+        long q = a -> my_long / b -> my_long;
+        long r = a -> my_long % b -> my_long;
+        while (r > 0) {
+            next_a = next_b;
+            next_b = r;
+            q = next_a / next_b;
+            r = next_a % next_b;
+        }
+        gcd -> my_long = next_b;
+    } else {
+        gcd -> int_type = BIGINT;
+        if (a -> int_type == LONG) {
+            Myint_promote(a);
+        }
+        if (b -> int_type == LONG) {
+            Myint_promote(b);
+        }
+        gcd -> bigint = Bigint_gcd(a -> bigint, b -> bigint);
+        Myint_reduce(a);
+        Myint_reduce(b);
+        Myint_reduce(gcd);
+    }
+    a -> sign = a_sign; b -> sign = b_sign;
+    return gcd;
+}
 
 int main() {
     struct Myint* a = Myint_constructor();
     struct Myint* b = Myint_constructor();
     struct Myint* c = Myint_constructor();
     struct Myint* d = Myint_constructor();
-    a -> my_long = 5;
-    b -> my_long = 2048;
-    a -> sign = -1;
-    b -> sign = -1;
-    struct Myint** dm = Myint_divmod(b, a);
-    c = dm[0];
-    d = dm[1];
+    a -> my_long = 45;
+    b -> int_type = BIGINT;
+    b -> bigint = Bigint_constructor();
+    Bigint_enqueue(b -> bigint, 0);
+    Bigint_enqueue(b -> bigint, 0);
+    Bigint_enqueue(b -> bigint, 2046);
+    // a -> sign = -1;
+    // b -> sign = -1;
+    c = Myint_gcd(a, b);
     printf("  a: "); Myint_print(a); printf("\n");
     printf("  b: "); Myint_print(b); printf("\n");
-    printf("a/b: "); Myint_print(c); printf("\n");
-    printf("a%%b: "); Myint_print(d); printf("\n");
+    printf("gcd(a,b): "); Myint_print(c); printf("\n");
 }
