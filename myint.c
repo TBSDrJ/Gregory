@@ -257,11 +257,11 @@ struct Myint** Myint_divmod(struct Myint* a, struct Myint* b) {
 struct Myint* Myint_gcd(struct Myint* a, struct Myint* b) {
         bool fail = false;
     if (!Myint_contract(a)) {
-        printf("ERROR: Failed contract, a from Myint_divmod\n");
+        printf("ERROR: Failed contract, a from Myint_gcd\n");
         fail = true;
     }
     if (!Myint_contract(b)) {
-        printf("ERROR: Failed contract, b from Myint_divmod\n");
+        printf("ERROR: Failed contract, b from Myint_gcd\n");
         fail = true;
     }
     if (fail) {return NULL;}
