@@ -18,7 +18,7 @@ struct Myint* Myint_destructor(struct Myint* a) {
     a -> sign = 0;
     a -> my_long = 0;
     if (a -> bigint) {
-        a -> bigint = destruct_Bigint(a -> bigint);
+        a -> bigint = Bigint_destructor(a -> bigint);
     }
     return NULL;
 }
@@ -38,7 +38,7 @@ bool Myint_contract(struct Myint* a) {
         printf("Contract fails at BIGINT.\n"); return false;
     }
     if (a -> bigint) {
-        return check_Bigint_isok(a -> bigint);
+        return Bigint_contract(a -> bigint);
     }
     return true;
 }
@@ -52,14 +52,14 @@ void Myint_print(struct Myint* a) {
         if (a -> sign < 0) {printf("-");}
         printf("%lu", a -> my_long);
     } else {
-        print_Bigint(a -> bigint);
+        Bigint_print(a -> bigint);
     }
 }
 
 void Myint_promote(struct Myint* a) {
     a -> int_type = BIGINT;
-    a -> bigint = construct_Bigint();
-    enqueue_to_Bigint(a -> bigint, a -> my_long);
+    a -> bigint = Bigint_constructor();
+    Bigint_enqueue(a -> bigint, a -> my_long);
     a -> my_long = 0;
     a -> bigint -> sign = a -> sign;
 }
@@ -70,11 +70,11 @@ void Myint_reduce(struct Myint* a) {
         return;
     }
     if (a -> bigint) {
-        eliminate_zeros(a -> bigint);
+        Bigint_eliminate_zeros(a -> bigint);
         if (a -> bigint -> len == 1) {
             a -> int_type = LONG;
             a -> my_long = a -> bigint -> head -> content;
-            a -> bigint = destruct_Bigint(a -> bigint);
+            a -> bigint = Bigint_destructor(a -> bigint);
         }
     }
 }
@@ -93,7 +93,7 @@ long Myint_intlog2(struct Myint* a) {
         }
     }
     else {
-        return largest_nonzero_bit(a -> bigint);
+        return Bigint_intlog2(a -> bigint);
     };
     return -2; // error, should never reach this.
 }
@@ -132,7 +132,7 @@ struct Myint* Myint_add(struct Myint* a, struct Myint* b) {
         if (b -> int_type == LONG) {
             Myint_promote(b);
         }
-        c -> bigint = add_Bigints(a -> bigint, b -> bigint);
+        c -> bigint = Bigint_add(a -> bigint, b -> bigint);
         Myint_reduce(a);
         Myint_reduce(b);
     }
@@ -174,7 +174,7 @@ struct Myint* Myint_subtract(struct Myint* a, struct Myint* b) {
         if (b -> int_type == LONG) {
             Myint_promote(b);
         }
-        c -> bigint = subtract_Bigints(a -> bigint, b -> bigint);
+        c -> bigint = Bigint_subtract(a -> bigint, b -> bigint);
         Myint_reduce(a);
         Myint_reduce(b);
     }
@@ -205,7 +205,7 @@ struct Myint* Myint_multiply(struct Myint* a, struct Myint* b) {
         if (b -> int_type == LONG) {
             Myint_promote(b);
         }
-        c -> bigint = multiply_Bigints(a -> bigint, b -> bigint);
+        c -> bigint = Bigint_multiply(a -> bigint, b -> bigint);
         Myint_reduce(a);
         Myint_reduce(b);
     }
@@ -239,7 +239,7 @@ struct Myint** Myint_divmod(struct Myint* a, struct Myint* b) {
         if (b -> int_type == LONG) {
             Myint_promote(b);
         }
-        struct Bigint** dm = divmod_Bigints(a -> bigint, b -> bigint);
+        struct Bigint** dm = Bigint_divmod(a -> bigint, b -> bigint);
         div -> bigint = dm[0];
         mod -> bigint = dm[1];
         free(dm); dm = NULL;
