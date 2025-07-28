@@ -339,6 +339,16 @@ struct Myint* Myint_bitshift_right(struct Myint* a, unsigned long n) {
 }
 
 bool Myint_equal(struct Myint* a, struct Myint* b) {
+    bool fail = false;
+    if (!Myint_contract(a)) {
+        printf("ERROR: Failed contract, a from Myint_equal\n");
+        fail = true;
+    }
+    if (!Myint_contract(b)) {
+        printf("ERROR: Failed contract, b from Myint_equal\n");
+        fail = true;
+    }
+    if (fail) {return NULL;}
     Myint_reduce(a);
     Myint_reduce(b);
     if ((a -> int_type == LONG) && (b -> int_type == LONG)) {
