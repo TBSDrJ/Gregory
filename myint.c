@@ -338,23 +338,30 @@ struct Myint* Myint_bitshift_right(struct Myint* a, unsigned long n) {
     return b;
 }
 
+bool Myint_equal(struct Myint* a, struct Myint* b) {
+    Myint_reduce(a);
+    Myint_reduce(b);
+    if ((a -> int_type == LONG) && (b -> int_type == LONG)) {
+        if (a -> sign != b -> sign) {return false;}
+        return a -> my_long == b -> my_long;
+    } else if ((a -> int_type == BIGINT) && (a -> int_type == BIGINT)) {
+        if (a -> sign != b -> sign) {return false;}
+        return Bigint_equal(a -> bigint, b -> bigint);
+    }
+    return false;
+}
+
 int main() {
     struct Myint* a = Myint_constructor();
     struct Myint* b = Myint_constructor();
     struct Myint* c = Myint_constructor();
     struct Myint* d = Myint_constructor();
     a -> my_long = 1234567890123456789;
+    b -> my_long = 1234567890123456789;
+    Myint_promote(b);
     // a -> sign = -1;
     // b -> sign = -1;
     printf("  a: "); Myint_print(a); printf("\n");
-    b = a;
-    for (long i=0; i<64; i++) {
-        b = Myint_bitshift_right(b, 1);
-        printf("  b: "); Myint_print(b); printf("\n");
-    }
-    b = Myint_bitshift_right(a, 66);
     printf("  b: "); Myint_print(b); printf("\n");
-    c -> my_long = 31;
-    c = Myint_bitshift_right(c, 66);
-    printf("  c: "); Myint_print(c); printf("\n");
+    printf("%d\n", Myint_equal(a,b));
 }
