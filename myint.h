@@ -22,7 +22,10 @@ struct Myint* Myint_constructor();
 struct Myint* Myint_destructor(struct Myint* a);
 bool Myint_contract(struct Myint* a);
 void Myint_print(struct Myint* a);
+// if int_type is LONG, promote to a single-digit BIGINT
 void Myint_promote(struct Myint* a);
+// if int_type is BIGINT, eliminate_zeros, then, if only one digit, convert
+//    to int_type LONG.
 void Myint_reduce(struct Myint* a);
 // intlog2 is equivalent to finding the largest nonzero bit of a.
 long Myint_intlog2(struct Myint* a);
