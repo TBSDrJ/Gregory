@@ -3,9 +3,11 @@ import math
 import subprocess
 
 all_signs = [[1,1], [-1,1], [1,-1], [-1, -1]]
+ocb = '{'
+ccb = '}'
 errors = 0
 primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,
-        67, 71, 73, 79, 83, 89, 97]
+        67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109]
 
 def expand(n):
     ex = []
@@ -19,25 +21,32 @@ def expand(n):
     return ex
 
 for d in range(1000):
+    exs = []
+    for i in range(8):
+        n = 0
+        sz = random.randrange(5, 19)
+        for j in range(i//2 + 1):
+            for k in range(sz):
+                n += random.randrange(10) * 10**(k+j*sz)
+        # Want to test what happens when one or more digits base 2**64 are zero
+        while random.randrange(10) == 0:
+            if random.randrange(2) == 0:
+                n *= 2**64
+            else:
+                if n > 2**64:
+                    n = (n % 2**64) + (n - n%2**64)*2**64
+                else:
+                    n = (n % 2**32) + (n - n%2**32)*2**96
+        exs.append(n)
+    # Add in a primorial, mostly for more larger gcd results
+    p = random.randrange(5, len(primes))
+    primorial = 1
+    for i in range(p):
+        primorial *= primes[i]
+    exs.append(primorial)
+
     for signs in all_signs:
-        exs = []
-
-        for i in range(8):
-            n = 0
-            for j in range(i//2 + 1):
-                for k in range(16):
-                    n += random.randrange(10) * 10**(k+j*16)
-            exs.append(n)
-
-        # Add in a primorial, mostly for more larger gcd results
-        p = random.randrange(5, len(primes))
-        primorial = 1
-        for i in range(p):
-            primorial *= primes[i]
-        exs.append(primorial)
-
         separated_exs = []
-
         for i in range(len(exs)):
             n = exs[i]
             ex = expand(n)
@@ -60,10 +69,13 @@ for d in range(1000):
         code_str = ""
         for i in range(len(separated_exs)):
             letter = chr(97+i)
-            code_str += f"struct Bigint* {letter}_0 = construct_Bigint();\n"
-            for n in separated_exs[i]:
-                code_str += f"enqueue_to_Bigint({letter}_0, (unsigned long) {n});\n"
-
+            code_str += f"struct Myint* {letter}_0 = Myint_constructor();\n"
+            code_str += f"{letter}_0 -> my_long = {separated_exs[i][0]};\n"
+            if len(separated_exs[i]) > 1:
+                code_str += f"Myint_promote({letter}_0);\n"
+                for n in separated_exs[i][1:]:
+                    code_str += f"Bigint_enqueue({letter}_0 -> bigint, "
+                    code_str += f"(long) {n});\n"
         m = 0
         ans = []
         pairs = []
@@ -76,12 +88,16 @@ for d in range(1000):
                     i -= 25
                     m += 1
                 code_str += f"{chr(97+j)}_0 -> sign = {signs[0]};\n"
+                code_str += f"{chr(97+j)}_0 -> bigint -> sign = {signs[0]};\n"
                 code_str += f"{chr(97+k)}_0 -> sign = {signs[1]};\n"
-                code_str += f"struct Bigint* {chr(97+i)}_{m} = "
-                code_str += f"add_Bigints({chr(97+j)}_0, {chr(97+k)}_0);\n"
-                code_str += f'print_Bigint({chr(97+i)}_{m}); printf("\\n");\n'
+                code_str += f"{chr(97+k)}_0 -> bigint -> sign = {signs[1]};\n"
+                code_str += f"struct Myint* {chr(97+i)}_{m} = "
+                code_str += f"Myint_add({chr(97+j)}_0, {chr(97+k)}_0);\n"
+                code_str += f'Myint_print({chr(97+i)}_{m}); printf("\\n");\n'
                 code_str += f"{chr(97+j)}_0 -> sign = 1;\n"
+                code_str += f"{chr(97+j)}_0 -> bigint -> sign = 1;\n"
                 code_str += f"{chr(97+k)}_0 -> sign = 1;\n"
+                code_str += f"{chr(97+k)}_0 -> bigint -> sign = 1;\n"
                 ans.append((signs[0] * exs[j]) + (signs[1] * exs[k]))
                 pairs.append([j, k, 'add'])
 
@@ -94,12 +110,16 @@ for d in range(1000):
                     i -= 25
                     m += 1
                 code_str += f"{chr(97+j)}_0 -> sign = {signs[0]};\n"
+                code_str += f"{chr(97+j)}_0 -> bigint -> sign = {signs[0]};\n"
                 code_str += f"{chr(97+k)}_0 -> sign = {signs[1]};\n"
-                code_str += f"struct Bigint* {chr(97+i)}_{m} = "
-                code_str += f"subtract_Bigints({chr(97+j)}_0, {chr(97+k)}_0);\n"
-                code_str += f'print_Bigint({chr(97+i)}_{m}); printf("\\n");\n'
+                code_str += f"{chr(97+k)}_0 -> bigint -> sign = {signs[1]};\n"
+                code_str += f"struct Myint* {chr(97+i)}_{m} = "
+                code_str += f"Myint_subtract({chr(97+j)}_0, {chr(97+k)}_0);\n"
+                code_str += f'Myint_print({chr(97+i)}_{m}); printf("\\n");\n'
                 code_str += f"{chr(97+j)}_0 -> sign = 1;\n"
+                code_str += f"{chr(97+j)}_0 -> bigint -> sign = 1;\n"
                 code_str += f"{chr(97+k)}_0 -> sign = 1;\n"
+                code_str += f"{chr(97+k)}_0 -> bigint -> sign = 1;\n"
                 ans.append((signs[0] * exs[j]) - (signs[1] * exs[k]))
                 pairs.append([j, k, 'subtract'])
 
@@ -112,12 +132,16 @@ for d in range(1000):
                     i -= 25
                     m += 1
                 code_str += f"{chr(97+j)}_0 -> sign = {signs[0]};\n"
+                code_str += f"{chr(97+j)}_0 -> bigint -> sign = {signs[0]};\n"
                 code_str += f"{chr(97+k)}_0 -> sign = {signs[1]};\n"
-                code_str += f"struct Bigint* {chr(97+i)}_{m} = "
-                code_str += f"subtract_Bigints({chr(97+k)}_0, {chr(97+j)}_0);\n"
-                code_str += f'print_Bigint({chr(97+i)}_{m}); printf("\\n");\n'
+                code_str += f"{chr(97+k)}_0 -> bigint -> sign = {signs[1]};\n"
+                code_str += f"struct Myint* {chr(97+i)}_{m} = "
+                code_str += f"Myint_subtract({chr(97+k)}_0, {chr(97+j)}_0);\n"
+                code_str += f'Myint_print({chr(97+i)}_{m}); printf("\\n");\n'
                 code_str += f"{chr(97+j)}_0 -> sign = 1;\n"
+                code_str += f"{chr(97+j)}_0 -> bigint -> sign = 1;\n"
                 code_str += f"{chr(97+k)}_0 -> sign = 1;\n"
+                code_str += f"{chr(97+k)}_0 -> bigint -> sign = 1;\n"
                 ans.append((signs[1] * exs[k]) - (signs[0] * exs[j]))
                 pairs.append([k, j, 'rev subtract'])
 
@@ -130,12 +154,16 @@ for d in range(1000):
                     i -= 25
                     m += 1
                 code_str += f"{chr(97+j)}_0 -> sign = {signs[0]};\n"
+                code_str += f"{chr(97+j)}_0 -> bigint -> sign = {signs[0]};\n"
                 code_str += f"{chr(97+k)}_0 -> sign = {signs[1]};\n"
-                code_str += f"struct Bigint* {chr(97+i)}_{m} = "
-                code_str += f"multiply_Bigints({chr(97+j)}_0, {chr(97+k)}_0);\n"
-                code_str += f'print_Bigint({chr(97+i)}_{m}); printf("\\n");\n'
+                code_str += f"{chr(97+k)}_0 -> bigint -> sign = {signs[1]};\n"
+                code_str += f"struct Myint* {chr(97+i)}_{m} = "
+                code_str += f"Myint_multiply({chr(97+j)}_0, {chr(97+k)}_0);\n"
+                code_str += f'Myint_print({chr(97+i)}_{m}); printf("\\n");\n'
                 code_str += f"{chr(97+j)}_0 -> sign = 1;\n"
+                code_str += f"{chr(97+j)}_0 -> bigint -> sign = 1;\n"
                 code_str += f"{chr(97+k)}_0 -> sign = 1;\n"
+                code_str += f"{chr(97+k)}_0 -> bigint -> sign = 1;\n"
                 ans.append((signs[0] * exs[j]) * (signs[1] * exs[k]))
                 pairs.append([j, k, 'multiply'])
 
@@ -148,13 +176,17 @@ for d in range(1000):
                     i -= 25
                     m += 1
                 code_str += f"{chr(97+j)}_0 -> sign = {signs[0]};\n"
+                code_str += f"{chr(97+j)}_0 -> bigint -> sign = {signs[0]};\n"
                 code_str += f"{chr(97+k)}_0 -> sign = {signs[1]};\n"
-                code_str += f"struct Bigint** {chr(97+i)}_{m} = "
-                code_str += f"divmod_Bigints({chr(97+j)}_0, {chr(97+k)}_0);\n"
-                code_str += f'print_Bigint({chr(97+i)}_{m}[0]); printf("\\n");\n'
-                code_str += f'print_Bigint({chr(97+i)}_{m}[1]); printf("\\n");\n'
+                code_str += f"{chr(97+k)}_0 -> bigint -> sign = {signs[1]};\n"
+                code_str += f"struct Myint** {chr(97+i)}_{m} = "
+                code_str += f"Myint_divmod({chr(97+j)}_0, {chr(97+k)}_0);\n"
+                code_str += f'Myint_print({chr(97+i)}_{m}[0]); printf("\\n");\n'
+                code_str += f'Myint_print({chr(97+i)}_{m}[1]); printf("\\n");\n'
                 code_str += f"{chr(97+j)}_0 -> sign = 1;\n"
+                code_str += f"{chr(97+j)}_0 -> bigint -> sign = 1;\n"
                 code_str += f"{chr(97+k)}_0 -> sign = 1;\n"
+                code_str += f"{chr(97+k)}_0 -> bigint -> sign = 1;\n"
                 a = (signs[0] * exs[j]) // (signs[1] * exs[k])
                 if signs[0] * signs[1] < 0:
                     a += 1 
@@ -177,13 +209,17 @@ for d in range(1000):
                     i -= 25
                     m += 1
                 code_str += f"{chr(97+j)}_0 -> sign = {signs[0]};\n"
+                code_str += f"{chr(97+j)}_0 -> bigint -> sign = {signs[0]};\n"
                 code_str += f"{chr(97+k)}_0 -> sign = {signs[1]};\n"
-                code_str += f"struct Bigint** {chr(97+i)}_{m} = "
-                code_str += f"divmod_Bigints({chr(97+k)}_0, {chr(97+j)}_0);\n"
-                code_str += f'print_Bigint({chr(97+i)}_{m}[0]); printf("\\n");\n'
-                code_str += f'print_Bigint({chr(97+i)}_{m}[1]); printf("\\n");\n'
+                code_str += f"{chr(97+k)}_0 -> bigint -> sign = {signs[1]};\n"
+                code_str += f"struct Myint** {chr(97+i)}_{m} = "
+                code_str += f"Myint_divmod({chr(97+k)}_0, {chr(97+j)}_0);\n"
+                code_str += f'Myint_print({chr(97+i)}_{m}[0]); printf("\\n");\n'
+                code_str += f'Myint_print({chr(97+i)}_{m}[1]); printf("\\n");\n'
                 code_str += f"{chr(97+j)}_0 -> sign = 1;\n"
+                code_str += f"{chr(97+j)}_0 -> bigint -> sign = 1;\n"
                 code_str += f"{chr(97+k)}_0 -> sign = 1;\n"
+                code_str += f"{chr(97+k)}_0 -> bigint -> sign = 1;\n"
                 a = (signs[1] * exs[k]) // (signs[0] * exs[j])
                 if signs[0] * signs[1] < 0:
                     a += 1
@@ -206,18 +242,22 @@ for d in range(1000):
                     i -= 25
                     m += 1
                 code_str += f"{chr(97+j)}_0 -> sign = {signs[0]};\n"
+                code_str += f"{chr(97+j)}_0 -> bigint -> sign = {signs[0]};\n"
                 code_str += f"{chr(97+k)}_0 -> sign = {signs[1]};\n"
-                code_str += f"struct Bigint* {chr(97+i)}_{m} = "
-                code_str += f"gcd_Bigints({chr(97+j)}_0, {chr(97+k)}_0);\n"
-                code_str += f'print_Bigint({chr(97+i)}_{m}); printf("\\n");\n'
+                code_str += f"{chr(97+k)}_0 -> bigint -> sign = {signs[1]};\n"
+                code_str += f"struct Myint* {chr(97+i)}_{m} = "
+                code_str += f"Myint_gcd({chr(97+j)}_0, {chr(97+k)}_0);\n"
+                code_str += f'Myint_print({chr(97+i)}_{m}); printf("\\n");\n'
                 code_str += f"{chr(97+j)}_0 -> sign = 1;\n"
+                code_str += f"{chr(97+j)}_0 -> bigint -> sign = 1;\n"
                 code_str += f"{chr(97+k)}_0 -> sign = 1;\n"
+                code_str += f"{chr(97+k)}_0 -> bigint -> sign = 1;\n"
                 ans.append(math.gcd((signs[0] * exs[j]), (signs[1] * exs[k])))
                 pairs.append([j, k, 'gcd'])
 
-        with open("bigint.c", "r") as f:
+        with open("myint.c", "r") as f:
             lines = f.readlines()
-        with open("bigint_test.c", "w") as fout:
+        with open("myint_test.c", "w") as fout:
             for line in lines:
                 print(line[:-1], file=fout)
                 if "int main()" in line:
@@ -225,14 +265,14 @@ for d in range(1000):
             print(code_str, file=fout)
             print("}", file=fout)
 
-        proc = subprocess.run(["gcc", "bigint_test.c", "-o", "bigint.out"], 
+        proc = subprocess.run(["gcc", "myint_test.c", "-o", "myint.out", "-L.", "-lbigint"], 
                 capture_output=True)
         for line in proc.stderr.decode():
             if "warning" in line:
                 if "integer literal is too large to be represented in a signed integer type" not in line:
                     print(proc.stderr.decode())
                     break
-        proc = subprocess.run(["./bigint.out"], capture_output=True)
+        proc = subprocess.run(["./myint.out"], capture_output=True)
         results = proc.stdout.decode()
         results = results.split("\n")[:-1]
         k = 0
@@ -273,7 +313,7 @@ for d in range(1000):
             for ex in exs:
                 print(expand(ex))
 
-    print(f"  {d}", end="\r")
+    print(f"  {d+1}", end="\r")
 
 if not errors:
-    print(f"{d} tests.\nSuccessfully completed all tests with no errors.")
+    print(f"{d+1} tests.\nSuccessfully completed all tests with no errors.")
