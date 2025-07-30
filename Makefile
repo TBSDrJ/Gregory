@@ -72,7 +72,9 @@ all-mac:
 	gcc -shared queue_2.o -L. -lpolynomials -o libqueue_2.dylib
 	gcc -c -fPIC bigint.c -o bigint.o
 	gcc -shared bigint.o -o libbigint.dylib
-	gcc main.c -o main.out -L. -lpolynomials -lqueue_2 -lbigint
+	gcc -c -fPIC myint.c -o myint.o
+	gcc -shared myint.o -L. -lbigint -o libmyint.dylib
+	gcc main.c -o main.out -L. -lpolynomials -lqueue_2 -lbigint -lmyint
 	./main.out
 
 clean-mac:
@@ -82,4 +84,6 @@ clean-mac:
 	rm libqueue_2.dylib
 	rm bigint.o
 	rm libbigint.dylib
+	rm myint.o
+	rm libmyint.dylib
 	rm main.out
