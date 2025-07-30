@@ -211,6 +211,7 @@ struct Myint* Myint_multiply(struct Myint* a, struct Myint* b) {
     }
     Myint_reduce(c);
     c -> sign = (a -> sign) * (b -> sign);
+    c -> bigint -> sign = (a -> sign) * (b -> sign);
     return c;
 }
 
@@ -249,6 +250,10 @@ struct Myint** Myint_divmod(struct Myint* a, struct Myint* b) {
         Myint_reduce(mod);
     }
     struct Myint** divmod = malloc(2*sizeof(struct Myint*));
+    div -> sign = (a -> sign) * (b -> sign);
+    div -> bigint -> sign = (a -> sign) * (b -> sign);
+    mod -> sign = a -> sign;
+    mod -> bigint -> sign = a -> sign;
     divmod[0] = div;
     divmod[1] = mod;
     return divmod;
