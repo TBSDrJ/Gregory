@@ -10,7 +10,7 @@ https://stackoverflow.com/questions/14768230/malloc-for-struct-and-pointer-in-c
 Looking back, that probably should have been obvious.
 */
 
-struct Polynomial* construct_poly(long deg) {
+struct Polynomial* Polynomial_constructor(long deg) {
     struct Polynomial* p = malloc(sizeof(struct Polynomial));
     if (deg < 0) {
         deg = 0;
@@ -32,7 +32,7 @@ struct Polynomial* construct_poly(long deg) {
     return p;
 }
 
-void destruct_poly(struct Polynomial* p) {
+void Polynomial_destructor(struct Polynomial* p) {
     if (!p) {
         free(p -> coeffs);
         free(p);
@@ -42,7 +42,7 @@ void destruct_poly(struct Polynomial* p) {
 /* 
 Unary operations:
 1. Print
-2. Reduce (if highest deg coeff = 0, reduce degree)
+2. Reduce (if highest deg coeff = 0, Polynomial_reduce degree)
 3. Negative
 4. Derivative
 5. Substitute a value
@@ -52,7 +52,7 @@ Binary Operations:
 2. Product
 */
 
-void print_poly(struct Polynomial* p) {
+void Polynomial_print(struct Polynomial* p) {
     for (long i=(p -> degree); i>1; i--) {
         printf("%lix^%li + ", (p -> coeffs)[i], i);
     }
@@ -60,7 +60,7 @@ void print_poly(struct Polynomial* p) {
     printf("%li", (p -> coeffs)[0]);
 }
 
-struct Polynomial* reduce(struct Polynomial* p) {
+struct Polynomial* Polynomial_reduce(struct Polynomial* p) {
     long n = p -> degree;
     while(p -> coeffs[n] == 0) {
         n--;
@@ -76,23 +76,23 @@ struct Polynomial* reduce(struct Polynomial* p) {
     return p;
 }
 
-struct Polynomial* neg(struct Polynomial* p) {
-    struct Polynomial* n = construct_poly(p -> degree);
+struct Polynomial* Polynomial_neg(struct Polynomial* p) {
+    struct Polynomial* n = Polynomial_constructor(p -> degree);
     for (long i=0; i<((n -> degree) + 1); i++) {
         (n -> coeffs)[i] = -(p -> coeffs)[i];
     }
-    return reduce(n);
+    return Polynomial_reduce(n);
 }
 
-struct Polynomial* der(struct Polynomial* p) {
-    struct Polynomial* d = construct_poly((p -> degree) - 1);
+struct Polynomial* Polynomial_der(struct Polynomial* p) {
+    struct Polynomial* d = Polynomial_constructor((p -> degree) - 1);
     for (long i=0; i<(p -> degree); i++) {
         (d -> coeffs)[i] = (p -> coeffs)[i+1] * (i+1);
     }
-    return reduce(d);
+    return Polynomial_reduce(d);
 }
 
-long subs(struct Polynomial* p, long x) {
+long Polynomial_subs(struct Polynomial* p, long x) {
     long y = 0, term;
     if (x == 0) {
         return p -> coeffs[0];
@@ -108,29 +108,32 @@ long subs(struct Polynomial* p, long x) {
     return y;
 }
 
-struct Polynomial* sum(struct Polynomial* p, struct Polynomial* q) {
+struct Polynomial* Polynomial_add(
+        struct Polynomial* p, struct Polynomial* q) {
     // Make p be the one with greater degree if they are different.
     if ((p -> degree) < (q -> degree)) {
         struct Polynomial* temp = p;
         p = q;
         q = temp;
     }
-    struct Polynomial* s = construct_poly(p -> degree);
+    struct Polynomial* s = Polynomial_constructor(p -> degree);
     for (long i=0; i<=(q -> degree); i++) {
         s -> coeffs[i] = (p -> coeffs[i]) + (q -> coeffs[i]);
     }
     for (long i=(q -> degree) + 1; i<=(p -> degree); i++) {
         s -> coeffs[i] = p -> coeffs[i];
     }
-    return reduce(s);
+    return Polynomial_reduce(s);
 }
 
-struct Polynomial* prod(struct Polynomial* p, struct Polynomial* q) {
-    struct Polynomial* s = construct_poly((p -> degree) + (q -> degree));
+struct Polynomial* Polynomial_multiply(
+            struct Polynomial* p, struct Polynomial* q) {
+    struct Polynomial* s = Polynomial_constructor(
+                (p -> degree) + (q -> degree));
     for (long i=0; i<=(p -> degree); i++) {
         for (long j=0; j<=(q -> degree); j++) {
             s -> coeffs[i+j] += (p -> coeffs[i]) * (q -> coeffs[j]);
         }
     }
-    return reduce(s);
+    return Polynomial_reduce(s);
 }

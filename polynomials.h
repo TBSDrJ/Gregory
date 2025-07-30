@@ -7,8 +7,8 @@ struct Polynomial {
     long* coeffs;
 };
 
-struct Polynomial* construct_poly(long deg);
-void destruct_poly(struct Polynomial* p);
+struct Polynomial* Polynomial_constructor(long deg);
+void Polynomial_destructor(struct Polynomial* p);
 
 /* 
 Unary operations:
@@ -23,12 +23,14 @@ Binary Operations:
 2. Product
 */
 
-void print_poly(struct Polynomial* p);
-struct Polynomial* reduce(struct Polynomial* p);
-struct Polynomial* neg(struct Polynomial* p);
-struct Polynomial* der(struct Polynomial* p);
-long subs(struct Polynomial* p, long x);
-struct Polynomial* sum(struct Polynomial* p, struct Polynomial* q);
-struct Polynomial* prod(struct Polynomial* p, struct Polynomial* q);
+void Polynomial_print(struct Polynomial* p);
+struct Polynomial* Polynomial_reduce(struct Polynomial* p);
+struct Polynomial* Polynomial_neg(struct Polynomial* p);
+struct Polynomial* Polynomial_der(struct Polynomial* p);
+long Polynomial_subs(struct Polynomial* p, long x);
+struct Polynomial* Polynomial_add(
+        struct Polynomial* p, struct Polynomial* q);
+struct Polynomial* Polynomial_multiply(
+        struct Polynomial* p, struct Polynomial* q);
 
 #endif
