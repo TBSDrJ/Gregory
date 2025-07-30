@@ -1,7 +1,7 @@
 #include"queue_2.h"
 #include"polynomials.h"
 
-struct Queue_2* construct_q_2 () {
+struct Queue_2* Queue_2_constructor () {
     struct Queue_2* q = malloc(sizeof(struct Queue_2));
     q -> head = NULL;
     q -> tail = NULL;
@@ -9,20 +9,20 @@ struct Queue_2* construct_q_2 () {
     return q;
 }
 
-void destruct_q_2(struct Queue_2* q) {
+void Queue_2_destructor(struct Queue_2* q) {
     if (q -> head) {
         struct Entry_2* e = q -> head;
         while (e -> next) {
             struct Entry_2* tmp = e;
             e = e -> next;
-            destruct_entry_2(tmp);
+            Entry_2_destructor(tmp);
         }
-        destruct_entry_2(e);
+        Entry_2_destructor(e);
     }
     free(q);
 }
 
-struct Entry_2* construct_entry_2(struct Polynomial* a, struct Polynomial* b) {
+struct Entry_2* Entry_2_constructor(struct Polynomial* a, struct Polynomial* b) {
     struct Entry_2* e = malloc(sizeof(struct Entry_2));
     e -> a = a;
     e -> b = b;
@@ -30,14 +30,14 @@ struct Entry_2* construct_entry_2(struct Polynomial* a, struct Polynomial* b) {
     return e;
 }
 
-void destruct_entry_2(struct Entry_2* e) {
-    if (e -> a) {destruct_poly(e -> a);}
-    if (e -> b) {destruct_poly(e -> b);}
+void Entry_2_destructor(struct Entry_2* e) {
+    if (e -> a) {Polynomial_destructor(e -> a);}
+    if (e -> b) {Polynomial_destructor(e -> b);}
     free(e);
 }
 
-void enqueue_2(struct Queue_2* q, struct Polynomial* a, struct Polynomial* b) {
-    struct Entry_2* e = construct_entry_2(a, b);
+void Queue_2_enqueue(struct Queue_2* q, struct Polynomial* a, struct Polynomial* b) {
+    struct Entry_2* e = Entry_2_constructor(a, b);
     if (q -> len == 0) {
         q -> len = 1;
         q -> head = e;
