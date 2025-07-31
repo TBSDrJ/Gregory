@@ -302,6 +302,15 @@ struct Myint* Myint_gcd(struct Myint* a, struct Myint* b) {
     return gcd;
 }
 
+struct Myint* Myint_lcm(struct Myint* a, struct Myint* b) {
+    struct Myint* c = Myint_multiply(a, b);
+    struct Myint* d = Myint_gcd(a, b);
+    struct Myint* lcm = Myint_divide(c, d);
+    c = Myint_destructor(c);
+    d = Myint_destructor(d);
+    return lcm;
+}
+
 struct Myint* Myint_bitshift_left(struct Myint* a, unsigned long n) {
     if (!Myint_contract(a)) {
         printf("ERROR: Failed contract, a from Myint_bitshift_left\n");

@@ -35,6 +35,7 @@ struct Myint* Myint_multiply(struct Myint* a, struct Myint* b);
 // divmod returns a/b as [0] entry and a%b as [1] entry.
 struct Myint** Myint_divmod(struct Myint* a, struct Myint* b);
 struct Myint* Myint_gcd(struct Myint* a, struct Myint* b);
+struct Myint* Myint_lcm(struct Myint* a, struct Myint* b);
 struct Myint* Myint_bitshift_left(struct Myint* a, unsigned long n);
 struct Myint* Myint_bitshift_right(struct Myint* a, unsigned long n);
 bool Myint_equal(struct Myint* a, struct Myint* b);
