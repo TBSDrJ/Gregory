@@ -215,6 +215,22 @@ struct Myint* Myint_multiply(struct Myint* a, struct Myint* b) {
     return c;
 }
 
+struct Myint* Myint_divide(struct Myint* a, struct Myint* b) {
+    struct Myint** dm = Myint_divmod(a, b);
+    struct Myint* div = dm[0];
+    dm[1] = Myint_destructor(dm[1]);
+    free(dm); dm = NULL;
+    return div;
+}
+
+struct Myint* Myint_mod(struct Myint* a, struct Myint* b) {
+    struct Myint** dm = Myint_divmod(a, b);
+    struct Myint* mod = dm[1];
+    dm[0] = Myint_destructor(dm[0]);
+    free(dm); dm = NULL;
+    return mod;
+}
+
 struct Myint** Myint_divmod(struct Myint* a, struct Myint* b) {
     bool fail = false;
     if (!Myint_contract(a)) {
@@ -305,10 +321,7 @@ struct Myint* Myint_gcd(struct Myint* a, struct Myint* b) {
 struct Myint* Myint_lcm(struct Myint* a, struct Myint* b) {
     struct Myint* c = Myint_multiply(a, b);
     struct Myint* d = Myint_gcd(a, b);
-    struct Myint** lcm_divmod = Myint_divmod(c, d);
-    struct Myint* lcm = lcm_divmod[0];
-    lcm_divmod[1] = Myint_destructor(lcm_divmod[1]);
-    free(lcm_divmod); lcm_divmod = NULL;
+    struct Myint* lcm = Myint_divide(c, d);
     c = Myint_destructor(c);
     d = Myint_destructor(d);
     return lcm;

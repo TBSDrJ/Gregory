@@ -32,6 +32,9 @@ long Myint_intlog2(struct Myint* a);
 struct Myint* Myint_add(struct Myint* a, struct Myint* b);
 struct Myint* Myint_subtract(struct Myint* a, struct Myint* b);
 struct Myint* Myint_multiply(struct Myint* a, struct Myint* b);
+// If you are using both a/b and a%b, use divmod to avoid calculating twice.
+struct Myint* Myint_divide(struct Myint* a, struct Myint* b);
+struct Myint* Myint_mod(struct Myint* a, struct Myint* b);
 // divmod returns a/b as [0] entry and a%b as [1] entry.
 struct Myint** Myint_divmod(struct Myint* a, struct Myint* b);
 struct Myint* Myint_gcd(struct Myint* a, struct Myint* b);
