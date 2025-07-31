@@ -211,7 +211,7 @@ struct Myint* Myint_multiply(struct Myint* a, struct Myint* b) {
     }
     Myint_reduce(c);
     c -> sign = (a -> sign) * (b -> sign);
-    c -> bigint -> sign = (a -> sign) * (b -> sign);
+    if (c -> bigint) {c -> bigint -> sign = (a -> sign) * (b -> sign);}
     return c;
 }
 
@@ -251,9 +251,9 @@ struct Myint** Myint_divmod(struct Myint* a, struct Myint* b) {
     }
     struct Myint** divmod = malloc(2*sizeof(struct Myint*));
     div -> sign = (a -> sign) * (b -> sign);
-    div -> bigint -> sign = (a -> sign) * (b -> sign);
+    if (div -> bigint) {div -> bigint -> sign = (a -> sign) * (b -> sign);}
     mod -> sign = a -> sign;
-    mod -> bigint -> sign = a -> sign;
+    if (mod -> bigint) {mod -> bigint -> sign = a -> sign;}
     divmod[0] = div;
     divmod[1] = mod;
     return divmod;
@@ -305,7 +305,10 @@ struct Myint* Myint_gcd(struct Myint* a, struct Myint* b) {
 struct Myint* Myint_lcm(struct Myint* a, struct Myint* b) {
     struct Myint* c = Myint_multiply(a, b);
     struct Myint* d = Myint_gcd(a, b);
-    struct Myint* lcm = Myint_divide(c, d);
+    struct Myint** lcm_divmod = Myint_divmod(c, d);
+    struct Myint* lcm = lcm_divmod[0];
+    lcm_divmod[1] = Myint_destructor(lcm_divmod[1]);
+    free(lcm_divmod); lcm_divmod = NULL;
     c = Myint_destructor(c);
     d = Myint_destructor(d);
     return lcm;
