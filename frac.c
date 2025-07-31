@@ -1,11 +1,21 @@
+#include"frac.h"
 
+struct Fraction* Fraction_constructor() {
+    struct Myint* numerator = Myint_constructor();
+    struct Myint* denominator = Myint_constructor();
+    struct Fraction* a = malloc(sizeof(struct Fraction));
+    a -> numerator = numerator;
+    a -> denominator = denominator;
+    return a;
+}
 
-// Functions for Fraction
-struct Fraction* construct_frac() {
-    struct Bigint* numerator = construct_Bigint();
-    struct Bigint* denominator = construct_Bigint();
-    struct Fraction* f = malloc(sizeof(struct Fraction));
-    f -> numerator = numerator;
-    f -> denominator = denominator;
-    return f;
+struct Fraction* Fraction_destructor(struct Fraction* a) {
+    a -> numerator = Myint_destructor(a -> numerator);
+    a -> denominator = Myint_destructor(a -> denominator);
+    free(a); a = NULL;
+    return a;
+}
+
+int main() {
+    printf("frac\n");
 }
