@@ -79,6 +79,17 @@ void Myint_reduce(struct Myint* a) {
     }
 }
 
+struct Myint* Myint_deepcopy(struct Myint* a) {
+    struct Myint* b = Myint_constructor();
+    b -> int_type = a -> int_type;
+    if (b -> int_type == LONG) {
+        b -> my_long = a -> my_long;
+    } else {
+        b -> bigint = Bigint_deepcopy(a -> bigint);
+    }
+    return b;
+}
+
 long Myint_intlog2(struct Myint* a) {
     if (!Myint_contract(a)) {
         printf("ERROR: Failed contract, Myint_intlog2\n");

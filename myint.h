@@ -27,6 +27,7 @@ void Myint_promote(struct Myint* a);
 // if int_type is BIGINT, eliminate_zeros, then, if only one digit, convert
 //    to int_type LONG.
 void Myint_reduce(struct Myint* a);
+struct Myint* Myint_deepcopy(struct Myint* a);
 // intlog2 is equivalent to finding the largest nonzero bit of a.
 long Myint_intlog2(struct Myint* a);
 struct Myint* Myint_add(struct Myint* a, struct Myint* b);

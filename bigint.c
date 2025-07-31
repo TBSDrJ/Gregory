@@ -118,6 +118,23 @@ void Bigint_print(struct Bigint* a) {
     }
 }
 
+struct Bigint* Bigint_deepcopy(struct Bigint* a) {
+    struct Bigint* b = Bigint_constructor();
+    struct Entry_long* e_a = a -> head;
+    struct Entry_long* e_b_prev = NULL;
+    while (e_a) {
+        struct Entry_long* e_b = Entry_long_constructor(e_a -> content);
+        e_b -> prev = e_b_prev;
+        if (e_b_prev) {
+            e_b_prev -> next = e_b;
+        }
+        e_a = e_a -> next;
+        e_b_prev = e_b;
+    }
+    return b;
+}
+
+
 struct Bigint* Bigint_add(struct Bigint* a, struct Bigint* b) {
     bool a_ok = Bigint_contract(a);
     bool b_ok = Bigint_contract(b);
