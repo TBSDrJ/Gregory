@@ -541,6 +541,12 @@ struct Bigint* Bigint_gcd(struct Bigint* a, struct Bigint* b) {
     residue = Bigint_destructor(residue);
     // printf("469 KEEP %lu\n", (unsigned long) prev_b);
     a -> sign = a_sign; b -> sign = b_sign;
+    if (prev_b == b) {
+        prev_b = Bigint_deepcopy(b);
+    }
+    if (prev_b == a) {
+        prev_b = Bigint_deepcopy(a);
+    }
     return prev_b;
 }
 
