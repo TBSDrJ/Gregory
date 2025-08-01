@@ -25,17 +25,17 @@ struct Myint* Myint_destructor(struct Myint* a) {
 
 bool Myint_contract(struct Myint* a) {
     if (a -> int_type > 1) 
-        {printf("Contract fails at int_type > 1\n"); return false;}
+        {printf("Myint_contract fails at int_type > 1\n"); return false;}
     else if (a -> int_type < 0) 
-        {printf("Contract fails at int_type < 0\n"); return false;}
+        {printf("Myint_contract fails at int_type < 0\n"); return false;}
     else if (a -> sign == 0) 
-        {printf("Contract fails at sign == 0\n"); return false;}
+        {printf("Myint_contract fails at sign == 0\n"); return false;}
     else if (a -> sign > 1) 
-        {printf("Contract fails at sign > 0\n"); return false;}
+        {printf("Myint_contract fails at sign > 0\n"); return false;}
     else if (a -> sign < -1) 
-        {printf("Contract fails at sign < 0\n"); return false;}
+        {printf("Myint_contract fails at sign < 0\n"); return false;}
     else if ((a -> int_type == BIGINT) && !(a -> bigint)) {
-        printf("Contract fails at BIGINT.\n"); return false;
+        printf("Myint_contract fails at BIGINT.\n"); return false;
     }
     if (a -> bigint) {
         return Bigint_contract(a -> bigint);
@@ -57,6 +57,10 @@ void Myint_print(struct Myint* a) {
 }
 
 void Myint_promote(struct Myint* a) {
+    if (!Myint_contract(a)) {
+        printf("ERROR: Failed contract, Myint_promote\n");
+        return;
+    }
     a -> int_type = BIGINT;
     a -> bigint = Bigint_constructor();
     Bigint_enqueue(a -> bigint, a -> my_long);
@@ -80,12 +84,20 @@ void Myint_reduce(struct Myint* a) {
 }
 
 struct Myint* Myint_deepcopy(struct Myint* a) {
+    if (!Myint_contract(a)) {
+        printf("ERROR: Failed contract, Myint_deepcopy, a\n");
+        return NULL;
+    }
     struct Myint* b = Myint_constructor();
     b -> int_type = a -> int_type;
     if (b -> int_type == LONG) {
         b -> my_long = a -> my_long;
     } else {
         b -> bigint = Bigint_deepcopy(a -> bigint);
+    }
+    if (!Myint_contract(b)) {
+        printf("ERROR: Failed contract, Myint_deepcopy, b\n");
+        return NULL;
     }
     return b;
 }
