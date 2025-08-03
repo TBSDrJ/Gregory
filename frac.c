@@ -67,12 +67,70 @@ void Fraction_reduce(struct Fraction* a) {
     gcd = Myint_destructor(gcd);
 }
 
+void Fraction_common_denom(struct Fraction* a, struct Fraction* b) {
+    bool fail = false;
+    if (!(Fraction_contract(a))) {
+        printf("Fraction_contract fails at Fraction_common_denom, a\n");
+        fail = true;
+    }
+    if (!(Fraction_contract(b))) {
+        printf("Fraction_contract fails at Fraction_common_denom, b\n");
+        fail = true;
+    }
+    if (fail) {return;}
+    struct Myint* common_denom = Myint_lcm(a -> denominator, b -> denominator);
+    struct Myint* num_a_factor = Myint_divide(common_denom, a -> denominator);
+    struct Myint* num_b_factor = Myint_divide(common_denom, b -> denominator);
+    struct Myint* tmp = a -> numerator;
+    a -> numerator = Myint_multiply(a -> numerator, num_a_factor);
+    tmp = Myint_destructor(tmp);
+    num_a_factor = Myint_destructor(num_a_factor);
+    tmp = b -> numerator;
+    b -> numerator = Myint_multiply(b -> numerator, num_b_factor);
+    tmp = Myint_destructor(tmp);
+    num_b_factor = Myint_destructor(num_b_factor);
+    a -> denominator = Myint_destructor(a -> denominator);
+    b -> denominator = Myint_destructor(b -> denominator);
+    a -> denominator = common_denom;
+    b -> denominator = Myint_deepcopy(common_denom);
+}
+
+struct Fraction* Fraction_add(struct Fraction* a, struct Fraction* b) {
+    bool fail = false;
+    if (!(Fraction_contract(a))) {
+        printf("Fraction_contract fails at Fraction_add, a\n");
+        fail = true;
+    }
+    if (!(Fraction_contract(b))) {
+        printf("Fraction_contract fails at Fraction_add, b\n");
+        fail = true;
+    }
+    if (fail) {return NULL;}
+    struct Fraction* c = Fraction_constructor();
+    Fraction_common_denom(a, b);
+    // a & b should have the same denominator at this point
+    c -> numerator = Myint_add(a -> numerator, b -> numerator);
+    c -> denominator = Myint_deepcopy(a -> denominator);
+    Fraction_reduce(a);
+    Fraction_reduce(b);
+    Fraction_reduce(c);
+    return c;
+}
+
 int main() {
     struct Fraction* a = Fraction_constructor();
-    a -> numerator -> my_long = 14161676921445484;
-    a -> denominator -> my_long = 706049982514030;
-    struct Myint* lcm = Myint_lcm(a -> numerator, a -> denominator);
-    printf("lcm: "); Myint_print(lcm); printf("\n");
-    Fraction_reduce(a);
-    printf("a: "); Fraction_print(a); printf("\n");
+    struct Fraction* b = Fraction_constructor();
+    struct Fraction* c = NULL;
+    struct Fraction* tmp = NULL;
+    a -> numerator -> my_long = 1;
+    a -> denominator -> my_long = 1;
+    b -> numerator -> my_long = 0;
+    b -> denominator -> my_long = 1;
+    for (long i=2; i<100; i++) {
+        b = Fraction_add(a, b);
+        a -> denominator -> my_long = i;
+        a -> numerator -> sign *= -1;
+    }
+    Fraction_print(a); printf("\n");
+    Fraction_print(b); printf("\n");
 }
