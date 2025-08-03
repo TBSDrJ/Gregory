@@ -313,10 +313,10 @@ struct Myint* Myint_gcd(struct Myint* a, struct Myint* b) {
     long a_sign = a -> sign, b_sign = b -> sign;
     a -> sign = 1; b -> sign = 1;
     if ((a -> int_type == LONG) && (b -> int_type == LONG)) {
-        long next_a = 0;
-        long next_b = b -> my_long;
-        long q = a -> my_long / b -> my_long;
-        long r = a -> my_long % b -> my_long;
+        unsigned long next_a = 0;
+        unsigned long next_b = b -> my_long;
+        unsigned long q = a -> my_long / b -> my_long;
+        unsigned long r = a -> my_long % b -> my_long;
         while (r > 0) {
             next_a = next_b;
             next_b = r;
