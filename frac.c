@@ -16,11 +16,41 @@ struct Fraction* Fraction_destructor(struct Fraction* a) {
     return a;
 }
 
+bool Fraction_contract(struct Fraction* a) {
+    bool fail = false;
+    if (!(a -> numerator)) {
+        printf("Fraction_contract fails, a -> numerator is NULL.\n");
+        fail = true;
+    }
+    if (!(a -> denominator)) {
+        printf("Fraction_contract fails, a -> denomintor is NULL.\n");
+        fail = true;
+    }
+    if (!(Myint_contract(a -> numerator))) {
+        printf("Fraction_contract fails, a -> numerator, Myint_contract.\n");
+        fail = true;
+    }
+    if (!(Myint_contract(a -> denominator))) {
+        printf("Fraction_contract fails, a -> denominator, Myint_contract.\n");
+        fail = true;
+    }
+    if (fail) {return false;}
+    return true;
+}
+
 void Fraction_print(struct Fraction* a) {
+    if (!(Fraction_contract(a))) {
+        printf("Fraction_contract fails at Fraction_print\n");
+        return;
+    }
     Myint_print(a -> numerator); printf(" / "); Myint_print(a -> denominator);
 }
 
 void Fraction_reduce(struct Fraction* a) {
+    if (!(Fraction_contract(a))) {
+        printf("Fraction_contract fails at Fraction_reduce\n");
+        return;
+    }
     struct Myint* gcd = Myint_gcd(a -> numerator, a -> denominator);
     struct Myint* one = Myint_constructor();
     one -> my_long = 1;

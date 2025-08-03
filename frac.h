@@ -3,6 +3,7 @@
 
 #include<stdlib.h>
 #include<stdio.h>
+#include<stdbool.h>
 #include"myint.h"
 
 struct Fraction {
@@ -12,6 +13,7 @@ struct Fraction {
 
 struct Fraction* Fraction_constructor();
 struct Fraction* Fraction_destructor(struct Fraction* a);
+bool Fraction_contract(struct Fraction* a);
 void Fraction_print(struct Fraction* a);
 void Fraction_reduce(struct Fraction* a);
 struct Fraction* Fraction_add(struct Fraction* a, struct Fraction* b);
