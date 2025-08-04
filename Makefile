@@ -69,7 +69,8 @@ myint-mac:
 
 frac-mac:
 	gcc frac.c -o frac.out -L. -lmyint
-	./frac.out
+	/usr/bin/time -l ./frac.out > ln_of_2.txt
+	python3 ln_of_2.py
 
 all-mac:
 	gcc -c -fPIC polynomials.c -o polynomials.o
