@@ -23,7 +23,7 @@ bool Fraction_contract(struct Fraction* a) {
         fail = true;
     }
     if (!(a -> denominator)) {
-        printf("Fraction_contract fails, a -> denomintor is NULL.\n");
+        printf("Fraction_contract fails, a -> denominator is NULL.\n");
         fail = true;
     }
     if (!(Myint_contract(a -> numerator))) {
@@ -34,12 +34,6 @@ bool Fraction_contract(struct Fraction* a) {
         printf("Fraction_contract fails, a -> denominator, Myint_contract.\n");
         fail = true;
     }
-    struct Myint* zero = Myint_constructor();
-    zero -> my_long = 0;
-    if (Myint_equal(zero, a -> denominator)) {
-        printf("Fraction_contract fails, a -> denominator equals zero.\n");
-    }
-    zero = Myint_destructor(zero);
     if (fail) {return false;}
     return true;
 }
