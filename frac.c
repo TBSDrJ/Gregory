@@ -138,42 +138,73 @@ struct Fraction* Fraction_subtract(struct Fraction* a, struct Fraction* b) {
     Fraction_reduce(c);
     return c;
 }
+
+struct Fraction* Fraction_multiply(struct Fraction* a, struct Fraction* b) {
+    bool fail = false;
+    if (!(Fraction_contract(a))) {
+        printf("Fraction_contract fails at Fraction_multiply, a\n");
+        fail = true;
+    }
+    if (!(Fraction_contract(b))) {
+        printf("Fraction_contract fails at Fraction_multiply, b\n");
+        fail = true;
+    }
+    if (fail) {return NULL;}
+    struct Fraction* c = Fraction_constructor();
+    c -> numerator = Myint_multiply(a -> numerator, b -> numerator);
+    c -> denominator = Myint_multiply(a -> denominator, b -> denominator);
+    return c;
+}
+
+struct Fraction* Fraction_divide(struct Fraction* a, struct Fraction* b) {
+    bool fail = false;
+    if (!(Fraction_contract(a))) {
+        printf("Fraction_contract fails at Fraction_multiply, a\n");
+        fail = true;
+    }
+    if (!(Fraction_contract(b))) {
+        printf("Fraction_contract fails at Fraction_multiply, b\n");
+        fail = true;
+    }
+    if (fail) {return NULL;}
+    struct Fraction* c = Fraction_constructor();
+    c -> numerator = Myint_multiply(a -> numerator, b -> denominator);
+    c -> denominator = Myint_multiply(a -> denominator, b -> numerator);
+    return c;
+}
+
 int main() {
     struct Fraction* a = Fraction_constructor();
     struct Fraction* b = Fraction_constructor();
-    struct Fraction* c = NULL;
-    struct Fraction* tmp = NULL;
-    a -> numerator -> my_long = 1;
-    a -> denominator -> my_long = 1;
-    b -> numerator -> my_long = 0;
-    b -> denominator -> my_long = 1;
-    for (long i=2; i<100; i++) {
-        tmp = b;
-        b = Fraction_add(a, b);
-        tmp = Fraction_destructor(tmp);
-        a -> denominator -> my_long = i;
-        a -> numerator -> sign *= -1;
+    struct Fraction* c = Fraction_constructor();
+    struct Fraction* d = Fraction_constructor();
+    struct Fraction* e = Fraction_constructor();
+    a -> numerator -> my_long = 3;
+    a -> denominator -> my_long = 4;
+    b -> numerator -> my_long = 2;
+    b -> denominator -> my_long = 3;
+    struct Myint* two = Myint_constructor();
+    two -> my_long = 2;
+    struct Myint* x = Myint_constructor();
+    x -> my_long = 2;
+    for (int i=0; i<65; i++) {
+        x = Myint_multiply(x, two);
     }
-    Fraction_print(b); printf("\n");
+    a -> numerator -> my_long = 1;
+    a -> denominator = x;
+    b -> numerator = x;
+    b -> denominator -> my_long = 1;
+    c = Fraction_multiply(a, b); Fraction_reduce(c);
+    d = Fraction_divide(a, b); Fraction_reduce(d);
+    e = Fraction_divide(b, a); Fraction_reduce(e);
+    printf("a: "); Fraction_print(a); printf("\n");
+    printf("b: "); Fraction_print(b); printf("\n");
+    printf("a * b: "); Fraction_print(c); printf("\n");
+    printf("a / b: "); Fraction_print(d); printf("\n");
+    printf("b / a: "); Fraction_print(e); printf("\n");
     a = Fraction_destructor(a);
     b = Fraction_destructor(b);
-    a = Fraction_constructor();
-    b = Fraction_constructor();
-    a -> numerator -> my_long = 1;
-    a -> denominator -> my_long = 1;
-    b -> numerator -> my_long = 0;
-    b -> denominator -> my_long = 1;
-    for (long i=1; i<50; i++) {
-        tmp = b;
-        b = Fraction_add(b, a);
-        tmp = Fraction_destructor(tmp);
-        a -> denominator -> my_long = 2*i;
-        tmp = b;
-        b = Fraction_subtract(b, a);
-        tmp = Fraction_destructor(tmp);
-        a -> denominator -> my_long = 2*i+1;
-    }
-    Fraction_print(b); printf("\n");
-    a = Fraction_destructor(a);
-    b = Fraction_destructor(b);
+    c = Fraction_destructor(c);
+    d = Fraction_destructor(d);
+    e = Fraction_destructor(e);
 }
