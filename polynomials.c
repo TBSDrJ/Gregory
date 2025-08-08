@@ -1,6 +1,7 @@
 #include<stdlib.h>
 #include<stdio.h>
 #include<string.h>
+#include<stdbool.h>
 #include"polynomials.h"
 
 /*
@@ -39,6 +40,23 @@ void Polynomial_destructor(struct Polynomial* p) {
     }
 }
 
+bool Polynomial_contract(struct Polynomial* p) {
+    bool fail = false;
+    if (!p) {
+        printf("Polynomial contract fails, p is null.\n");
+        fail = true;
+    }
+    if (p -> degree < 0) {
+        printf("Polynomial contract fails, p -> degree is negative.\n");
+        fail = true;
+    }
+    if (!p -> coeffs) {
+        printf("Polynomial contract fails, p -> coeffs is null.\n");
+        fail = true;
+    }
+    return !fail;
+}
+
 /* 
 Unary operations:
 1. Print
@@ -53,6 +71,10 @@ Binary Operations:
 */
 
 void Polynomial_print(struct Polynomial* p) {
+    if (!Polynomial_contract(p)) {
+        printf("Polynomial_contract fails at Polynomial_print.\n");
+        return;
+    }
     for (long i=(p -> degree); i>1; i--) {
         printf("%lix^%li + ", (p -> coeffs)[i], i);
     }
@@ -61,6 +83,10 @@ void Polynomial_print(struct Polynomial* p) {
 }
 
 struct Polynomial* Polynomial_reduce(struct Polynomial* p) {
+    if (!Polynomial_contract(p)) {
+        printf("Polynomial_contract fails at Polynomial_reduce.\n");
+        return NULL;
+    }
     long n = p -> degree;
     while(p -> coeffs[n] == 0) {
         n--;
@@ -77,6 +103,10 @@ struct Polynomial* Polynomial_reduce(struct Polynomial* p) {
 }
 
 struct Polynomial* Polynomial_neg(struct Polynomial* p) {
+    if (!Polynomial_contract(p)) {
+        printf("Polynomial_contract fails at Polynomial_neg.\n");
+        return NULL;
+    }
     struct Polynomial* n = Polynomial_constructor(p -> degree);
     for (long i=0; i<((n -> degree) + 1); i++) {
         (n -> coeffs)[i] = -(p -> coeffs)[i];
@@ -85,6 +115,10 @@ struct Polynomial* Polynomial_neg(struct Polynomial* p) {
 }
 
 struct Polynomial* Polynomial_der(struct Polynomial* p) {
+    if (!Polynomial_contract(p)) {
+        printf("Polynomial_contract fails at Polynomial_der.\n");
+        return NULL;
+    }
     struct Polynomial* d = Polynomial_constructor((p -> degree) - 1);
     for (long i=0; i<(p -> degree); i++) {
         (d -> coeffs)[i] = (p -> coeffs)[i+1] * (i+1);
@@ -93,6 +127,10 @@ struct Polynomial* Polynomial_der(struct Polynomial* p) {
 }
 
 long Polynomial_subs(struct Polynomial* p, long x) {
+    if (!Polynomial_contract(p)) {
+        printf("Polynomial_contract fails at Polynomial_subs.\n");
+        return NULL;
+    }
     long y = 0, term;
     if (x == 0) {
         return p -> coeffs[0];
@@ -110,6 +148,10 @@ long Polynomial_subs(struct Polynomial* p, long x) {
 
 struct Polynomial* Polynomial_add(
         struct Polynomial* p, struct Polynomial* q) {
+    if (!Polynomial_contract(p)) {
+        printf("Polynomial_contract fails at Polynomial_add.\n");
+        return NULL;
+    }
     // Make p be the one with greater degree if they are different.
     if ((p -> degree) < (q -> degree)) {
         struct Polynomial* temp = p;
@@ -128,6 +170,10 @@ struct Polynomial* Polynomial_add(
 
 struct Polynomial* Polynomial_multiply(
             struct Polynomial* p, struct Polynomial* q) {
+    if (!Polynomial_contract(p)) {
+        printf("Polynomial_contract fails at Polynomial_multiply.\n");
+        return NULL;
+    }
     struct Polynomial* s = Polynomial_constructor(
                 (p -> degree) + (q -> degree));
     for (long i=0; i<=(p -> degree); i++) {
