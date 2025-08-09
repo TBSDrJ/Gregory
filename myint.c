@@ -92,6 +92,7 @@ struct Myint* Myint_deepcopy(struct Myint* a) {
     b -> int_type = a -> int_type;
     if (b -> int_type == LONG) {
         b -> my_long = a -> my_long;
+        b -> sign = a -> sign;
     } else {
         b -> bigint = Bigint_deepcopy(a -> bigint);
     }

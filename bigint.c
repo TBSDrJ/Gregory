@@ -166,6 +166,7 @@ struct Bigint* Bigint_deepcopy(struct Bigint* a) {
         b -> len++;
     }
     b -> tail = e_b;
+    b -> sign = a -> sign;
     return b;
 }
 
