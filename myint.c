@@ -408,7 +408,12 @@ bool Myint_equal(struct Myint* a, struct Myint* b) {
     if ((a -> int_type == LONG) && (b -> int_type == LONG)) {
         if (a -> sign != b -> sign) {return false;}
         return a -> my_long == b -> my_long;
-    } else if ((a -> int_type == BIGINT) && (a -> int_type == BIGINT)) {
+    } else {
+        if (a -> int_type == LONG) {
+            Myint_promote(a);
+        } else if (b -> int_type == LONG) {
+            Myint_promote(b);
+        }
         if (a -> sign != b -> sign) {return false;}
         return Bigint_equal(a -> bigint, b -> bigint);
     }
