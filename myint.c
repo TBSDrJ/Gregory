@@ -78,6 +78,7 @@ void Myint_reduce(struct Myint* a) {
         if (a -> bigint -> len == 1) {
             a -> int_type = LONG;
             a -> my_long = a -> bigint -> head -> content;
+            a -> sign = a -> bigint -> sign;
             a -> bigint = Bigint_destructor(a -> bigint);
         }
     }
@@ -234,8 +235,19 @@ struct Myint* Myint_multiply(struct Myint* a, struct Myint* b) {
         Myint_reduce(b);
     }
     Myint_reduce(c);
-    c -> sign = (a -> sign) * (b -> sign);
-    if (c -> bigint) {c -> bigint -> sign = (a -> sign) * (b -> sign);}
+    long a_sign, b_sign;
+    if (a -> int_type == LONG) {
+        a_sign = a -> sign;
+    } else {
+        a_sign = a -> bigint -> sign;
+    }
+    if (b -> int_type == LONG) {
+        b_sign = b -> sign;
+    } else {
+        b_sign = b -> bigint -> sign;
+    }
+    c -> sign = (a_sign) * (b_sign);
+    if (c -> bigint) {c -> bigint -> sign = (a_sign) * (b_sign);}
     return c;
 }
 
