@@ -49,6 +49,12 @@ poly-mac:
 	gcc main.c -o main.out -L. -lpolynomials -lqueue_2 -lbigint -lmyint
 	./main.out
 
+test-poly-mac:
+	gcc -c -fPIC polynomials.c -o polynomials.o
+	gcc -shared polynomials.o -o libpolynomials.dylib -L. -lmyint
+	gcc polynomial_test.c -o polynomial-test.out -L. -lpolynomials -lmyint
+	./polynomial-test.out
+
 queue-mac:
 	gcc -c -fPIC queue_2.c -o queue_2.o
 	gcc -shared queue_2.o -L. -lpolynomials -o libqueue_2.dylib
@@ -69,17 +75,17 @@ myint-mac:
 
 frac-mac:
 	gcc frac.c -o frac.out -L. -lmyint
-	/usr/bin/time -l ./frac.out
+	./frac.out
 
 all-mac:
-	gcc -c -fPIC polynomials.c -o polynomials.o
-	gcc -shared polynomials.o -o libpolynomials.dylib
-	gcc -c -fPIC queue_2.c -o queue_2.o
-	gcc -shared queue_2.o -L. -lpolynomials -o libqueue_2.dylib
 	gcc -c -fPIC bigint.c -o bigint.o
 	gcc -shared bigint.o -o libbigint.dylib
 	gcc -c -fPIC myint.c -o myint.o
 	gcc -shared myint.o -L. -lbigint -o libmyint.dylib
+	gcc -c -fPIC polynomials.c -o polynomials.o
+	gcc -shared polynomials.o -o libpolynomials.dylib -L. -lmyint
+	gcc -c -fPIC queue_2.c -o queue_2.o
+	gcc -shared queue_2.o -L. -lpolynomials -o libqueue_2.dylib
 	gcc main.c -o main.out -L. -lpolynomials -lqueue_2 -lbigint -lmyint
 	./main.out
 

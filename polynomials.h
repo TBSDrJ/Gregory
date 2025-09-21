@@ -1,14 +1,17 @@
 #ifndef POLYNOMIALS_H
 #define POLYNOMIALS_H
 
+#include<stdbool.h>
+
 struct Polynomial {
     long degree;
     // Will point to an array of length n+1
-    long* coeffs;
+    struct Myint** coeffs;
 };
 
 struct Polynomial* Polynomial_constructor(long deg);
-void Polynomial_destructor(struct Polynomial* p);
+struct Polynomial* Polynomial_destructor(struct Polynomial* p);
+bool Polynomial_contract(struct Polynomial* p);
 
 /* 
 Unary operations:
@@ -24,10 +27,10 @@ Binary Operations:
 */
 
 void Polynomial_print(struct Polynomial* p);
-struct Polynomial* Polynomial_reduce(struct Polynomial* p);
+void Polynomial_reduce(struct Polynomial* p);
 struct Polynomial* Polynomial_neg(struct Polynomial* p);
 struct Polynomial* Polynomial_der(struct Polynomial* p);
-long Polynomial_subs(struct Polynomial* p, long x);
+struct Myint* Polynomial_subs(struct Polynomial* p, long x);
 struct Polynomial* Polynomial_add(
         struct Polynomial* p, struct Polynomial* q);
 struct Polynomial* Polynomial_multiply(
