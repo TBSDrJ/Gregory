@@ -418,6 +418,8 @@ bool Myint_equal(struct Myint* a, struct Myint* b) {
     Myint_reduce(a);
     Myint_reduce(b);
     if ((a -> int_type == LONG) && (b -> int_type == LONG)) {
+        // Make sure that 0 == -0 is True
+        if ((a -> my_long == 0) && (b -> my_long == 0)) {return true;}
         if (a -> sign != b -> sign) {return false;}
         return a -> my_long == b -> my_long;
     } else {
