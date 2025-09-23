@@ -10,7 +10,7 @@ struct Queue_2* Queue_2_constructor () {
 }
 
 void Queue_2_destructor(struct Queue_2* q) {
-    if (q -> head) {
+    if (q && q -> head) {
         struct Entry_2* e = q -> head;
         while (e -> next) {
             struct Entry_2* tmp = e;
@@ -31,9 +31,11 @@ struct Entry_2* Entry_2_constructor(struct Polynomial* a, struct Polynomial* b) 
 }
 
 void Entry_2_destructor(struct Entry_2* e) {
-    if (e -> a) {Polynomial_destructor(e -> a);}
-    if (e -> b) {Polynomial_destructor(e -> b);}
-    free(e);
+    if (e) {
+        if (e -> a) {Polynomial_destructor(e -> a);}
+        if (e -> b) {Polynomial_destructor(e -> b);}
+        free(e);
+    }
 }
 
 void Queue_2_enqueue(struct Queue_2* q, struct Polynomial* a, struct Polynomial* b) {
