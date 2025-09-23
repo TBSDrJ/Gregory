@@ -28,6 +28,7 @@ Binary Operations:
 
 void Polynomial_print(struct Polynomial* p);
 void Polynomial_reduce(struct Polynomial* p);
+struct Polynomial* Polynomial_deepcopy(struct Polynomial* p);
 struct Polynomial* Polynomial_neg(struct Polynomial* p);
 struct Polynomial* Polynomial_der(struct Polynomial* p);
 struct Myint* Polynomial_subs(struct Polynomial* p, long x);

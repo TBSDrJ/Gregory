@@ -118,6 +118,19 @@ void Polynomial_reduce(struct Polynomial* p) {
     }
 }
 
+struct Polynomial* Polynomial_deepcopy(struct Polynomial* p) {
+    if (!Polynomial_contract(p)) {
+        printf("Polynomial_contract fails at Polynomial_deepcopy.\n");
+        return NULL;
+    }
+    struct Polynomial* q = Polynomial_constructor(p -> degree);
+    for (long i=0; i<=(q -> degree); i++) {
+        q -> coeffs[i] = Myint_deepcopy(p -> coeffs[i]);
+    }
+    Polynomial_reduce(q);
+    return q;
+}
+
 struct Polynomial* Polynomial_neg(struct Polynomial* p) {
     if (!Polynomial_contract(p)) {
         printf("Polynomial_contract fails at Polynomial_neg.\n");
