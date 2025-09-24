@@ -289,13 +289,13 @@ void test_Polynomial_multiply() {
 } 
 
 int main() {
-    // test_Polynomial_constructor();
-    // test_Polynomial_print();
-    // test_Polynomial_reduce();
-    // test_Polynomial_neg();
-    // test_Polynomial_der();
-    // test_Polynomial_subs();
-    // test_Polynomial_add();
+    test_Polynomial_constructor();
+    test_Polynomial_print();
+    test_Polynomial_reduce();
+    test_Polynomial_neg();
+    test_Polynomial_der();
+    test_Polynomial_subs();
+    test_Polynomial_add();
     test_Polynomial_multiply();
     printf("\n\n\n");
 }
