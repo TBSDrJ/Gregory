@@ -1,13 +1,35 @@
+"""
+To use this, insert a line similar to:
+    printf("malloc Bigint %li\n", (long) a);
+right after using a = malloc(...);
+
+Then a line similar to:
+    printf("free Bigint %li\n", (long) a);
+right before using free(a);
+
+Then compile and run using, e.g. ./bigint.out > tmp.txt
+and then just run this program with no command-line arguments.
+"""
+
 with open('tmp.txt', 'r') as f:
     lines = list(f.readlines())
-constructs = [l for l in lines if 'CONSTRUCT' in l]
-destructs = [l for l in lines if 'DESTRUCT' in l]
-con_addrs = [l.split()[3][:-1] for l in constructs]
-des_addrs = [l.split()[3][:-1] for l in destructs]
-con_addrs = list(set(con_addrs))
-des_addrs = list(set(des_addrs))
-missing = [l for l in con_addrs if l not in des_addrs]
-for m in missing:
-    for l in lines:
-        if m in l:
-            print(l)
+probs = False
+addr = []
+for line in lines:
+    s = line.split()
+    if s[0] == "malloc":
+        addr.append(int(s[2]))
+    if s[0] == "free":
+        ptr = int(s[2])
+        if ptr in addr:
+            addr.pop(addr.index(ptr))
+        else:
+            msg = f"freed ptr {ptr} to {s[1]} not in allocated addresses"
+            print(msg)
+            probs = True
+if addr:
+    print(f"Some allocated addresses not freed.")
+    print(addr)
+    probs = True
+if not probs:
+    print("\nAll memory handled properly.  Whoo-hoo!\n\n")

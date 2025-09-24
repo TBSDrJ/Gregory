@@ -5,6 +5,7 @@
 // Functions for Bigint
 struct Bigint* Bigint_constructor() {
     struct Bigint* a = malloc(sizeof(struct Bigint));
+    printf("malloc Bigint %li\n", (long) a);
     a -> sign = 1;
     a -> head = NULL;
     a -> tail = NULL;
@@ -103,6 +104,7 @@ struct Bigint* Bigint_destructor(struct Bigint* a) {
         a -> head = NULL;
         a -> tail = NULL;
         a -> len = 0;
+        printf("free Bigint %li\n", (long) a);
         free(a);
     }
     return NULL;
@@ -499,7 +501,6 @@ struct Bigint** Bigint_divmod(struct Bigint* a, struct Bigint* b) {
     return quot_res;
 }
 
-// Still a small memory leak in gcd
 struct Bigint* Bigint_gcd(struct Bigint* a, struct Bigint* b) {
     bool a_ok = Bigint_contract(a); //printf("440 CONSTRUCT:A %lu\n", (unsigned long) a);
     bool b_ok = Bigint_contract(b); //printf("440 CONSTRUCT:B %lu\n", (unsigned long) b);
@@ -768,6 +769,7 @@ struct Entry_long* Entry_long_constructor(unsigned long n) {
     e -> content = n;
     e -> next = NULL;
     e -> prev = NULL;
+    printf("malloc Entry_long %li\n", (long) e);
     return e;
 }
 
@@ -775,6 +777,7 @@ struct Entry_long* Entry_long_destructor(struct Entry_long* e) {
     struct Entry_long* next = NULL;
     if (e) {
         next = e -> next;
+        printf("free Entry_long %li\n", (long) e);
         free(e);
     }
     e = NULL;
@@ -788,6 +791,41 @@ int main() {
     Bigint_enqueue(a, (long) 1 << 30);
     Bigint_enqueue(a, (long) 1 << 29);
     struct Bigint* b = Bigint_deepcopy(a);
+    struct Bigint* c = Bigint_add(a, b);
+    struct Bigint* d = Bigint_multiply(a, b);
+    struct Bigint* e = Bigint_subtract(d, c);
+    struct Bigint* f = Bigint_gcd(d, e);
+    struct Bigint** dm = Bigint_divmod(d, e);
+    struct Bigint* g = dm[0];
+    struct Bigint* h = dm[1];
+    struct Bigint* i = Bigint_constructor();
+    Bigint_enqueue(i, (long) 37*41*43*47*53*59);
+    struct Bigint* j = Bigint_gcd(d, i);
+    struct Bigint* k = Bigint_bitshift_left(d, 100);
+    struct Bigint* l = Bigint_bitshift_right(d, 100);
     printf("a: "); Bigint_print(a); printf("\n");
     printf("b: "); Bigint_print(b); printf("\n");
+    printf("c: "); Bigint_print(c); printf("\n");
+    printf("d: "); Bigint_print(d); printf("\n");
+    printf("e: "); Bigint_print(e); printf("\n");
+    printf("f: "); Bigint_print(f); printf("\n");
+    printf("g: "); Bigint_print(g); printf("\n");
+    printf("h: "); Bigint_print(h); printf("\n");
+    printf("i: "); Bigint_print(i); printf("\n");
+    printf("j: "); Bigint_print(j); printf("\n");
+    printf("k: "); Bigint_print(k); printf("\n");
+    printf("l: "); Bigint_print(l); printf("\n");
+    a = Bigint_destructor(a);
+    b = Bigint_destructor(b);
+    c = Bigint_destructor(c);
+    d = Bigint_destructor(d);
+    e = Bigint_destructor(e);
+    f = Bigint_destructor(f);
+    g = Bigint_destructor(g);
+    h = Bigint_destructor(h);
+    i = Bigint_destructor(i);
+    j = Bigint_destructor(j);
+    k = Bigint_destructor(k);
+    l = Bigint_destructor(l);
+    free(dm); dm = NULL;
 }
