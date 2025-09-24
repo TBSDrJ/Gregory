@@ -13,13 +13,13 @@ struct Myint* Myint_constructor() {
 }
 
 struct Myint* Myint_destructor(struct Myint* a) {
-    // A couple of changes that will make the contract fail
     a -> int_type = -2;
     a -> sign = 0;
     a -> my_long = 0;
     if (a -> bigint) {
         a -> bigint = Bigint_destructor(a -> bigint);
     }
+    free(a);
     return NULL;
 }
 
