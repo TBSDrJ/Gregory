@@ -9,6 +9,7 @@ def intlog2(n: int) -> int:
     return bits
 
 def split_into_places(n: int) -> list[int]:
+    """Change from base 10 to base 2**64 notation, as used by the C program"""
     digits = []
     digits.append(n % 2**64)
     while n > 0:
@@ -18,7 +19,7 @@ def split_into_places(n: int) -> list[int]:
     return digits
 
 def enqueue(n: int, a: int) -> int:
-    """Add a*2**(k*64) to n"""
+    """Add a*2**(k*64) to n, matches Bigint_enqueue()"""
     bits = intlog2(n)
     if bits == 0:
         return a
@@ -29,7 +30,11 @@ def enqueue(n: int, a: int) -> int:
     n += a * 2**(places * 64)
     return n
 
-def main():
+def memory_leak_checks() -> None:
+    """Should give the same outputs as memory_leak_checks() in bigint.c
+    
+    Notice that this only checks the arithmetic, use check_for_memory_leaks.py 
+    to check for memory leaks."""
     a = 1 << 32
     a = enqueue(a, 1 << 31)
     a = enqueue(a, 1 << 30)
@@ -58,10 +63,12 @@ def main():
     print(f"k: {split_into_places(k)}")
     print(f"l: {split_into_places(l)}")
 
+def arithmetic_checks() -> None:
 
 
-
-
+def main():
+    # memory_leak_checks()
+    arithmetic_checks()
 
 if __name__ == "__main__":
     main()

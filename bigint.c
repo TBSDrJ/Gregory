@@ -1,11 +1,14 @@
 #include"bigint.h"
 
 #define DEBUG 1
+#define MEM_LEAK_CHK 1
 
 // Functions for Bigint
 struct Bigint* Bigint_constructor() {
     struct Bigint* a = malloc(sizeof(struct Bigint));
-    printf("malloc Bigint %li\n", (long) a);
+    if (MEM_LEAK_CHK) {
+        printf("malloc Bigint %li\n", (long) a);
+    }
     a -> sign = 1;
     a -> head = NULL;
     a -> tail = NULL;
@@ -104,7 +107,9 @@ struct Bigint* Bigint_destructor(struct Bigint* a) {
         a -> head = NULL;
         a -> tail = NULL;
         a -> len = 0;
-        printf("free Bigint %li\n", (long) a);
+        if (MEM_LEAK_CHK) {
+            printf("free Bigint %li\n", (long) a);
+        }
         free(a);
     }
     return NULL;
@@ -496,6 +501,9 @@ struct Bigint** Bigint_divmod(struct Bigint* a, struct Bigint* b) {
     quotient -> sign = (a -> sign) * (b -> sign);
     residue -> sign = a -> sign;
     struct Bigint** quot_res = malloc(2*sizeof(struct Bigint*));
+    if (MEM_LEAK_CHK) {
+        printf("malloc quot_res-in-Bigint_divmod %li\n", (long) quot_res);
+    }
     quot_res[0] = quotient;
     quot_res[1] = residue;
     return quot_res;
@@ -514,6 +522,9 @@ struct Bigint* Bigint_gcd(struct Bigint* a, struct Bigint* b) {
     struct Bigint* quotient = divmod[0]; //printf("447 CONSTRUCT %lu\n", (unsigned long) quotient);
     struct Bigint* residue = divmod[1]; //printf("448 CONSTRUCT %lu\n", (unsigned long) residue);
     // printf("\t449 DESTRUCT %lu\n", (unsigned long) divmod); 
+    if (MEM_LEAK_CHK) {
+        printf("free divmod-1-in-Bigint_gcd %li\n", (long) divmod);
+    }
     free(divmod); divmod = NULL; 
     struct Bigint* zero = Bigint_constructor(); //printf("450 CONSTRUCT %lu\n", (unsigned long) zero);
     Bigint_enqueue(zero, 0);
@@ -533,6 +544,9 @@ struct Bigint* Bigint_gcd(struct Bigint* a, struct Bigint* b) {
         tmp = Bigint_destructor(tmp);}
         residue = divmod[1]; //printf("463 CONSTRUCT %lu\n", (unsigned long) divmod[1]);
         //printf("\t464 DESTRUCT %lu\n", (unsigned long) divmod); 
+        if (MEM_LEAK_CHK) {
+            printf("free divmod-2-in-Bigint_gcd %li\n", (long) divmod);
+        }
         free(divmod); divmod = NULL;
     }
     // printf("466 DESTRUCT %lu\n", (unsigned long) zero); 
@@ -769,7 +783,9 @@ struct Entry_long* Entry_long_constructor(unsigned long n) {
     e -> content = n;
     e -> next = NULL;
     e -> prev = NULL;
-    printf("malloc Entry_long %li\n", (long) e);
+    if (MEM_LEAK_CHK) {
+        printf("malloc Entry_long %li\n", (long) e);
+    }
     return e;
 }
 
@@ -777,14 +793,16 @@ struct Entry_long* Entry_long_destructor(struct Entry_long* e) {
     struct Entry_long* next = NULL;
     if (e) {
         next = e -> next;
-        printf("free Entry_long %li\n", (long) e);
+        if (MEM_LEAK_CHK) {
+            printf("free Entry_long %li\n", (long) e);
+        }
         free(e);
     }
     e = NULL;
     return next;
 }
 
-int main() {
+void memory_leak_checks() {
     struct Bigint* a = Bigint_constructor();
     Bigint_enqueue(a, (long) 1 << 32);
     Bigint_enqueue(a, (long) 1 << 31);
@@ -827,5 +845,16 @@ int main() {
     j = Bigint_destructor(j);
     k = Bigint_destructor(k);
     l = Bigint_destructor(l);
+    if (MEM_LEAK_CHK) {
+        printf("free dm-from-Bigint_divmod-test %li\n", (long) dm);
+    }
     free(dm); dm = NULL;
+}
+
+void arithmetic_checks() {
+
+}
+
+int main() {
+    memory_leak_checks();
 }

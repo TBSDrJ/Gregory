@@ -4,3 +4,4 @@ saves/**
 **/*.dylib
 **/*.o
 **/*.so
+tmp.*
