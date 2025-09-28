@@ -643,7 +643,12 @@ struct Bigint* Bigint_bitshift_right(struct Bigint* a, unsigned long n) {
         unsigned long digits = n/64, bits = n%64;
         unsigned long n_0, n_1 = 0;
         for (long i=0; i<digits; i++) {
+            if (e) {
             e = e -> next;
+            } else {
+                Bigint_enqueue(b, 0);
+                return b;
+            }
         }
         while (e) {
             n_0 = (e -> content) >> bits;
