@@ -27,6 +27,7 @@ struct Bigint {
 };
 
 struct Bigint* Bigint_constructor();
+struct Bigint* Bigint_from_long(long a);
 struct Bigint* Bigint_destructor(struct Bigint* b);
 // This next function represents the contract for most functions.
 bool Bigint_contract(struct Bigint* a);
@@ -38,9 +39,18 @@ struct Bigint* Bigint_subtract(struct Bigint* a, struct Bigint* b);
 struct Bigint* Bigint_multiply(struct Bigint* a, struct Bigint* b);
 // Notice different return type. This array of pointers needs to be freed.
 // This function returns ptr to a/b at return[0], and ptr to a%b at return[1].
+// Also note: I have chosen to have sign of remainder match sign of numerator.  
+//      This is *not* entirely typical, it more typical to always use 
+//      remainder > 0. In particular, matching results from this with Python 
+//      will disagree when numerator < 0.  But, always, a = bq + r.
+// As of now, division by zero results in a segfault.
 struct Bigint** Bigint_divmod(struct Bigint* a, struct Bigint* b);
+// As of now, if (a == 0 or b == 0) then we get a segfault.
+// Note: Sign of gcd(a,b) will match sign of b.  So, if one of a,b is positive
+//      and other is negative, then gcd(a,b) = -gcd(b,a). I don't think this
+//      is a problem, but it is surprising that gcd(a,b) != gcd(b,a)
 struct Bigint* Bigint_gcd(struct Bigint* a, struct Bigint* b);
-// Returns location of -1 if (a == 0)
+// Returns -1 if (a == 0), -2 if error
 long Bigint_intlog2(struct Bigint* a);
 struct Bigint* Bigint_bitshift_left(struct Bigint* a, unsigned long n);
 struct Bigint* Bigint_bitshift_right(struct Bigint* a, unsigned long n);
