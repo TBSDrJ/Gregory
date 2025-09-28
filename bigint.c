@@ -690,11 +690,16 @@ bool Bigint_equal(struct Bigint* a, struct Bigint* b) {
     if (!a_ok && DEBUG) {printf("ERROR: Failed contract, Bigint_equal, a\n");}
     if (!b_ok && DEBUG) {printf("ERROR: Failed contract, Bigint_equal, b\n");}
     if (!a_ok || !b_ok) {return false;}
+    Bigint_eliminate_zeros(a);
+    Bigint_eliminate_zeros(b);
+    // 0 should test as equal to -0
+    if (((a -> len == 1) && (b -> len == 1)) && (a -> head -> content == 0) 
+            && (b -> head -> content == 0)) {
+        return true;
+    }
     if (a -> sign != b -> sign) {
         return false;
     }
-    Bigint_eliminate_zeros(a);
-    Bigint_eliminate_zeros(b);
     if (a -> len != b -> len) {
         return false;
     }
