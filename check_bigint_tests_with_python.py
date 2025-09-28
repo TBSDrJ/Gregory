@@ -2,11 +2,13 @@ import math
 
 def intlog2(n: int) -> int:
     """Determine how many bits in n."""
+    if n == 0:
+        return -1
     bits = 0
     while n > 0:
         n >>= 1
         bits += 1
-    return bits
+    return bits - 1
 
 def split_into_places(n: int) -> list[int]:
     """Change from base 10 to base 2**64 notation, as used by the C program"""
