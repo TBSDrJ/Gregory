@@ -120,12 +120,22 @@ struct Fraction* Fraction_add(struct Fraction* a, struct Fraction* b) {
     }
     if (fail) {return NULL;}
     struct Fraction* c = Fraction_constructor();
+    struct Fraction* tmp_a = Fraction_deepcopy(a);
+    struct Fraction* tmp_b = Fraction_deepcopy(b);
     Fraction_common_denom(a, b);
     // a & b should have the same denominator at this point
     c -> numerator = Myint_add(a -> numerator, b -> numerator);
     c -> denominator = Myint_deepcopy(a -> denominator);
-    Fraction_reduce(a);
-    Fraction_reduce(b);
+    struct Myint* tmp_num = a -> numerator;
+    struct Myint* tmp_den = a -> denominator;
+    tmp_num = Myint_destructor(tmp_num);
+    tmp_den = Myint_destructor(tmp_den);
+    memcpy(a, tmp_a, sizeof(struct Fraction));
+    tmp_num = b -> numerator;
+    tmp_den = b -> denominator;
+    tmp_num = Myint_destructor(tmp_num);
+    tmp_den = Myint_destructor(tmp_den);
+    memcpy(b, tmp_b, sizeof(struct Fraction));
     Fraction_reduce(c);
     return c;
 }
@@ -142,12 +152,22 @@ struct Fraction* Fraction_subtract(struct Fraction* a, struct Fraction* b) {
     }
     if (fail) {return NULL;}
     struct Fraction* c = Fraction_constructor();
+    struct Fraction* tmp_a = Fraction_deepcopy(a);
+    struct Fraction* tmp_b = Fraction_deepcopy(b);
     Fraction_common_denom(a, b);
     // a & b should have the same denominator at this point
     c -> numerator = Myint_subtract(a -> numerator, b -> numerator);
     c -> denominator = Myint_deepcopy(a -> denominator);
-    Fraction_reduce(a);
-    Fraction_reduce(b);
+    struct Myint* tmp_num = a -> numerator;
+    struct Myint* tmp_den = a -> denominator;
+    tmp_num = Myint_destructor(tmp_num);
+    tmp_den = Myint_destructor(tmp_den);
+    memcpy(a, tmp_a, sizeof(struct Fraction));
+    tmp_num = b -> numerator;
+    tmp_den = b -> denominator;
+    tmp_num = Myint_destructor(tmp_num);
+    tmp_den = Myint_destructor(tmp_den);
+    memcpy(b, tmp_b, sizeof(struct Fraction));
     Fraction_reduce(c);
     return c;
 }

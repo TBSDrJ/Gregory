@@ -1,5 +1,10 @@
 """With Harmonic Series out to 10k terms, the C portion took almost 3 1/4 hours 
-to run.  The numerator and denominator, in lowest terms, are 14,438-bit 
+to run.  UPDATE: I changed the fraction addition and subtraction algorithms to
+remember a and b instead of finding the common denominator at the beginning 
+and then reducing at the end, and cutting out the fraction reducing helped 
+quite a bit: down to 2 hours, 36 minutes, which is about a 20% speed increase.
+
+The numerator and denominator, in lowest terms, are 14,438-bit 
 integers.  So the arbitrary precision integers were pretty necessary.
 """
 import math
@@ -15,5 +20,5 @@ for i in range(len(s_m)):
     m += s_m[i] * 2**(64*i)
 for i in range(len(s_n)):
     n += s_n[i] * 2**(64*i)
-print("Estimate using alt harmonic series: ", m/n)
+print("Estimate using alternating harmonic series: ", m/n)
 print("Actual using python math library: ", math.log(2))
