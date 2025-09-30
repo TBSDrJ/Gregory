@@ -1,5 +1,5 @@
 #include<stdio.h>
-#include"polynomials.h"
+#include"polynomial.h"
 #include"myint.h"
 #include"queue_2.h"
 

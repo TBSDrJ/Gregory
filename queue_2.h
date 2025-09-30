@@ -5,7 +5,7 @@ A struct for a queue/singly-linked list of pairs of pointers to Polynomials.
 #define QUEUE_2_H
 
 #include<stdlib.h>
-#include"polynomials.h"
+#include"polynomial.h"
 
 struct Entry_2;
 

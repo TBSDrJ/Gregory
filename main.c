@@ -1,10 +1,8 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#include"polynomials.h"
-#include"queue_2.h"
+#include"polynomial.h"
 #include"myint.h"
-#include"rationalfn.h"
 
 #define n 4
 
@@ -54,10 +52,6 @@ int main() {
                 Polynomial_neg(Polynomial_multiply(b, Polynomial_der(d))));
     dc_1 = Polynomial_multiply(x_plus_1, c);
     dd_1 = Polynomial_multiply(d, d);
-    Rationalfn_cancel_zeros(da_0, dc_0);
-    Rationalfn_cancel_zeros(db_0, dd_0);
-    Rationalfn_cancel_zeros(da_1, dc_1);
-    Rationalfn_cancel_zeros(db_1, dd_1);
     printf("da_0: "); Polynomial_print(da_0); printf("\n");
     printf("db_0: "); Polynomial_print(db_0); printf("\n");
     printf("dc_0: "); Polynomial_print(dc_0); printf("\n");

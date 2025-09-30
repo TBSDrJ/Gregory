@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
-#include"polynomials.h"
+#include"polynomial.h"
 #include"myint.h"
 
 #define EXS 4

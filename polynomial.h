@@ -1,5 +1,5 @@
-#ifndef POLYNOMIALS_H
-#define POLYNOMIALS_H
+#ifndef POLYNOMIAL_H
+#define POLYNOMIAL_H
 
 #include<stdbool.h>
 

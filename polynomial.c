@@ -1,7 +1,7 @@
 #include<stdlib.h>
 #include<stdio.h>
 #include<string.h>
-#include"polynomials.h"
+#include"polynomial.h"
 #include"myint.h"
 #include"bigint.h"
 
