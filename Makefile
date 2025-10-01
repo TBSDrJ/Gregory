@@ -1,21 +1,21 @@
 default:
-	gcc main.c -o main.out -L. -lbigint -lmyint -lfrac -lpolynomials
+	gcc main.c -O2 -o main.out -L. -lbigint -lmyint -lfrac -lpolynomials
 	./main.out
 
 bigint:
-	gcc -c -fPIC bigint.c -o bigint.o
+	gcc -c -fPIC -O2 bigint.c -o bigint.o
 	gcc -shared bigint.o -o libbigint.so
 
 bigint-test:
-	gcc -c -fPIC bigint.c -o bigint.o
+	gcc -c -fPIC -O2 bigint.c -o bigint.o
 	gcc -shared bigint.o -o libbigint.so
-	gcc bigint_test.c -L. -lbigint -o bigint_test.out
+	gcc bigint_test.c -O2 -L. -lbigint -o bigint_test.out
 	./bigint_test.out
 
 myint:
-	gcc -c -fPIC bigint.c -o bigint.o
+	gcc -c -fPIC -O2 bigint.c -o bigint.o
 	gcc -shared bigint.o -o libbigint.so
-	gcc -c -fPIC myint.c -o myint.o
+	gcc -c -fPIC -O2 myint.c -o myint.o
 	gcc -shared myint.o -L. -lbigint -o libmyint.so
 
 myint-test:
@@ -27,11 +27,11 @@ myint-test:
 	./myint_test.out
 	
 frac:
-	gcc -c -fPIC bigint.c -o bigint.o
+	gcc -c -fPIC -O2 bigint.c -o bigint.o
 	gcc -shared bigint.o -o libbigint.so
-	gcc -c -fPIC myint.c -o myint.o
+	gcc -c -fPIC -O2 myint.c -o myint.o
 	gcc -shared myint.o -L. -lbigint -o libmyint.so
-	gcc -c -fPIC frac.c -o frac.o
+	gcc -c -fPIC -O2 frac.c -o frac.o
 	gcc -shared frac.o -L. -lbigint -lmyint -o libfrac.so
 
 frac-test:
@@ -45,11 +45,11 @@ frac-test:
 	./frac_test.out
 	
 polynomial:
-	gcc -c -fPIC bigint.c -o bigint.o
+	gcc -c -fPIC -O2 bigint.c -o bigint.o
 	gcc -shared bigint.o -o libbigint.so
-	gcc -c -fPIC myint.c -o myint.o
+	gcc -c -fPIC -O2 myint.c -o myint.o
 	gcc -shared myint.o -L. -lbigint -o libmyint.so
-	gcc -c -fPIC polynomial.c -o polynomial.o
+	gcc -c -fPIC -O2 polynomial.c -o polynomial.o
 	gcc -shared polynomial.o -L. -lbigint -lmyint -o libpolynomial.so
 
 polynomial-test:
@@ -63,15 +63,15 @@ polynomial-test:
 	./polynomial_test.out
 
 all:
-	gcc -c -fPIC bigint.c -o bigint.o
+	gcc -c -fPIC -O2 bigint.c -o bigint.o
 	gcc -shared bigint.o -o libbigint.so
-	gcc -c -fPIC myint.c -o myint.o
+	gcc -c -fPIC -O2 myint.c -o myint.o
 	gcc -shared myint.o -L. -lbigint -o libmyint.so
-	gcc -c -fPIC frac.c -o frac.o
+	gcc -c -fPIC -O2 frac.c -o frac.o
 	gcc -shared frac.o -L. -lbigint -lmyint -o libfrac.so
-	gcc -c -fPIC polynomial.c -o polynomial.o
+	gcc -c -fPIC -O2 polynomial.c -o polynomial.o
 	gcc -shared polynomial.o -L. -lbigint -lmyint -o libpolynomial.so
-	gcc main.c -o main.out -L. -lbigint -lmyint -lfrac -lpolynomial
+	gcc main.c -O2 -o main.out -L. -lbigint -lmyint -lfrac -lpolynomial
 	./main.out
 
 all-tests:
@@ -94,11 +94,11 @@ clean:
 	rm *.so
 
 mac:
-	gcc main.c -o main.out -L. -lbigint -lmyint -lfrac -lpolynomial
+	gcc main.c -O2 -o main.out -L. -lbigint -lmyint -lfrac -lpolynomial
 	./main.out
 
 bigint-mac:
-	gcc -c -fPIC bigint.c -o bigint.o
+	gcc -c -fPIC -O2 bigint.c -o bigint.o
 	gcc -shared bigint.o -o libbigint.dylib
 
 bigint-test-mac:
@@ -108,9 +108,9 @@ bigint-test-mac:
 	./bigint_test.out
 
 myint-mac:
-	gcc -c -fPIC bigint.c -o bigint.o
+	gcc -c -fPIC -O2 bigint.c -o bigint.o
 	gcc -shared bigint.o -o libbigint.dylib
-	gcc -c -fPIC myint.c -o myint.o
+	gcc -c -fPIC -O2 myint.c -o myint.o
 	gcc -shared myint.o -L. -lbigint -o libmyint.dylib
 
 myint-test-mac:
@@ -119,14 +119,14 @@ myint-test-mac:
 	gcc -c -fPIC myint.c -o myint.o
 	gcc -shared myint.o -L. -lbigint -o libmyint.dylib
 	gcc myint_test.c -L. -lmyint -lbigint -o myint_test.out
-	./myint_test.out 2> tmp.txt
+	./myint_test.out
 	
 frac-mac:
-	gcc -c -fPIC bigint.c -o bigint.o
+	gcc -c -fPIC -O2 bigint.c -o bigint.o
 	gcc -shared bigint.o -o libbigint.dylib
-	gcc -c -fPIC myint.c -o myint.o
+	gcc -c -fPIC -O2 myint.c -o myint.o
 	gcc -shared myint.o -L. -lbigint -o libmyint.dylib
-	gcc -c -fPIC frac.c -o frac.o
+	gcc -c -fPIC -O2 frac.c -o frac.o
 	gcc -shared frac.o -L. -lbigint -lmyint -o libfrac.dylib
 
 frac-test-mac:
@@ -140,11 +140,11 @@ frac-test-mac:
 	./frac_test.out
 	
 polynomial-mac:
-	gcc -c -fPIC bigint.c -o bigint.o
+	gcc -c -fPIC -O2 bigint.c -o bigint.o
 	gcc -shared bigint.o -o libbigint.dylib
-	gcc -c -fPIC myint.c -o myint.o
+	gcc -c -fPIC -O2  myint.c -o myint.o
 	gcc -shared myint.o -L. -lbigint -o libmyint.dylib
-	gcc -c -fPIC polynomial.c -o polynomial.o
+	gcc -c -fPIC -O2 polynomial.c -o polynomial.o
 	gcc -shared polynomial.o -L. -lbigint -lmyint -o libpolynomial.dylib
 
 polynomial-test-mac:
@@ -166,8 +166,8 @@ all-mac:
 	gcc -shared frac.o -L. -lbigint -lmyint -o libfrac.dylib
 	gcc -c -fPIC -O2 polynomial.c -o polynomial.o
 	gcc -shared polynomial.o -L. -lbigint -lmyint -o libpolynomial.dylib
-	gcc main.c -o main.out -L. -lbigint -lmyint -lfrac -lpolynomial
-# 	./main.out
+	gcc main.c -O2 -o main.out -L. -lbigint -lmyint -lfrac -lpolynomial
+	./main.out
 
 all-tests-mac:
 	gcc -c -fPIC bigint.c -o bigint.o
