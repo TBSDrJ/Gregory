@@ -16,7 +16,6 @@ NB: This means that 'digits' are ordered from least significant to most.
 
 // First the data types:
 struct Entry_long;
-struct Fraction;
 
 struct Bigint {
     // sign should always be +1 or -1.
