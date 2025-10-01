@@ -436,6 +436,14 @@ struct Myint* Myint_bitshift_left(struct Myint* a, unsigned long n) {
         Myint_reduce(a);
         Myint_reduce(b);
     }
+    b -> sign = a -> sign; 
+    if (b -> bigint) {
+        if (a -> bigint) {
+            b -> bigint -> sign = a -> bigint -> sign;
+        } else {
+            b -> bigint -> sign = a -> sign;
+        }
+    }
     return b;
 }
 
@@ -456,6 +464,14 @@ struct Myint* Myint_bitshift_right(struct Myint* a, unsigned long n) {
         b -> int_type = BIGINT;
         b -> bigint = Bigint_bitshift_right(a -> bigint, n);
         Myint_reduce(b);
+    }
+    b -> sign = a -> sign; 
+    if (b -> bigint) {
+        if (a -> bigint) {
+            b -> bigint -> sign = a -> bigint -> sign;
+        } else {
+            b -> bigint -> sign = a -> sign;
+        }
     }
     return b;
 }

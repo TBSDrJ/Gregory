@@ -644,6 +644,7 @@ struct Bigint* Bigint_bitshift_left(struct Bigint* a, unsigned long n) {
         }
         Bigint_eliminate_zeros(b);
     }
+    b -> sign = a -> sign;
     return b;
 }
 
@@ -686,6 +687,7 @@ struct Bigint* Bigint_bitshift_right(struct Bigint* a, unsigned long n) {
             Bigint_enqueue(b, 0);
         }
     }
+    b -> sign = a -> sign;
     return b;
 }
 
