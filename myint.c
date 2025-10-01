@@ -1,15 +1,23 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include"bigint.h"
 #include"myint.h"
+
+#define MEM_LEAK_CHK 1
 
 struct Myint* Myint_constructor() {
     struct Myint* a = malloc(sizeof(struct Myint));
+    if (MEM_LEAK_CHK) {
+        fprintf(stderr, "malloc Myint %li\n", (long) a);
+    }
     a -> int_type = LONG;
     a -> sign = 1;
     a -> my_long = 0;
     a -> bigint = NULL;
     return a;
+}
+
+struct Myint* Myint_from_long(long a) {
+    struct Myint* b = Myint_constructor();
+    b -> my_long = a;
+    return b;
 }
 
 struct Myint* Myint_destructor(struct Myint* a) {
@@ -19,23 +27,37 @@ struct Myint* Myint_destructor(struct Myint* a) {
     if (a -> bigint) {
         a -> bigint = Bigint_destructor(a -> bigint);
     }
+    if (MEM_LEAK_CHK) {
+        fprintf(stderr, "free Myint %li\n", (long) a);
+    }
     free(a);
     return NULL;
 }
 
 bool Myint_contract(struct Myint* a) {
-    if (a -> int_type > 1) 
-        {printf("Myint_contract fails at int_type > 1\n"); return false;}
-    else if (a -> int_type < 0) 
-        {printf("Myint_contract fails at int_type < 0\n"); return false;}
-    else if (a -> sign == 0) 
-        {printf("Myint_contract fails at sign == 0\n"); return false;}
-    else if (a -> sign > 1) 
-        {printf("Myint_contract fails at sign > 0\n"); return false;}
-    else if (a -> sign < -1) 
-        {printf("Myint_contract fails at sign < 0\n"); return false;}
+    if (a -> int_type > 1) {
+        fprintf(stderr, "Myint_contract fails at int_type > 1\n"); 
+        return false;
+    }
+    else if (a -> int_type < 0) {
+        fprintf(stderr, "Myint_contract fails at int_type < 0\n"); 
+        return false;
+    }
+    else if (a -> sign == 0) {
+        fprintf(stderr, "Myint_contract fails at sign == 0\n"); 
+        return false;
+   }
+    else if (a -> sign > 1) {
+        fprintf(stderr, "Myint_contract fails at sign > 0\n"); 
+        return false;
+    }
+    else if (a -> sign < -1) {
+        fprintf(stderr, "Myint_contract fails at sign < 0\n"); 
+        return false;
+    }
     else if ((a -> int_type == BIGINT) && !(a -> bigint)) {
-        printf("Myint_contract fails at BIGINT.\n"); return false;
+        fprintf(stderr, "Myint_contract fails at BIGINT.\n"); 
+        return false;
     }
     if (a -> bigint) {
         return Bigint_contract(a -> bigint);
@@ -45,7 +67,7 @@ bool Myint_contract(struct Myint* a) {
 
 void Myint_print(struct Myint* a) {
     if (!Myint_contract(a)) {
-        printf("ERROR: Failed contract, Myint_print\n");
+        fprintf(stderr, "ERROR: Failed contract, Myint_print\n");
         return;
     }
     if (a -> int_type == LONG) {
@@ -58,7 +80,7 @@ void Myint_print(struct Myint* a) {
 
 void Myint_promote(struct Myint* a) {
     if (!Myint_contract(a)) {
-        printf("ERROR: Failed contract, Myint_promote\n");
+        fprintf(stderr, "ERROR: Failed contract, Myint_promote\n");
         return;
     }
     a -> int_type = BIGINT;
@@ -70,7 +92,7 @@ void Myint_promote(struct Myint* a) {
 
 void Myint_reduce(struct Myint* a) {
     if (!Myint_contract(a)) {
-        printf("ERROR: Failed contract, Myint_reduce\n");
+        fprintf(stderr, "ERROR: Failed contract, Myint_reduce\n");
         return;
     }
     if (a -> bigint) {
@@ -86,7 +108,7 @@ void Myint_reduce(struct Myint* a) {
 
 struct Myint* Myint_deepcopy(struct Myint* a) {
     if (!Myint_contract(a)) {
-        printf("ERROR: Failed contract, Myint_deepcopy, a\n");
+        fprintf(stderr, "ERROR: Failed contract, Myint_deepcopy, a\n");
         return NULL;
     }
     struct Myint* b = Myint_constructor();
@@ -98,7 +120,7 @@ struct Myint* Myint_deepcopy(struct Myint* a) {
         b -> bigint = Bigint_deepcopy(a -> bigint);
     }
     if (!Myint_contract(b)) {
-        printf("ERROR: Failed contract, Myint_deepcopy, b\n");
+        fprintf(stderr, "ERROR: Failed contract, Myint_deepcopy, b\n");
         return NULL;
     }
     return b;
@@ -106,7 +128,7 @@ struct Myint* Myint_deepcopy(struct Myint* a) {
 
 long Myint_intlog2(struct Myint* a) {
     if (!Myint_contract(a)) {
-        printf("ERROR: Failed contract, Myint_intlog2\n");
+        fprintf(stderr, "ERROR: Failed contract, Myint_intlog2\n");
         return -2;
     }
     if (a -> int_type == LONG) {
@@ -124,16 +146,15 @@ long Myint_intlog2(struct Myint* a) {
 }
 
 struct Myint* Myint_add(struct Myint* a, struct Myint* b) {
-    bool fail = false;
-    if (!Myint_contract(a)) {
-        printf("ERROR: Failed contract, a from Myint_add\n");
-        fail = true;
+    bool a_ok = Myint_contract(a);
+    bool b_ok = Myint_contract(b);
+    if (!a_ok) {
+        fprintf(stderr, "ERROR: Failed contract, a from Myint_add\n");
     }
-    if (!Myint_contract(b)) {
-        printf("ERROR: Failed contract, b from Myint_add\n");
-        fail = true;
+    if (!b_ok) {
+        fprintf(stderr, "ERROR: Failed contract, b from Myint_add\n");
     }
-    if (fail) {return NULL;}
+    if (!a_ok || !b_ok) {return NULL;}
     struct Myint* c = Myint_constructor();
     if ((a -> int_type == LONG) && (b -> int_type == LONG) && 
             (Myint_intlog2(a) < 63) && (Myint_intlog2(b) < 63)) {
@@ -166,16 +187,15 @@ struct Myint* Myint_add(struct Myint* a, struct Myint* b) {
 }
 
 struct Myint* Myint_subtract(struct Myint* a, struct Myint* b) {
-    bool fail = false;
-    if (!Myint_contract(a)) {
-        printf("ERROR: Failed contract, a from Myint_subtract\n");
-        fail = true;
+    bool a_ok = Myint_contract(a);
+    bool b_ok = Myint_contract(b);
+    if (!a_ok) {
+        fprintf(stderr, "ERROR: Failed contract, a from Myint_subtract\n");
     }
-    if (!Myint_contract(b)) {
-        printf("ERROR: Failed contract, b from Myint_subtract\n");
-        fail = true;
+    if (!b_ok) {
+        fprintf(stderr, "ERROR: Failed contract, b from Myint_subtract\n");
     }
-    if (fail) {return NULL;}
+    if (!a_ok || !b_ok) {return NULL;}
     struct Myint* c = Myint_constructor();
     if ((a -> int_type == LONG) && (b -> int_type == LONG) && 
             (Myint_intlog2(a) < 63) && (Myint_intlog2(b) < 63)) {
@@ -208,16 +228,15 @@ struct Myint* Myint_subtract(struct Myint* a, struct Myint* b) {
 }
 
 struct Myint* Myint_multiply(struct Myint* a, struct Myint* b) {
-    bool fail = false;
-    if (!Myint_contract(a)) {
-        printf("ERROR: Failed contract, a from Myint_multiply\n");
-        fail = true;
+    bool a_ok = Myint_contract(a);
+    bool b_ok = Myint_contract(b);
+    if (!a_ok) {
+        fprintf(stderr, "ERROR: Failed contract, a from Myint_multiply\n");
     }
-    if (!Myint_contract(b)) {
-        printf("ERROR: Failed contract, b from Myint_multiply\n");
-        fail = true;
+    if (!b_ok) {
+        fprintf(stderr, "ERROR: Failed contract, b from Myint_multiply\n");
     }
-    if (fail) {return NULL;}
+    if (!a_ok || !b_ok) {return NULL;}
     struct Myint* c = Myint_constructor();
     if ((a -> int_type == LONG) && (b -> int_type == LONG) && 
             (Myint_intlog2(a) + Myint_intlog2(b) < 63)) {
@@ -255,6 +274,9 @@ struct Myint* Myint_divide(struct Myint* a, struct Myint* b) {
     struct Myint** dm = Myint_divmod(a, b);
     struct Myint* div = dm[0];
     dm[1] = Myint_destructor(dm[1]);
+    if (MEM_LEAK_CHK) {
+        fprintf(stderr, "free Myint_divide %li\n", (long) a);
+    }
     free(dm); dm = NULL;
     return div;
 }
@@ -263,21 +285,23 @@ struct Myint* Myint_mod(struct Myint* a, struct Myint* b) {
     struct Myint** dm = Myint_divmod(a, b);
     struct Myint* mod = dm[1];
     dm[0] = Myint_destructor(dm[0]);
+    if (MEM_LEAK_CHK) {
+        fprintf(stderr, "free Myint_mod %li\n", (long) a);
+    }
     free(dm); dm = NULL;
     return mod;
 }
 
 struct Myint** Myint_divmod(struct Myint* a, struct Myint* b) {
-    bool fail = false;
-    if (!Myint_contract(a)) {
-        printf("ERROR: Failed contract, a from Myint_divmod\n");
-        fail = true;
+    bool a_ok = Myint_contract(a);
+    bool b_ok = Myint_contract(b);
+    if (!a_ok) {
+        fprintf(stderr, "ERROR: Failed contract, a from Myint_divmod\n");
     }
-    if (!Myint_contract(b)) {
-        printf("ERROR: Failed contract, b from Myint_divmod\n");
-        fail = true;
+    if (!b_ok) {
+        fprintf(stderr, "ERROR: Failed contract, b from Myint_divmod\n");
     }
-    if (fail) {return NULL;}
+    if (!a_ok || !b_ok) {return NULL;}
     struct Myint* div = Myint_constructor();
     struct Myint* mod = Myint_constructor();
     if ((a -> int_type == LONG) && (b -> int_type == LONG)) {
@@ -295,6 +319,9 @@ struct Myint** Myint_divmod(struct Myint* a, struct Myint* b) {
         struct Bigint** dm = Bigint_divmod(a -> bigint, b -> bigint);
         div -> bigint = dm[0];
         mod -> bigint = dm[1];
+        if (MEM_LEAK_CHK) {
+            fprintf(stderr, "free Myint_divmod %li\n", (long) a);
+        }
         free(dm); dm = NULL;
         Myint_reduce(a);
         Myint_reduce(b);
@@ -302,6 +329,9 @@ struct Myint** Myint_divmod(struct Myint* a, struct Myint* b) {
         Myint_reduce(mod);
     }
     struct Myint** divmod = malloc(2*sizeof(struct Myint*));
+    if (MEM_LEAK_CHK) {
+        fprintf(stderr, "malloc Myint_divmod %li\n", (long) a);
+    }
     div -> sign = (a -> sign) * (b -> sign);
     if (div -> bigint) {div -> bigint -> sign = (a -> sign) * (b -> sign);}
     mod -> sign = a -> sign;
@@ -312,16 +342,15 @@ struct Myint** Myint_divmod(struct Myint* a, struct Myint* b) {
 }
 
 struct Myint* Myint_gcd(struct Myint* a, struct Myint* b) {
-    bool fail = false;
-    if (!Myint_contract(a)) {
-        printf("ERROR: Failed contract, a from Myint_gcd\n");
-        fail = true;
+    bool a_ok = Myint_contract(a);
+    bool b_ok = Myint_contract(b);
+    if (!a_ok) {
+        fprintf(stderr, "ERROR: Failed contract, a from Myint_gcd\n");
     }
-    if (!Myint_contract(b)) {
-        printf("ERROR: Failed contract, b from Myint_gcd\n");
-        fail = true;
+    if (!b_ok) {
+        fprintf(stderr, "ERROR: Failed contract, b from Myint_gcd\n");
     }
-    if (fail) {return NULL;}
+    if (!a_ok || !b_ok) {return NULL;}
     struct Myint* gcd = Myint_constructor();
     long a_sign = a -> sign, b_sign = b -> sign;
     a -> sign = 1; b -> sign = 1;
@@ -365,7 +394,8 @@ struct Myint* Myint_lcm(struct Myint* a, struct Myint* b) {
 
 struct Myint* Myint_bitshift_left(struct Myint* a, unsigned long n) {
     if (!Myint_contract(a)) {
-        printf("ERROR: Failed contract, a from Myint_bitshift_left\n");
+        fprintf(stderr, 
+                "ERROR: Failed contract, a from Myint_bitshift_left\n");
         return NULL;
     }
     struct Myint* b = Myint_constructor();
@@ -386,7 +416,8 @@ struct Myint* Myint_bitshift_left(struct Myint* a, unsigned long n) {
 
 struct Myint* Myint_bitshift_right(struct Myint* a, unsigned long n) {
     if (!Myint_contract(a)) {
-        printf("ERROR: Failed contract, a from Myint_bitshift_right\n");
+        fprintf(stderr, 
+                "ERROR: Failed contract, a from Myint_bitshift_right\n");
         return NULL;
     }
     struct Myint* b = Myint_constructor();
@@ -405,16 +436,15 @@ struct Myint* Myint_bitshift_right(struct Myint* a, unsigned long n) {
 }
 
 bool Myint_equal(struct Myint* a, struct Myint* b) {
-    bool fail = false;
-    if (!Myint_contract(a)) {
-        printf("ERROR: Failed contract, a from Myint_equal\n");
-        fail = true;
+    bool a_ok = Myint_contract(a);
+    bool b_ok = Myint_contract(b);
+    if (!a_ok) {
+        fprintf(stderr, "ERROR: Failed contract, a from Myint_equal\n");
     }
-    if (!Myint_contract(b)) {
-        printf("ERROR: Failed contract, b from Myint_equal\n");
-        fail = true;
+    if (!b_ok) {
+        fprintf(stderr, "ERROR: Failed contract, b from Myint_equal\n");
     }
-    if (fail) {return false;}
+    if (!a_ok || !b_ok) {return NULL;}
     Myint_reduce(a);
     Myint_reduce(b);
     if ((a -> int_type == LONG) && (b -> int_type == LONG)) {
@@ -435,16 +465,15 @@ bool Myint_equal(struct Myint* a, struct Myint* b) {
 }
 
 bool Myint_lt(struct Myint* a, struct Myint* b) {
-    bool fail = false;
-    if (!Myint_contract(a)) {
-        printf("ERROR: Failed contract, a from Myint_lt\n");
-        fail = true;
+    bool a_ok = Myint_contract(a);
+    bool b_ok = Myint_contract(b);
+    if (!a_ok) {
+        fprintf(stderr, "ERROR: Failed contract, a from Myint_lt\n");
     }
-    if (!Myint_contract(b)) {
-        printf("ERROR: Failed contract, b from Myint_lt\n");
-        fail = true;
+    if (!b_ok) {
+        fprintf(stderr, "ERROR: Failed contract, b from Myint_lt\n");
     }
-    if (fail) {return false;}
+    if (!a_ok || !b_ok) {return NULL;}
     Myint_reduce(a);
     Myint_reduce(b);
     if ((a -> sign > 0) && (b -> sign < 0)) {

@@ -2,11 +2,14 @@
 This constructs a library that creates a data type thay operates using 
 unsigned long data type for arithmetic when that is possible, but automatically
 promotes to Myint whenever needed.  This should operate without substantial
-speed penalty when operting as unsigned long, while still offering some basic
+speed penalty when operating as unsigned long, while still offering some basic
 error checking.
 */
 
 #include<stdbool.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include"bigint.h"
 
 #ifndef MYINT_H
 #define MYINT_H
@@ -19,6 +22,7 @@ struct Myint {
 };
 
 struct Myint* Myint_constructor();
+struct Myint* Myint_from_long(long a);
 struct Myint* Myint_destructor(struct Myint* a);
 bool Myint_contract(struct Myint* a);
 void Myint_print(struct Myint* a);
