@@ -145,6 +145,18 @@ long Myint_intlog2(struct Myint* a) {
     return -2; // error, should never reach this.
 }
 
+void Myint_neg(struct Myint* a) {
+       if (!Myint_contract(a)) {
+        fprintf(stderr, "ERROR: Failed contract, Myint_intlog2\n");
+        return;
+    }
+    if (a -> int_type == LONG) {
+        a -> sign *= -1;
+    } else {
+        a -> bigint -> sign *= -1;
+    }
+}
+
 struct Myint* Myint_add(struct Myint* a, struct Myint* b) {
     bool a_ok = Myint_contract(a);
     bool b_ok = Myint_contract(b);
