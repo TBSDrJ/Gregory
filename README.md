@@ -55,10 +55,11 @@ Specifically, I am developing an arbitrary-precision library for integers, integ
 1. The only dependency is to have an installation of `gcc`.  So far, I have tested all the code on a Mac; some of my tests have failed in Ubuntu linux, but I expect to make sure it works in linux and Windows in the longer run.  If you are using a different C compiler, your mileage may vary.
 1. I am *not* using `math.h` at all.
 1. At this point, I believe am using only these functions/constants from the C Standard Library: 
-   1. `stdio.h` for `printf`, `fprintf`, `stderr`, `stdout` 
+   1. `stdio.h` for `printf`, `fprintf`, `stderr` 
+   1. `stdbool.h` for the `bool` data type.
    1. `stdlib.h` for `malloc` and `free`
    1. `string.h` for `memcpy`
-1. I believe that I have everything set up to be independent of the byte size of the data types.  So far, I have only tested the library on 64-bit systems where `long` is 64 bits/8 bytes, but I think everything is flexible about the size of `long`.  I definitely assume that there are 8 bits in a byte in several places, a change in that would involve some work, but that seems to be a very safe assumption these days.
+1. I believe that I have everything set up in the libraries to be independent of the byte size of the data types.  A couple of the tests require long to be 64 bits.  So far, I have only tested the library on 64-bit systems where `long` is 64 bits/8 bytes, but I think everything is flexible about the size of `long`.  I definitely assume that there are 8 bits in a byte in several places, a change in that would involve some work, but that seems to be a very safe assumption these days.  Right now, any user of the library needs to know how many bits/bytes are in `long` and use that information when creating integer objects; it would be a good challenge to remove that requirement.
 
 ### The structure of the library
 
@@ -73,4 +74,4 @@ Specifically, I am developing an arbitrary-precision library for integers, integ
 
 I've obviously been testing some as I went along, but I did a pretty terrible job of keeping track of those tests, and ensuring that the tests were thorough.  I've decided to go back and write decent tests for most of the functions, because I should have been doing this all along and now I have regrets.  The functions I am skipping are all used inside the functions that I'm testing, so I'm using that as the tests for those skipped functions, which is probably not the greatest practice, but I'll live with it.  
 
-I did tests for `Polynomial`s first because that's where I was when I started to decide to do this, but then went back to `Bigint` and now I'm about to start on test coverage for `Myint` and `Fraction`.  Then, I'll check on portability of the libraries and tests to linux and Windows, and then I'll work on testing and ironing out the soon-to-be-renamed `Queue_2` library and the `rationalfn` library.  Then, finally, I'll be able to start thinking about generating results.  
+I did tests for `Polynomial`s first because that's where I was when I started to decide to do this, but then went back to `Bigint` and now I'm working on test coverage for `Myint`.  After that, I will work on tests for `Fraction`.  Then, I'll check on portability of the libraries and tests to linux and Windows, and then I'll work on testing and ironing out the soon-to-be-renamed `Queue_2` library and the `rationalfn` library.  Then, finally, I'll be able to start thinking about generating results.  
