@@ -119,7 +119,7 @@ myint-test-mac:
 	gcc -c -fPIC myint.c -o myint.o
 	gcc -shared myint.o -L. -lbigint -o libmyint.dylib
 	gcc myint_test.c -L. -lmyint -lbigint -o myint_test.out
-	./myint_test.out
+	./myint_test.out 2> tmp.txt
 	
 frac-mac:
 	gcc -c -fPIC bigint.c -o bigint.o

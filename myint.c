@@ -35,7 +35,11 @@ struct Myint* Myint_destructor(struct Myint* a) {
 }
 
 bool Myint_contract(struct Myint* a) {
-    if (a -> int_type > 1) {
+    if (!a) {
+        fprintf(stderr, "Myint_contract fails at a is not NULL.\n");
+        return false;
+    }
+    else if (a -> int_type > 1) {
         fprintf(stderr, "Myint_contract fails at int_type > 1\n"); 
         return false;
     }
@@ -344,10 +348,19 @@ struct Myint** Myint_divmod(struct Myint* a, struct Myint* b) {
     if (MEM_LEAK_CHK) {
         fprintf(stderr, "malloc Myint_divmod %li\n", (long) a);
     }
-    div -> sign = (a -> sign) * (b -> sign);
-    if (div -> bigint) {div -> bigint -> sign = (a -> sign) * (b -> sign);}
-    mod -> sign = a -> sign;
-    if (mod -> bigint) {mod -> bigint -> sign = a -> sign;}
+    char a_sign, b_sign;
+    if (a -> int_type == LONG) 
+        {a_sign = a -> sign;} 
+    else 
+        {a_sign = a -> bigint -> sign;}
+    if (b -> int_type == LONG) 
+        {b_sign = b -> sign;} 
+    else 
+        {b_sign = b -> bigint -> sign;}
+    div -> sign = (a_sign) * (b_sign);
+    if (div -> bigint) {div -> bigint -> sign = (a_sign) * (b_sign);}
+    mod -> sign = a_sign;
+    if (mod -> bigint) {mod -> bigint -> sign = a_sign;}
     divmod[0] = div;
     divmod[1] = mod;
     return divmod;

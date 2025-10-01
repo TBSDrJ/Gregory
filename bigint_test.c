@@ -116,231 +116,231 @@ void arithmetic_checks() {
         b -> sign = 1;
     }
 
-    // // deepcopy test
-    // printf("\n\nTest deepcopy:\n");
-    // a = bn[2];
-    // // Make 2 copies so that I don't destroy the actual array entry
-    // b = Bigint_deepcopy(a);
-    // c = Bigint_deepcopy(b);
-    // printf("b is deepcopy of bn[2], c is deepcopy of b.\n");
-    // printf("b is "); Bigint_print(b); printf(" at address %li\n", (long) b);
-    // printf("c is "); Bigint_print(c); printf(" at address %li\n", (long) c);
-    // printf("\nNow destroy b, see if c still exists.\n");
-    // b = Bigint_destructor(b);
-    // printf("b is "); Bigint_print(b); printf(" at address %li\n", (long) b);
-    // printf("c is "); Bigint_print(c); printf(" at address %li\n", (long) c);
-    // c = Bigint_destructor(c);
+    // deepcopy test
+    printf("\n\nTest deepcopy:\n");
+    a = bn[2];
+    // Make 2 copies so that I don't destroy the actual array entry
+    b = Bigint_deepcopy(a);
+    c = Bigint_deepcopy(b);
+    printf("b is deepcopy of bn[2], c is deepcopy of b.\n");
+    printf("b is "); Bigint_print(b); printf(" at address %li\n", (long) b);
+    printf("c is "); Bigint_print(c); printf(" at address %li\n", (long) c);
+    printf("\nNow destroy b, see if c still exists.\n");
+    b = Bigint_destructor(b);
+    printf("b is "); Bigint_print(b); printf(" at address %li\n", (long) b);
+    printf("c is "); Bigint_print(c); printf(" at address %li\n", (long) c);
+    c = Bigint_destructor(c);
 
-    // printf("\n\nTest addition:\n");
-    // for (long i=0; i<EXS; i++) {
-    //     a = bn[i];
-    //     for (long j=i; j<EXS; j++) {
-    //         b = Bigint_deepcopy(bn[j]);
-    //         for (long k=0; k<4; k++) {
-    //             a -> sign = signs[2*k];
-    //             b -> sign = signs[2*k + 1];
-    //             c = Bigint_add(a, b);
-    //             Bigint_print(a); printf(" + "); 
-    //             Bigint_print(b); printf(" = ");
-    //             Bigint_print(c); printf("\n");
-    //             c = Bigint_destructor(c);
-    //         }
-    //         b = Bigint_destructor(b);
-    //     }
-    // }
+    printf("\n\nTest addition:\n");
+    for (long i=0; i<EXS; i++) {
+        a = bn[i];
+        for (long j=i; j<EXS; j++) {
+            b = Bigint_deepcopy(bn[j]);
+            for (long k=0; k<4; k++) {
+                a -> sign = signs[2*k];
+                b -> sign = signs[2*k + 1];
+                c = Bigint_add(a, b);
+                Bigint_print(a); printf(" + "); 
+                Bigint_print(b); printf(" = ");
+                Bigint_print(c); printf("\n");
+                c = Bigint_destructor(c);
+            }
+            b = Bigint_destructor(b);
+        }
+    }
 
-    // printf("\n\nTest subtraction:\n");
-    // for (long i=0; i<EXS; i++) {
-    //     a = bn[i];
-    //     for (long j=i; j<EXS; j++) {
-    //         b = Bigint_deepcopy(bn[j]);
-    //         for (long k=0; k<4; k++) {
-    //             a -> sign = signs[2*k];
-    //             b -> sign = signs[2*k + 1];
-    //             c = Bigint_subtract(a, b);
-    //             Bigint_print(a); printf(" - "); 
-    //             Bigint_print(b); printf(" = ");
-    //             Bigint_print(c); printf("\n");
-    //             c = Bigint_destructor(c);
-    //         }
-    //         b = Bigint_destructor(b);
-    //     }
-    // }
+    printf("\n\nTest subtraction:\n");
+    for (long i=0; i<EXS; i++) {
+        a = bn[i];
+        for (long j=i; j<EXS; j++) {
+            b = Bigint_deepcopy(bn[j]);
+            for (long k=0; k<4; k++) {
+                a -> sign = signs[2*k];
+                b -> sign = signs[2*k + 1];
+                c = Bigint_subtract(a, b);
+                Bigint_print(a); printf(" - "); 
+                Bigint_print(b); printf(" = ");
+                Bigint_print(c); printf("\n");
+                c = Bigint_destructor(c);
+            }
+            b = Bigint_destructor(b);
+        }
+    }
 
-    // printf("\n\nTest multiplication:\n");
-    // for (long i=0; i<EXS; i++) {
-    //     a = bn[i];
-    //     for (long j=i; j<EXS; j++) {
-    //         b = Bigint_deepcopy(bn[j]);
-    //         for (long k=0; k<4; k++) {
-    //             a -> sign = signs[2*k];
-    //             b -> sign = signs[2*k + 1];
-    //             c = Bigint_multiply(a, b);
-    //             Bigint_print(a); printf(" * "); 
-    //             Bigint_print(b); printf(" = ");
-    //             Bigint_print(c); printf("\n");
-    //             c = Bigint_destructor(c);
-    //         }
-    //         b = Bigint_destructor(b);
-    //     }
-    // }
+    printf("\n\nTest multiplication:\n");
+    for (long i=0; i<EXS; i++) {
+        a = bn[i];
+        for (long j=i; j<EXS; j++) {
+            b = Bigint_deepcopy(bn[j]);
+            for (long k=0; k<4; k++) {
+                a -> sign = signs[2*k];
+                b -> sign = signs[2*k + 1];
+                c = Bigint_multiply(a, b);
+                Bigint_print(a); printf(" * "); 
+                Bigint_print(b); printf(" = ");
+                Bigint_print(c); printf("\n");
+                c = Bigint_destructor(c);
+            }
+            b = Bigint_destructor(b);
+        }
+    }
 
-    // printf("\n\nTest divmod:\n");
+    printf("\n\nTest divmod:\n");
+    a = bn[0];
+    b = bn[1];
+    dm = Bigint_divmod(a, b);
+    printf("0 // 1 = "); Bigint_print(dm[0]); printf("\n");
+    printf("0 %% 1 = "); Bigint_print(dm[1]); printf("\n");
+    free(dm); dm = NULL;
+    // As of now, both of these result in a segfault.
+    // a = bn[1];
+    // b = bn[0];
+    // dm = Bigint_divmod(a, b);
+    // printf("1 // 0 = "); Bigint_print(dm[0]); printf("\n");
+    // printf("1 %% 0 = "); Bigint_print(dm[1]); printf("\n");
+    // a = bn[0];
+    // b = bn[0];
+    // dm = Bigint_divmod(a, b);
+    // printf("0 // 0 = "); Bigint_print(dm[0]); printf("\n");
+    // printf("0 %% 0 = "); Bigint_print(dm[1]); printf("\n");
+    for (long i=1; i<EXS; i++) {
+        a = bn[i];
+        for (long j=i; j<EXS; j++) {
+            b = Bigint_deepcopy(bn[j]);
+            for (long k=0; k<4; k++) {
+                a -> sign = signs[2*k];
+                b -> sign = signs[2*k + 1];
+                dm = Bigint_divmod(a, b);
+                Bigint_print(a); printf(" // "); 
+                Bigint_print(b); printf(" = ");
+                Bigint_print(dm[0]); printf("\n");
+                Bigint_print(a); printf(" %% "); 
+                Bigint_print(b); printf(" = ");
+                Bigint_print(dm[1]); printf("\n");
+                c = Bigint_multiply(dm[0], b);
+                d = Bigint_add(dm[1], c);
+                if (Bigint_equal(d, a)) {
+                    printf("Passes check: a = bq + r\n");
+                } else {
+                    printf("ERROR: Fails check: a != bq + r\n");
+                }
+                c = Bigint_destructor(c);
+                d = Bigint_destructor(d);
+                dm[0] = Bigint_destructor(dm[0]);
+                dm[1] = Bigint_destructor(dm[1]);
+                free(dm); dm = NULL;
+                dm = Bigint_divmod(b, a);
+                Bigint_print(b); printf(" // "); 
+                Bigint_print(a); printf(" = ");
+                Bigint_print(dm[0]); printf("\n");
+                Bigint_print(b); printf(" %% "); 
+                Bigint_print(a); printf(" = ");
+                Bigint_print(dm[1]); printf("\n");
+                c = Bigint_multiply(dm[0], a);
+                d = Bigint_add(dm[1], c);
+                if (Bigint_equal(d, b)) {
+                    printf("Passes check: b = aq + r\n");
+                } else {
+                    printf("ERROR: Fails check: b != ba + r\n");
+                }
+                c = Bigint_destructor(c);
+                d = Bigint_destructor(d);
+                dm[0] = Bigint_destructor(dm[0]);
+                dm[1] = Bigint_destructor(dm[1]);
+                free(dm); dm = NULL;
+            }
+            b = Bigint_destructor(b);
+        }
+    }
+
+    printf("\n\nTest gcd:\n");
+    // As of now, all three of these result in a segfault.
     // a = bn[0];
     // b = bn[1];
-    // dm = Bigint_divmod(a, b);
-    // printf("0 // 1 = "); Bigint_print(dm[0]); printf("\n");
-    // printf("0 %% 1 = "); Bigint_print(dm[1]); printf("\n");
-    // free(dm); dm = NULL;
-    // // As of now, both of these result in a segfault.
-    // // a = bn[1];
-    // // b = bn[0];
-    // // dm = Bigint_divmod(a, b);
-    // // printf("1 // 0 = "); Bigint_print(dm[0]); printf("\n");
-    // // printf("1 %% 0 = "); Bigint_print(dm[1]); printf("\n");
-    // // a = bn[0];
-    // // b = bn[0];
-    // // dm = Bigint_divmod(a, b);
-    // // printf("0 // 0 = "); Bigint_print(dm[0]); printf("\n");
-    // // printf("0 %% 0 = "); Bigint_print(dm[1]); printf("\n");
-    // for (long i=1; i<EXS; i++) {
-    //     a = bn[i];
-    //     for (long j=i; j<EXS; j++) {
-    //         b = Bigint_deepcopy(bn[j]);
-    //         for (long k=0; k<4; k++) {
-    //             a -> sign = signs[2*k];
-    //             b -> sign = signs[2*k + 1];
-    //             dm = Bigint_divmod(a, b);
-    //             Bigint_print(a); printf(" // "); 
-    //             Bigint_print(b); printf(" = ");
-    //             Bigint_print(dm[0]); printf("\n");
-    //             Bigint_print(a); printf(" %% "); 
-    //             Bigint_print(b); printf(" = ");
-    //             Bigint_print(dm[1]); printf("\n");
-    //             c = Bigint_multiply(dm[0], b);
-    //             d = Bigint_add(dm[1], c);
-    //             if (Bigint_equal(d, a)) {
-    //                 printf("Passes check: a = bq + r\n");
-    //             } else {
-    //                 printf("ERROR: Fails check: a != bq + r\n");
-    //             }
-    //             c = Bigint_destructor(c);
-    //             d = Bigint_destructor(d);
-    //             dm[0] = Bigint_destructor(dm[0]);
-    //             dm[1] = Bigint_destructor(dm[1]);
-    //             free(dm); dm = NULL;
-    //             dm = Bigint_divmod(b, a);
-    //             Bigint_print(b); printf(" // "); 
-    //             Bigint_print(a); printf(" = ");
-    //             Bigint_print(dm[0]); printf("\n");
-    //             Bigint_print(b); printf(" %% "); 
-    //             Bigint_print(a); printf(" = ");
-    //             Bigint_print(dm[1]); printf("\n");
-    //             c = Bigint_multiply(dm[0], a);
-    //             d = Bigint_add(dm[1], c);
-    //             if (Bigint_equal(d, b)) {
-    //                 printf("Passes check: b = aq + r\n");
-    //             } else {
-    //                 printf("ERROR: Fails check: b != ba + r\n");
-    //             }
-    //             c = Bigint_destructor(c);
-    //             d = Bigint_destructor(d);
-    //             dm[0] = Bigint_destructor(dm[0]);
-    //             dm[1] = Bigint_destructor(dm[1]);
-    //             free(dm); dm = NULL;
-    //         }
-    //         b = Bigint_destructor(b);
-    //     }
-    // }
+    // c = Bigint_gcd(a, b);
+    // printf("gcd(0, 1) = "); Bigint_print(c); printf("\n");
+    // a = bn[1];
+    // b = bn[0];
+    // c = Bigint_gcd(a, b);
+    // printf("gcd(1, 0) = "); Bigint_print(c); printf("\n");
+    // a = bn[0];
+    // b = bn[0];
+    // c = Bigint_gcd(a, b);
+    // printf("gcd(0, 0) = "); Bigint_print(c); printf("\n");
+    for (long i=1; i<EXS; i++) {
+        a = bn[i];
+        for (long j=i; j<EXS; j++) {
+            b = Bigint_deepcopy(bn[j]);
+            for (long k=0; k<4; k++) {
+                a -> sign = signs[2*k];
+                b -> sign = signs[2*k + 1];
+                c = Bigint_gcd(a, b);
+                printf("gcd("); Bigint_print(a); printf(", "); 
+                Bigint_print(b); printf(") = ");
+                Bigint_print(c); printf("\n");
+                dm = Bigint_divmod(a, c);
+                if (Bigint_equal(dm[1], zero)) {
+                    printf("Passes check: a %% gcd(a, b) == 0\n");
+                } else {
+                    printf("ERROR: Fails check: a %% gcd(a, b) !=0\n");
+                    printf("Got "); Bigint_print(c); printf(" instead.\n");
+                }
+                dm[0] = Bigint_destructor(dm[0]);
+                dm[1] = Bigint_destructor(dm[1]);
+                free(dm); dm = NULL;
+                dm = Bigint_divmod(b, c);
+                if (Bigint_equal(dm[1], zero)) {
+                    printf("Passes check: b %% gcd(a, b) == 0\n");
+                } else {
+                    printf("ERROR: Fails check: b %% gcd(a, b) !=0\n");
+                    printf("Got "); Bigint_print(c); printf(" instead.\n");
+                }
+                c = Bigint_destructor(c);
+                dm[0] = Bigint_destructor(dm[0]);
+                dm[1] = Bigint_destructor(dm[1]);
+                free(dm); dm = NULL;
+                c = Bigint_gcd(b, a);
+                printf("gcd("); Bigint_print(b); printf(", "); 
+                Bigint_print(a); printf(") = ");
+                Bigint_print(c); printf("\n");
+                dm = Bigint_divmod(a, c);
+                if (Bigint_equal(dm[1], zero)) {
+                    printf("Passes check: a %% gcd(a, b) == 0\n");
+                } else {
+                    printf("ERROR: Fails check: a %% gcd(a, b) != 0\n");
+                    printf("Got "); Bigint_print(c); printf(" instead.\n");
+                }
+                dm[0] = Bigint_destructor(dm[0]);
+                dm[1] = Bigint_destructor(dm[1]);
+                free(dm); dm = NULL;
+                dm = Bigint_divmod(b, c);
+                if (Bigint_equal(dm[1], zero)) {
+                    printf("Passes check: b %% gcd(a, b) == 0\n");
+                } else {
+                    printf("ERROR: Fails check: b %% gcd(a, b) !=0\n");
+                    printf("Got "); Bigint_print(c); printf(" instead.\n");
+                }
+                c = Bigint_destructor(c);
+                dm[0] = Bigint_destructor(dm[0]);
+                dm[1] = Bigint_destructor(dm[1]);
+                free(dm); dm = NULL;
+            }
+            b = Bigint_destructor(b);
+        }
+    }
 
-    // printf("\n\nTest gcd:\n");
-    // // As of now, all three of these result in a segfault.
-    // // a = bn[0];
-    // // b = bn[1];
-    // // c = Bigint_gcd(a, b);
-    // // printf("gcd(0, 1) = "); Bigint_print(c); printf("\n");
-    // // a = bn[1];
-    // // b = bn[0];
-    // // c = Bigint_gcd(a, b);
-    // // printf("gcd(1, 0) = "); Bigint_print(c); printf("\n");
-    // // a = bn[0];
-    // // b = bn[0];
-    // // c = Bigint_gcd(a, b);
-    // // printf("gcd(0, 0) = "); Bigint_print(c); printf("\n");
-    // for (long i=1; i<EXS; i++) {
-    //     a = bn[i];
-    //     for (long j=i; j<EXS; j++) {
-    //         b = Bigint_deepcopy(bn[j]);
-    //         for (long k=0; k<4; k++) {
-    //             a -> sign = signs[2*k];
-    //             b -> sign = signs[2*k + 1];
-    //             c = Bigint_gcd(a, b);
-    //             printf("gcd("); Bigint_print(a); printf(", "); 
-    //             Bigint_print(b); printf(") = ");
-    //             Bigint_print(c); printf("\n");
-    //             dm = Bigint_divmod(a, c);
-    //             if (Bigint_equal(dm[1], zero)) {
-    //                 printf("Passes check: a %% gcd(a, b) == 0\n");
-    //             } else {
-    //                 printf("ERROR: Fails check: a %% gcd(a, b) !=0\n");
-    //                 printf("Got "); Bigint_print(c); printf(" instead.\n");
-    //             }
-    //             dm[0] = Bigint_destructor(dm[0]);
-    //             dm[1] = Bigint_destructor(dm[1]);
-    //             free(dm); dm = NULL;
-    //             dm = Bigint_divmod(b, c);
-    //             if (Bigint_equal(dm[1], zero)) {
-    //                 printf("Passes check: b %% gcd(a, b) == 0\n");
-    //             } else {
-    //                 printf("ERROR: Fails check: b %% gcd(a, b) !=0\n");
-    //                 printf("Got "); Bigint_print(c); printf(" instead.\n");
-    //             }
-    //             c = Bigint_destructor(c);
-    //             dm[0] = Bigint_destructor(dm[0]);
-    //             dm[1] = Bigint_destructor(dm[1]);
-    //             free(dm); dm = NULL;
-    //             c = Bigint_gcd(b, a);
-    //             printf("gcd("); Bigint_print(b); printf(", "); 
-    //             Bigint_print(a); printf(") = ");
-    //             Bigint_print(c); printf("\n");
-    //             dm = Bigint_divmod(a, c);
-    //             if (Bigint_equal(dm[1], zero)) {
-    //                 printf("Passes check: a %% gcd(a, b) == 0\n");
-    //             } else {
-    //                 printf("ERROR: Fails check: a %% gcd(a, b) != 0\n");
-    //                 printf("Got "); Bigint_print(c); printf(" instead.\n");
-    //             }
-    //             dm[0] = Bigint_destructor(dm[0]);
-    //             dm[1] = Bigint_destructor(dm[1]);
-    //             free(dm); dm = NULL;
-    //             dm = Bigint_divmod(b, c);
-    //             if (Bigint_equal(dm[1], zero)) {
-    //                 printf("Passes check: b %% gcd(a, b) == 0\n");
-    //             } else {
-    //                 printf("ERROR: Fails check: b %% gcd(a, b) !=0\n");
-    //                 printf("Got "); Bigint_print(c); printf(" instead.\n");
-    //             }
-    //             c = Bigint_destructor(c);
-    //             dm[0] = Bigint_destructor(dm[0]);
-    //             dm[1] = Bigint_destructor(dm[1]);
-    //             free(dm); dm = NULL;
-    //         }
-    //         b = Bigint_destructor(b);
-    //     }
-    // }
-
-    // printf("\n\nTest intlog2:\n");
-    // for (long i=0; i<EXS; i++) {
-    //     a = bn[i];
-    //     n = Bigint_intlog2(a);
-    //     printf("Largest nonzero bit of "); Bigint_print(a); 
-    //     printf(" = %li\n", n); 
-    //     a -> sign = -1;
-    //     n = Bigint_intlog2(a);
-    //     printf("Largest nonzero bit of "); Bigint_print(a); 
-    //     printf(" = %li\n", n); 
-    //     a -> sign = 1;
-    // }
+    printf("\n\nTest intlog2:\n");
+    for (long i=0; i<EXS; i++) {
+        a = bn[i];
+        n = Bigint_intlog2(a);
+        printf("Largest nonzero bit of "); Bigint_print(a); 
+        printf(" = %li\n", n); 
+        a -> sign = -1;
+        n = Bigint_intlog2(a);
+        printf("Largest nonzero bit of "); Bigint_print(a); 
+        printf(" = %li\n", n); 
+        a -> sign = 1;
+    }
 
     printf("\n\nTest bitshift_left:\n");
     for (long i=0; i<EXS; i++) {

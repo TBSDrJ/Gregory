@@ -199,7 +199,6 @@ struct Bigint* Bigint_deepcopy(struct Bigint* a) {
     return b;
 }
 
-
 struct Bigint* Bigint_add(struct Bigint* a, struct Bigint* b) {
     bool a_ok = Bigint_contract(a);
     bool b_ok = Bigint_contract(b);
