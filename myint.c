@@ -1,6 +1,6 @@
 #include"myint.h"
 
-#define MEM_LEAK_CHK 1
+#define MEM_LEAK_CHK 0
 
 struct Myint* Myint_constructor() {
     struct Myint* a = malloc(sizeof(struct Myint));

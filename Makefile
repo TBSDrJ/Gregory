@@ -158,16 +158,16 @@ polynomial-test-mac:
 	./polynomial_test.out
 
 all-mac:
-	gcc -c -fPIC bigint.c -o bigint.o
+	gcc -c -fPIC -O2 bigint.c -o bigint.o
 	gcc -shared bigint.o -o libbigint.dylib
-	gcc -c -fPIC myint.c -o myint.o
+	gcc -c -fPIC -O2 myint.c -o myint.o
 	gcc -shared myint.o -L. -lbigint -o libmyint.dylib
-	gcc -c -fPIC frac.c -o frac.o
+	gcc -c -fPIC -O2 frac.c -o frac.o
 	gcc -shared frac.o -L. -lbigint -lmyint -o libfrac.dylib
-	gcc -c -fPIC polynomial.c -o polynomial.o
+	gcc -c -fPIC -O2 polynomial.c -o polynomial.o
 	gcc -shared polynomial.o -L. -lbigint -lmyint -o libpolynomial.dylib
 	gcc main.c -o main.out -L. -lbigint -lmyint -lfrac -lpolynomial
-	./main.out
+# 	./main.out
 
 all-tests-mac:
 	gcc -c -fPIC bigint.c -o bigint.o

@@ -2,7 +2,11 @@
 to run.  UPDATE: I changed the fraction addition and subtraction algorithms to
 remember a and b instead of finding the common denominator at the beginning 
 and then reducing at the end, and cutting out the fraction reducing helped 
-quite a bit: down to 2 hours, 36 minutes, which is about a 20% speed increase.
+quite a bit: down to 2 hours, 36 minutes, which is about a 20% speed increase.  
+
+Then it occurred to me to use the -O2 flag (not sure why I didn't do this 
+earlier) and that sped it up to under 20 minutes!  (18:45.3). This is a more 
+than 8x speed-up, which is spectacular.
 
 The numerator and denominator, in lowest terms, are 14,438-bit 
 integers.  So the arbitrary precision integers were pretty necessary.

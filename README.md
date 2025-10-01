@@ -75,3 +75,17 @@ Specifically, I am developing an arbitrary-precision library for integers, integ
 I've obviously been testing some as I went along, but I did a pretty terrible job of keeping track of those tests, and ensuring that the tests were thorough.  I've decided to go back and write decent tests for most of the functions, because I should have been doing this all along and now I have regrets.  The functions I am skipping are all used inside the functions that I'm testing, so I'm using that as the tests for those skipped functions, which is probably not the greatest practice, but I'll live with it.  
 
 I did tests for `Polynomial`s first because that's where I was when I started to decide to do this, but then went back to `Bigint` and now I'm working on test coverage for `Myint`.  After that, I will work on tests for `Fraction`.  Then, I'll check on portability of the libraries and tests to linux and Windows, and then I'll work on testing and ironing out the soon-to-be-renamed `Queue_2` library and the `rationalfn` library.  Then, finally, I'll be able to start thinking about generating results.  
+
+### Estimating $\ln(2)$
+
+At some point, I thought it would be an amusing/useful test to use the Alternating Harmonic Series as a test for the `Fraction` arithmetic.  It is well-known that:
+
+```math
+\sum_{n=1}^\infty \frac{(-1)^{n+1}}{n} \rightarrow \ln(2)
+```
+
+Calculating this exactly is quite awful, and is a terrible way to approximate $\ln(2)$ because of the magnitude of the denominators and the fact that alternating series tend to converge much more slowly to their targets (and this one is not an exception).  But, this gave me some ways to check on efficiency and speed.  
+
+It prompted me to make a change in the `Fraction_add()` and `Fraction_subtract()` functions: In the first iteration, I converted both summands to have a common denominator, then did the addition or subraction, then reduced at the end.  But, when the numerator and/or denominator have many digits, this is a huge waste of time.  So, in the Harmonic Series example, when we get near the 10,000<sup>th</sup> term, we have over 14k bits in the common denominator, and then we are finding a common denominator with $\frac{1}{n}$, with $n$ having fewer than 16 bits, and then needlessly reducing that fraction with 14k bits in both numerator and denominator back down to under 16 bits.  So, I changed it to store the summands and just replace the version with the common denominator with the stored values at the end.  
+
+I also remembered at some point to use the `-O2` flag in compiling the libraries and the C program that does the calculation, and this gave me a more than 8x speedup! (2 hrs, 36 mins $\rightarrow$ 18 mins, 45 secs) I don't know if I've ever seen that big a difference using this flag before.

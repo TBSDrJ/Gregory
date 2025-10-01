@@ -16,6 +16,7 @@ int main() {
         tmp = Fraction_destructor(tmp);
         a -> denominator -> my_long = i;
         a -> numerator -> sign *= -1;
+        printf("%li\r", i); fflush(stdout);
     }
     Fraction_print(a); printf("\n");
     Fraction_print(b); printf("\n");
