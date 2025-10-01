@@ -1,6 +1,6 @@
 #include"bigint.h"
 
-#define DEBUG 1
+#define DEBUG 0
 #define MEM_LEAK_CHK 0
 
 // Functions for Bigint
@@ -16,10 +16,10 @@ struct Bigint* Bigint_constructor() {
     return a;
 }
 
-struct Bigint* Bigint_from_long(long b) {
-    struct Bigint* a = Bigint_constructor();
-    Bigint_enqueue(a, b);
-    return a;
+struct Bigint* Bigint_from_long(long a) {
+    struct Bigint* b = Bigint_constructor();
+    Bigint_enqueue(b, a);
+    return b;
 }
 
 /* This represents the contract for just about all of the functions -- 
@@ -30,56 +30,64 @@ struct Bigint* Bigint_from_long(long b) {
     if DEBUG is on, we check that each Entry is well-formed also. */
 bool Bigint_contract(struct Bigint* a) {
     if (!a) {
-        printf("Bigint contract fails, a is NULL\n");
+        fprintf(stderr, "Bigint contract fails, a is NULL\n");
         return false;
     }
     if (!(a -> len)) {
-        printf("Bigint contract fails, a -> len is 0\n");
+        fprintf(stderr, "Bigint contract fails, a -> len is 0\n");
         return false;
     }
     if ((a -> len) < 0) {
-        printf("Bigint contract fails, a -> len is negative.\n");
+        fprintf(stderr, "Bigint contract fails, a -> len is negative.\n");
         return false;
     }
     if (!(a -> sign)) {
-        printf("Bigint contract fails, a -> sign = 0\n");
+        fprintf(stderr, "Bigint contract fails, a -> sign = 0\n");
         return false;
     }
     if ((a -> sign) < -1) {
-        printf("Bigint contract fails, a -> sign < -1\n");
+        fprintf(stderr, "Bigint contract fails, a -> sign < -1\n");
         return false;
     }
     if ((a -> sign) > 1) {
-        printf("Bigint contract fails, a -> sign > 1\n");
+        fprintf(stderr, "Bigint contract fails, a -> sign > 1\n");
         return false;
     }
     if (!(a -> head)) {
-        printf("Bigint contract fails, a -> head is NULL\n");
+        fprintf(stderr, "Bigint contract fails, a -> head is NULL\n");
         return false;
     }
     if (!(a -> tail)) {
-        printf("Bigint contract fails, a -> tail is NULL\n");
+        fprintf(stderr, "Bigint contract fails, a -> tail is NULL\n");
         return false;
     }
     if (DEBUG) {
         if (a -> len == 1) {
             if ((a -> head -> prev) || (a -> head -> next) || 
                     (a -> head != a -> tail)) {
+                fprintf(stderr, "Bigint contract fails, length is 1, but ");
+                fprintf(stderr, "head or tail pointer is not NULL.\n");
                 return false;
             }
         } else {
             struct Entry_long* e = a -> head;
             if ((e -> prev) || !(e -> next) || (e != e -> next -> prev)) {
+                fprintf(stderr, "Bigint contract fails, head entry ");
+                fprintf(stderr, "has an incorrect pointer.\n");
                 return false;
             }
             e = e -> next;
             while(e != a -> tail) {
                 if (!(e -> prev) || !(e -> next) || (e != e -> next -> prev)) {
+                    fprintf(stderr, "Bigint contract fails, interior entry ");
+                    fprintf(stderr, "has an incorrect pointer.\n");
                     return false;
                 }
                 e = e -> next;
             }
             if (!(e -> prev) || (e -> next)) {
+                fprintf(stderr, "Bigint contract fails, tail entry ");
+                fprintf(stderr, "has an incorrect pointer.\n");
                 return false;
             }
         }
@@ -126,9 +134,8 @@ struct Bigint* Bigint_destructor(struct Bigint* a) {
 void Bigint_enqueue(struct Bigint* a, unsigned long n) {
     if (a) {
         if (!(a -> sign)) {
-            if (DEBUG) {
-                fprintf(stderr, 
-                    "ERROR: Failed contract, Bigint_enqueue, sign is zero\n");}
+            fprintf(stderr, 
+                    "ERROR: Failed contract, Bigint_enqueue, sign is zero\n");
             return;
         }
         struct Entry_long* e = Entry_long_constructor(n);
@@ -143,21 +150,17 @@ void Bigint_enqueue(struct Bigint* a, unsigned long n) {
             a -> len = 1;
         }
     } else {
-        if (DEBUG) {
-            fprintf(stderr, 
-                    "ERROR: Failed contract, Bigint_enqueue, a is NULL\n");
-        }
+        fprintf(stderr, "ERROR: Failed contract, Bigint_enqueue, a is NULL\n");
         return; 
     }
     if (!Bigint_contract(a)) {
-        if (DEBUG) {
-            fprintf(stderr, "ERROR: Failed contract, end of Bigint_enqueue\n");}
+        fprintf(stderr, "ERROR: Failed contract, end of Bigint_enqueue\n");
     }
 }
 
 void Bigint_print(struct Bigint* a) {
     if (!Bigint_contract(a)) {
-        if (DEBUG) {fprintf(stderr, "ERROR: Failed contract, Bigint_print\n");}
+        fprintf(stderr, "ERROR: Failed contract, Bigint_print\n");
         return;
     }
     struct Entry_long* e = a -> head;
@@ -171,6 +174,10 @@ void Bigint_print(struct Bigint* a) {
 }
 
 struct Bigint* Bigint_deepcopy(struct Bigint* a) {
+    if (!Bigint_contract(a)) {
+        fprintf(stderr, "ERROR: Failed contract, Bigint_deepcopy\n");
+        return NULL;
+    }
     struct Bigint* b = Bigint_constructor();
     struct Entry_long* e_a = a -> head;
     struct Entry_long* e_b_prev = NULL;
@@ -196,9 +203,9 @@ struct Bigint* Bigint_deepcopy(struct Bigint* a) {
 struct Bigint* Bigint_add(struct Bigint* a, struct Bigint* b) {
     bool a_ok = Bigint_contract(a);
     bool b_ok = Bigint_contract(b);
-    if (!a_ok && DEBUG) 
+    if (!a_ok) 
         {fprintf(stderr, "ERROR: Failed contract, Bigint_add, a\n");} 
-    if (!b_ok && DEBUG) 
+    if (!b_ok) 
         {fprintf(stderr, "ERROR: Failed contract, Bigint_add, b\n");}
     if (!a_ok || !b_ok) {return NULL;}
     if ((a -> sign == -1) && (b -> sign == 1)) {
@@ -276,9 +283,9 @@ struct Bigint* Bigint_add(struct Bigint* a, struct Bigint* b) {
 struct Bigint* Bigint_subtract(struct Bigint* a, struct Bigint* b) {
     bool a_ok = Bigint_contract(a);
     bool b_ok = Bigint_contract(b);
-    if (!a_ok && DEBUG) {
+    if (!a_ok) {
         fprintf(stderr, "ERROR: Failed contract, Bigint_subtract, a\n");}
-    if (!b_ok && DEBUG) {
+    if (!b_ok) {
         fprintf(stderr, "ERROR: Failed contract, Bigint_subtract, a\n");}
     if (!a_ok || !b_ok) {return NULL;}
     // So we know that a and b are not NULL and have at least one entry each.
@@ -352,9 +359,9 @@ struct Bigint* Bigint_subtract(struct Bigint* a, struct Bigint* b) {
 struct Bigint* Bigint_multiply(struct Bigint* a, struct Bigint* b) {
     bool a_ok = Bigint_contract(a);
     bool b_ok = Bigint_contract(b);
-    if (!a_ok && DEBUG) {
+    if (!a_ok) {
         fprintf(stderr, "ERROR: Failed contract, Bigint_multiply, a\n");}
-    if (!b_ok && DEBUG) {
+    if (!b_ok) {
         fprintf(stderr, "ERROR: Failed contract, Bigint_multiply, b\n");}
     if (!a_ok || !b_ok) {return NULL;}
     struct Bigint* c = Bigint_constructor();
@@ -443,14 +450,14 @@ struct Bigint* Bigint_multiply(struct Bigint* a, struct Bigint* b) {
 struct Bigint** Bigint_divmod(struct Bigint* a, struct Bigint* b) {
     bool a_ok = Bigint_contract(a);
     bool b_ok = Bigint_contract(b);
-    if (!a_ok && DEBUG) 
+    if (!a_ok) 
         {fprintf(stderr, "ERROR: Failed contract, Bigint_divmod, a\n");}
-    if (!b_ok && DEBUG) 
+    if (!b_ok) 
         {fprintf(stderr, "ERROR: Failed contract, Bigint_divmod, b\n");}
+    Bigint_eliminate_zeros(b);
     if ((b -> len == 1) && (b -> head -> content == 0)) {
         b_ok = false;
-        if (DEBUG) 
-            {fprintf(stderr, "ERROR: Division by zero in Bigint_divmod.\n");}
+        fprintf(stderr, "ERROR: Division by zero in Bigint_divmod.\n");
     }
     if (!a_ok || !b_ok) {return NULL;}
     long a_sign = a -> sign;
@@ -532,9 +539,9 @@ struct Bigint** Bigint_divmod(struct Bigint* a, struct Bigint* b) {
 struct Bigint* Bigint_gcd(struct Bigint* a, struct Bigint* b) {
     bool a_ok = Bigint_contract(a);
     bool b_ok = Bigint_contract(b);
-    if (!a_ok && DEBUG) 
+    if (!a_ok) 
         {fprintf(stderr, "ERROR: Failed contract, Bigint_gcd, a\n");}
-    if (!b_ok && DEBUG) 
+    if (!b_ok) 
         {fprintf(stderr, "ERROR: Failed contract, Bigint_gcd, b\n");}
     if (!a_ok || !b_ok) {return NULL;}
     long a_sign = a -> sign, b_sign = b -> sign;
@@ -584,8 +591,7 @@ struct Bigint* Bigint_gcd(struct Bigint* a, struct Bigint* b) {
 
 long Bigint_intlog2(struct Bigint* a) {
     if (!Bigint_contract(a)) {
-        if (DEBUG) 
-            {fprintf(stderr, "ERROR: Failed contract, Bigint_intlog2\n");}
+        fprintf(stderr, "ERROR: Failed contract, Bigint_intlog2\n");
         return -2;
     }
     Bigint_eliminate_zeros(a);
@@ -603,9 +609,7 @@ long Bigint_intlog2(struct Bigint* a) {
 
 struct Bigint* Bigint_bitshift_left(struct Bigint* a, unsigned long n) {
     if (!Bigint_contract(a)) {
-        if (DEBUG) {
-            fprintf(stderr, 
-                    "ERROR: Failed contract, Bigint_bitshift_left, a\n");}
+        fprintf(stderr, "ERROR: Failed contract, Bigint_bitshift_left, a\n");
         return NULL;
     }
     struct Bigint* b = Bigint_constructor();
@@ -646,9 +650,7 @@ struct Bigint* Bigint_bitshift_left(struct Bigint* a, unsigned long n) {
 
 struct Bigint* Bigint_bitshift_right(struct Bigint* a, unsigned long n) {
     if (!Bigint_contract(a)) {
-        if (DEBUG) {
-            fprintf(stderr, 
-                    "ERROR: Failed contract, Bigint_bitshift_right, a\n");}
+        fprintf(stderr, "ERROR: Failed contract, Bigint_bitshift_right, a\n");
         return NULL;
     }
     struct Bigint* b = Bigint_constructor();
@@ -690,10 +692,7 @@ struct Bigint* Bigint_bitshift_right(struct Bigint* a, unsigned long n) {
 
 void Bigint_eliminate_zeros(struct Bigint* a) {
     if (!Bigint_contract(a)) {
-        if (DEBUG) {
-            fprintf(stderr, 
-                    "ERROR: Failed contract, Bigint_eliminate_zeros, a\n");
-        }
+        fprintf(stderr, "ERROR: Failed contract, Bigint_eliminate_zeros, a\n");
         return;
     }
     struct Entry_long* e = a -> tail;
@@ -713,9 +712,9 @@ void Bigint_eliminate_zeros(struct Bigint* a) {
 bool Bigint_equal(struct Bigint* a, struct Bigint* b) {
     bool a_ok = Bigint_contract(a);
     bool b_ok = Bigint_contract(b);
-    if (!a_ok && DEBUG) 
+    if (!a_ok) 
         {fprintf(stderr, "ERROR: Failed contract, Bigint_equal, a\n");}
-    if (!b_ok && DEBUG) 
+    if (!b_ok) 
         {fprintf(stderr, "ERROR: Failed contract, Bigint_equal, b\n");}
     if (!a_ok || !b_ok) {return false;}
     Bigint_eliminate_zeros(a);
@@ -746,9 +745,9 @@ bool Bigint_equal(struct Bigint* a, struct Bigint* b) {
 bool Bigint_lt(struct Bigint* a, struct Bigint* b) {
     bool a_ok = Bigint_contract(a);
     bool b_ok = Bigint_contract(b);
-    if (!a_ok && DEBUG) 
+    if (!a_ok) 
         {fprintf(stderr, "ERROR: Failed contract, Bigint_lt, a\n");}
-    if (!b_ok && DEBUG) 
+    if (!b_ok) 
         {fprintf(stderr, "ERROR: Failed contract, Bigint_lt, b\n");}
     if (!a_ok || !b_ok) {return false;}
     if (a -> sign == -1 && b -> sign == 1) {

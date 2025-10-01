@@ -27,11 +27,11 @@ struct Bigint {
 
 struct Bigint* Bigint_constructor();
 struct Bigint* Bigint_from_long(long a);
-struct Bigint* Bigint_destructor(struct Bigint* b);
+struct Bigint* Bigint_destructor(struct Bigint* a);
 // This next function represents the contract for most functions.
 bool Bigint_contract(struct Bigint* a);
-void Bigint_enqueue(struct Bigint* b, unsigned long n);
-void Bigint_print(struct Bigint* b);
+void Bigint_enqueue(struct Bigint* a, unsigned long n);
+void Bigint_print(struct Bigint* a);
 struct Bigint* Bigint_deepcopy(struct Bigint* a);
 struct Bigint* Bigint_add(struct Bigint* a, struct Bigint* b);
 struct Bigint* Bigint_subtract(struct Bigint* a, struct Bigint* b);
