@@ -23,7 +23,7 @@ f_8: num & den more than 64 bits, num > den, not in lowest terms
 struct Fraction* f_0() {
     struct Myint* n = Myint_constructor();
     struct Myint* d = Myint_from_long(1);
-    struct Fraction* a = Fraction_constructor();
+    struct Fraction* a = Fraction_from_Myints(n, d);
     a -> numerator = n;
     a -> denominator = d;
     return a;
@@ -32,7 +32,7 @@ struct Fraction* f_0() {
 struct Fraction* f_1() {
     struct Myint* n = Myint_from_long(1);
     struct Myint* d = Myint_from_long(5);
-    struct Fraction* a = Fraction_constructor();
+    struct Fraction* a = Fraction_from_Myints(n, d);
     a -> numerator = n;
     a -> denominator = d;
     return a;
@@ -41,7 +41,7 @@ struct Fraction* f_1() {
 struct Fraction* f_2() {
     struct Myint* n = Myint_from_long(11);
     struct Myint* d = Myint_from_long(7);
-    struct Fraction* a = Fraction_constructor();
+    struct Fraction* a = Fraction_from_Myints(n, d);
     a -> numerator = n;
     a -> denominator = d;
     return a;
@@ -50,7 +50,7 @@ struct Fraction* f_2() {
 struct Fraction* f_3() {
     struct Myint* n = Myint_from_long((long) 23*29*31*61*67*71);
     struct Myint* d = Myint_from_long((long) 37*41*43*47*53*59);
-    struct Fraction* a = Fraction_constructor();
+    struct Fraction* a = Fraction_from_Myints(n, d);
     a -> numerator = n;
     a -> denominator = d;
     return a;
@@ -60,7 +60,7 @@ struct Fraction* f_3() {
 struct Fraction* f_4() {
     struct Myint* n = Myint_from_long((long) 47*53*59*61*67*71);
     struct Myint* d = Myint_from_long((long) 37*41*43*73*79*83);
-    struct Fraction* a = Fraction_constructor();
+    struct Fraction* a = Fraction_from_Myints(n, d);
     a -> numerator = n;
     a -> denominator = d;
     return a;
@@ -73,7 +73,7 @@ struct Fraction* f_5() {
     Bigint_enqueue(d -> bigint, (long) 1 << 31);
     Bigint_enqueue(d -> bigint, (long) 1 << 30);
     Bigint_enqueue(d -> bigint, (long) 1 << 29);
-    struct Fraction* a = Fraction_constructor();
+    struct Fraction* a = Fraction_from_Myints(n, d);
     a -> numerator = n;
     a -> denominator = d;
     return a;
@@ -86,7 +86,7 @@ struct Fraction* f_6() {
     Bigint_enqueue(n -> bigint, (long) 1 << 30);
     Bigint_enqueue(n -> bigint, (long) 1 << 29);
     struct Myint* d = Myint_from_long((long) 37*41*43*47*53*59);
-    struct Fraction* a = Fraction_constructor();
+    struct Fraction* a = Fraction_from_Myints(n, d);
     a -> numerator = n;
     a -> denominator = d;
     return a;
@@ -104,7 +104,7 @@ struct Fraction* f_7() {
     Bigint_enqueue(d -> bigint, 0);
     Bigint_enqueue(d -> bigint, 0);
     Bigint_enqueue(d -> bigint, (long) 1 << 30);
-    struct Fraction* a = Fraction_constructor();
+    struct Fraction* a = Fraction_from_Myints(n, d);
     a -> numerator = n;
     a -> denominator = d;
     return a;
@@ -122,7 +122,7 @@ struct Fraction* f_8() {
     Bigint_enqueue(d -> bigint, (long) 1 << 31);
     Bigint_enqueue(d -> bigint, (long) 1 << 30);
     Bigint_enqueue(d -> bigint, (long) 1 << 29);
-    struct Fraction* a = Fraction_constructor();
+    struct Fraction* a = Fraction_from_Myints(n, d);
     a -> numerator = n;
     a -> denominator = d;
     return a;
@@ -130,6 +130,9 @@ struct Fraction* f_8() {
 
 struct Fraction** f_n() {
     struct Fraction** fn = malloc(EXS * sizeof(struct Fraction*));
+    if (MEM_LEAK_CHK) {
+        fprintf(stderr, "malloc fn_array %li\n", (long) fn);
+    }
     fn[0] = f_0();
     fn[1] = f_1();
     fn[2] = f_2();
@@ -469,7 +472,13 @@ void arithmetic_checks() {
 //             b = Myint_destructor(b);
 //         }
 //     }
-
+    for (long i=0; i<EXS; i++) {
+        fn[i] = Fraction_destructor(fn[i]);
+    }
+    if (MEM_LEAK_CHK) {
+        fprintf(stderr, "free fn_array %li\n", (long) fn);
+    }
+    free(fn); fn = NULL;
 }    
 
 int main() {

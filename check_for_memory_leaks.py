@@ -29,7 +29,9 @@ for line in lines:
             probs = True
 if addr:
     print(f"Some allocated addresses not freed.")
-    print(addr)
+    for address in addr:
+        found = [line for line in lines if str(address) in line]
+        print(found[-1], end="")
     probs = True
 if not probs:
     print("\nAll memory handled properly.  Whoo-hoo!\n\n")
