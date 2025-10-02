@@ -18,19 +18,23 @@ struct Fraction* Fraction_destructor(struct Fraction* a) {
 
 bool Fraction_contract(struct Fraction* a) {
     bool fail = false;
-    if (!(a -> numerator)) {
+    if (!a) {
+        printf("Fraction_contract fails, a is NULL.\n");
+        fail = true;
+    }
+    else if (!(a -> numerator)) {
         printf("Fraction_contract fails, a -> numerator is NULL.\n");
         fail = true;
     }
-    if (!(a -> denominator)) {
+    else if (!(a -> denominator)) {
         printf("Fraction_contract fails, a -> denominator is NULL.\n");
         fail = true;
     }
-    if (!(Myint_contract(a -> numerator))) {
+    else if (!(Myint_contract(a -> numerator))) {
         printf("Fraction_contract fails, a -> numerator, Myint_contract.\n");
         fail = true;
     }
-    if (!(Myint_contract(a -> denominator))) {
+    else if (!(Myint_contract(a -> denominator))) {
         printf("Fraction_contract fails, a -> denominator, Myint_contract.\n");
         fail = true;
     }
@@ -43,7 +47,11 @@ void Fraction_print(struct Fraction* a) {
         printf("Fraction_contract fails at Fraction_print\n");
         return;
     }
-    Myint_print(a -> numerator); printf(" / "); Myint_print(a -> denominator);
+    if (a) {
+        Myint_print(a -> numerator);
+        printf(" / "); 
+        Myint_print(a -> denominator);
+    }
 }
 
 struct Fraction* Fraction_deepcopy(struct Fraction* a) {

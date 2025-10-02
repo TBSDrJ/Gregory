@@ -18,6 +18,8 @@ f_7: num & den more than 64 bits, num < den, not in lowest terms
 f_8: num & den more than 64 bits, num > den, not in lowest terms
 */
 
+// I decided to just use the arithmetic checks as the memory leak checks.
+
 struct Fraction* f_0() {
     struct Myint* n = Myint_constructor();
     struct Myint* d = Myint_from_long(1);
@@ -140,61 +142,17 @@ struct Fraction** f_n() {
     return fn;
 }
 
-// void memory_leak_checks() {
-//     struct Myint* a = m_3();
-//     struct Myint* b = Myint_deepcopy(a);
-//     struct Myint* c = Myint_add(a, b);
-//     struct Myint* d = Myint_multiply(a, b);
-//     struct Myint* e = Myint_subtract(d, c);
-//     struct Myint* f = Myint_gcd(d, e);
-//     struct Myint** dm = Myint_divmod(d, e);
-//     struct Myint* g = dm[0];
-//     struct Myint* h = dm[1];
-//     struct Myint* i = m_2();
-//     struct Myint* j = Myint_gcd(d, i);
-//     struct Myint* k = Myint_bitshift_left(d, 100);
-//     struct Myint* l = Myint_bitshift_right(d, 100);
-//     printf("a: "); Myint_print(a); printf("\n");
-//     printf("b: "); Myint_print(b); printf("\n");
-//     printf("c: "); Myint_print(c); printf("\n");
-//     printf("d: "); Myint_print(d); printf("\n");
-//     printf("e: "); Myint_print(e); printf("\n");
-//     printf("f: "); Myint_print(f); printf("\n");
-//     printf("g: "); Myint_print(g); printf("\n");
-//     printf("h: "); Myint_print(h); printf("\n");
-//     printf("i: "); Myint_print(i); printf("\n");
-//     printf("j: "); Myint_print(j); printf("\n");
-//     printf("k: "); Myint_print(k); printf("\n");
-//     printf("l: "); Myint_print(l); printf("\n");
-//     a = Myint_destructor(a);
-//     b = Myint_destructor(b);
-//     c = Myint_destructor(c);
-//     d = Myint_destructor(d);
-//     e = Myint_destructor(e);
-//     f = Myint_destructor(f);
-//     g = Myint_destructor(g);
-//     h = Myint_destructor(h);
-//     i = Myint_destructor(i);
-//     j = Myint_destructor(j);
-//     k = Myint_destructor(k);
-//     l = Myint_destructor(l);
-//     if (MEM_LEAK_CHK) {
-//         fprintf(stderr, "free dm-from-Myint_divmod-test %li\n", (long) dm);
-//     }
-//     free(dm); dm = NULL;
-// }
-
 void arithmetic_checks() {
-//     char signs[8] = {1, 1, 1, -1, -1, 1, -1, -1};
+    char signs[8] = {1, 1, 1, -1, -1, 1, -1, -1};
     struct Fraction** fn = f_n();
     struct Fraction* a = NULL;
-//     struct Myint* b = NULL;
-//     struct Myint* c = NULL;
-//     struct Myint* d = NULL;
-//     struct Myint** dm = NULL;
-//     struct Myint* zero = Myint_from_long(0);
-//     long n;
-//     long bitshifts[5] = {0, 1, 30, 100, 300};
+    struct Fraction* b = NULL;
+    struct Fraction* c = NULL;
+    struct Fraction* d = NULL;
+    struct Fraction** dm = NULL;
+    struct Fraction* zero = fn[0];
+    long n;
+    long bitshifts[5] = {0, 1, 30, 100, 300};
     for (long i=0; i<EXS; i++) {
         a = fn[i];
         printf("test Fraction #%li: ", i); Fraction_print(a); printf("\n");
@@ -203,20 +161,27 @@ void arithmetic_checks() {
         Myint_neg(a -> numerator);
     }
 
-//     // deepcopy test
-//     printf("\n\nTest deepcopy:\n");
-//     a = mn[2];
-//     // Make 2 copies so that I don't destroy the actual array entry
-//     b = Myint_deepcopy(a);
-//     c = Myint_deepcopy(b);
-//     printf("b is deepcopy of mn[2], c is deepcopy of b.\n");
-//     printf("b is "); Myint_print(b); printf(" at address %li\n", (long) b);
-//     printf("c is "); Myint_print(c); printf(" at address %li\n", (long) c);
-//     printf("\nNow destroy b, see if c still exists.\n");
-//     b = Myint_destructor(b);
-//     printf("b is "); Myint_print(b); printf(" at address %li\n", (long) b);
-//     printf("c is "); Myint_print(c); printf(" at address %li\n", (long) c);
-//     c = Myint_destructor(c);
+    // deepcopy test
+    printf("\n\nTest deepcopy:\n");
+    for (long i=1; i<5; i++) {
+        a = fn[2*i];
+        // Make 2 copies so that I don't destroy the actual array entry
+        b = Fraction_deepcopy(a);
+        c = Fraction_deepcopy(b);
+        printf("b is deepcopy of fn[%li], c is deepcopy of b.\n", 2*i);
+        printf("b is "); Fraction_print(b); 
+        printf(" at address %li\n", (long) b);
+        printf("c is "); Fraction_print(c); 
+        printf(" at address %li\n", (long) c);
+        printf("\nNow destroy b, see if c still exists.\n");
+        b = Fraction_destructor(b);
+        printf("b is "); Fraction_print(b); 
+        printf(" at address %li\n", (long) b);
+        printf("c is "); Fraction_print(c); 
+        printf(" at address %li\n", (long) c);
+        c = Fraction_destructor(c);
+        printf("\n");
+    }
 
 //     printf("\n\nTest addition:\n");
 //     for (long i=0; i<EXS; i++) {
@@ -508,6 +473,5 @@ void arithmetic_checks() {
 }    
 
 int main() {
-    // memory_leak_checks();
     arithmetic_checks();
 }
