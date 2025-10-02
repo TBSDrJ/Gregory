@@ -41,7 +41,7 @@ frac-test:
 	gcc -shared myint.o -L. -lbigint -o libmyint.so
 	gcc -c -fPIC frac.c -o frac.o
 	gcc -shared frac.o -L. -lbigint -lmyint -o libfrac.so
-	gcc frac_test.c -L. -lmyint -lbigint -o frac_test.out
+	gcc frac_test.c -L. -lmyint -lbigint -lfrac -o frac_test.out
 	./frac_test.out
 	
 polynomial:
@@ -136,7 +136,7 @@ frac-test-mac:
 	gcc -shared myint.o -L. -lbigint -o libmyint.dylib
 	gcc -c -fPIC frac.c -o frac.o
 	gcc -shared frac.o -L. -lbigint -lmyint -o libfrac.dylib
-	gcc frac_test.c -L. -lmyint -lbigint -o frac_test.out
+	gcc frac_test.c -L. -lmyint -lbigint -lfrac -o frac_test.out
 	./frac_test.out
 	
 polynomial-mac:

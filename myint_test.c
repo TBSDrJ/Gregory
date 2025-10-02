@@ -2,7 +2,7 @@
 
 // If this is set to 1, it is intended that you redirect stderr to tmp.txt e.g.:
 //      ./bigint_test.out 2> tmp.txt
-// The #define MEM_LEAK_CHK in bigint.c also needs to be set to 1.
+// The #define MEM_LEAK_CHK in myint.c also needs to be set to 1.
 #define MEM_LEAK_CHK 0
 #define EXS 5
 
