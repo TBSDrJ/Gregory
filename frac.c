@@ -14,6 +14,16 @@ struct Fraction* Fraction_constructor() {
     return a;
 }
 
+struct Fraction* Fraction_from_Myints(struct Myint* n, struct Myint* d) {
+    struct Fraction* a = malloc(sizeof(struct Fraction));
+    if (MEM_LEAK_CHK) {
+        fprintf(stderr, "malloc Fraction %li\n", (long) a);
+    }
+    a -> numerator = n;
+    a -> denominator = d;
+    return a;
+}
+
 struct Fraction* Fraction_destructor(struct Fraction* a) {
     a -> numerator = Myint_destructor(a -> numerator);
     a -> denominator = Myint_destructor(a -> denominator);

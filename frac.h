@@ -13,6 +13,7 @@ struct Fraction {
 };
 
 struct Fraction* Fraction_constructor();
+struct Fraction* Fraction_from_Myints(struct Myint* n, struct Myint* d);
 struct Fraction* Fraction_destructor(struct Fraction* a);
 bool Fraction_contract(struct Fraction* a);
 void Fraction_print(struct Fraction* a);
