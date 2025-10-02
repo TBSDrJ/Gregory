@@ -14,21 +14,25 @@ and then just run this program with no command-line arguments.
 with open('tmp.txt', 'r') as f:
     lines = list(f.readlines())
 probs = False
-addr = []
+addr = {}
 for line in lines:
     s = line.split()
     if s[0] == "malloc":
-        addr.append(int(s[2]))
+        addr[int(s[2])] = s[1]
     if s[0] == "free":
         ptr = int(s[2])
-        if ptr in addr:
-            addr.pop(addr.index(ptr))
+        if ptr in addr.keys():
+            if addr[ptr] == s[1]:
+                del addr[ptr]
+            else:
+                print(f"Type mismatch. malloc {addr[ptr]}, free {s[1]}")
         else:
             msg = f"freed ptr {ptr} to {s[1]} not in allocated addresses"
             print(msg)
             probs = True
+print(len(addr))
 if addr:
-    print(f"Some allocated addresses not freed.")
+    print(f"Some addresses not matched.")
     for address in addr:
         found = [line for line in lines if str(address) in line]
         print(found[-1], end="")

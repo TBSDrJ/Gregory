@@ -1,7 +1,7 @@
 #include"bigint.h"
 
 #define DEBUG 0
-#define MEM_LEAK_CHK 0
+#define MEM_LEAK_CHK 1
 
 // Functions for Bigint
 struct Bigint* Bigint_constructor() {
@@ -519,15 +519,15 @@ struct Bigint** Bigint_divmod(struct Bigint* a, struct Bigint* b) {
             tmp_0 = Bigint_destructor(tmp_0);
         }
         shifted_b = Bigint_destructor(shifted_b);
-        one = Bigint_destructor(one);
     }
+    one = Bigint_destructor(one);
     a -> sign = a_sign;
     b -> sign = b_sign;
     quotient -> sign = (a -> sign) * (b -> sign);
     residue -> sign = a -> sign;
     struct Bigint** quot_res = malloc(2*sizeof(struct Bigint*));
     if (MEM_LEAK_CHK) {
-        fprintf(stderr, "malloc quot_res-in-Bigint_divmod %li\n", 
+        fprintf(stderr, "malloc Bigint_divmod %li\n", 
                 (long) quot_res);
     }
     quot_res[0] = quotient;
@@ -550,7 +550,7 @@ struct Bigint* Bigint_gcd(struct Bigint* a, struct Bigint* b) {
     struct Bigint* quotient = divmod[0];
     struct Bigint* residue = divmod[1];
     if (MEM_LEAK_CHK) {
-        fprintf(stderr, "free divmod-1-in-Bigint_gcd %li\n", 
+        fprintf(stderr, "free Bigint_divmod %li\n", 
                 (long) divmod);
     }
     free(divmod); divmod = NULL; 
@@ -570,7 +570,7 @@ struct Bigint* Bigint_gcd(struct Bigint* a, struct Bigint* b) {
         tmp = Bigint_destructor(tmp);}
         residue = divmod[1];
         if (MEM_LEAK_CHK) {
-            fprintf(stderr, "free divmod-2-in-Bigint_gcd %li\n", 
+            fprintf(stderr, "free Bigint_divmod %li\n", 
                     (long) divmod);
         }
         free(divmod); divmod = NULL;
