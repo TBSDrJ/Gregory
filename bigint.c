@@ -173,6 +173,21 @@ void Bigint_print(struct Bigint* a) {
     }
 }
 
+void Bigint_print_stderr(struct Bigint* a) {
+    if (!Bigint_contract(a)) {
+        fprintf(stderr, "ERROR: Failed contract, Bigint_print\n");
+        return;
+    }
+    struct Entry_long* e = a -> head;
+    if (a -> sign == -1) {
+        fprintf(stderr, "-");}
+    while(e) {
+        fprintf(stderr, "%lu", e -> content);
+        if (e -> next) {fprintf(stderr, ", ");}
+        e = e -> next;
+    }
+}
+
 struct Bigint* Bigint_deepcopy(struct Bigint* a) {
     if (!Bigint_contract(a)) {
         fprintf(stderr, "ERROR: Failed contract, Bigint_deepcopy\n");

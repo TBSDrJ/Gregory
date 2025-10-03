@@ -82,6 +82,19 @@ void Myint_print(struct Myint* a) {
     }
 }
 
+void Myint_print_stderr(struct Myint* a) {
+    if (!Myint_contract(a)) {
+        fprintf(stderr, "ERROR: Failed contract, Myint_print\n");
+        return;
+    }
+    if (a -> int_type == LONG) {
+        if (a -> sign < 0) {fprintf(stderr, "-");}
+        fprintf(stderr, "%lu", a -> my_long);
+    } else {
+        Bigint_print_stderr(a -> bigint);
+    }
+}
+
 void Myint_promote(struct Myint* a) {
     if (!Myint_contract(a)) {
         fprintf(stderr, "ERROR: Failed contract, Myint_promote\n");

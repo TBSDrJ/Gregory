@@ -17,6 +17,7 @@ struct Fraction* Fraction_from_Myints(struct Myint* n, struct Myint* d);
 struct Fraction* Fraction_destructor(struct Fraction* a);
 bool Fraction_contract(struct Fraction* a);
 void Fraction_print(struct Fraction* a);
+void Fraction_print_stderr(struct Fraction* a);
 struct Fraction* Fraction_deepcopy(struct Fraction* a);
 void Fraction_reduce(struct Fraction* a);
 // This converts a and b in place so that they have a common denominator

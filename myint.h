@@ -26,6 +26,7 @@ struct Myint* Myint_from_long(long a);
 struct Myint* Myint_destructor(struct Myint* a);
 bool Myint_contract(struct Myint* a);
 void Myint_print(struct Myint* a);
+void Myint_print_stderr(struct Myint* a);
 // if int_type is LONG, promote to a single-digit BIGINT
 void Myint_promote(struct Myint* a);
 // if int_type is BIGINT, eliminate_zeros, then, if only one digit, convert

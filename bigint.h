@@ -32,6 +32,7 @@ struct Bigint* Bigint_destructor(struct Bigint* a);
 bool Bigint_contract(struct Bigint* a);
 void Bigint_enqueue(struct Bigint* a, unsigned long n);
 void Bigint_print(struct Bigint* a);
+void Bigint_print_stderr(struct Bigint* a);
 struct Bigint* Bigint_deepcopy(struct Bigint* a);
 struct Bigint* Bigint_add(struct Bigint* a, struct Bigint* b);
 struct Bigint* Bigint_subtract(struct Bigint* a, struct Bigint* b);

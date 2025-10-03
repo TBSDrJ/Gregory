@@ -74,6 +74,18 @@ void Fraction_print(struct Fraction* a) {
     }
 }
 
+void Fraction_print_stderr(struct Fraction* a) {
+    if (!(Fraction_contract(a))) {
+        fprintf(stderr, "Fraction_contract fails at Fraction_print\n");
+        return;
+    }
+    if (a) {
+        Myint_print_stderr(a -> numerator);
+        printf(" / "); 
+        Myint_print_stderr(a -> denominator);
+    }
+}
+
 struct Fraction* Fraction_deepcopy(struct Fraction* a) {
     if (!(Fraction_contract(a))) {
         fprintf(stderr, "Fraction_contract fails at Fraction_deepcopy\n");
