@@ -75,7 +75,7 @@ void Myint_print(struct Myint* a) {
         return;
     }
     if (a -> int_type == LONG) {
-        if (a -> sign < 0) {printf("-");}
+        if (Myint_getsign(a) < 0) {printf("-");}
         printf("%lu", a -> my_long);
     } else {
         Bigint_print(a -> bigint);
@@ -88,7 +88,7 @@ void Myint_print_stderr(struct Myint* a) {
         return;
     }
     if (a -> int_type == LONG) {
-        if (a -> sign < 0) {fprintf(stderr, "-");}
+        if (Myint_getsign(a) < 0) {fprintf(stderr, "-");}
         fprintf(stderr, "%lu", a -> my_long);
     } else {
         Bigint_print_stderr(a -> bigint);
@@ -101,8 +101,7 @@ void Myint_promote(struct Myint* a) {
         return;
     }
     a -> int_type = BIGINT;
-    a -> bigint = Bigint_constructor();
-    Bigint_enqueue(a -> bigint, a -> my_long);
+    a -> bigint = Bigint_from_long(a -> my_long);
     a -> my_long = 0;
     a -> bigint -> sign = a -> sign;
 }
@@ -164,7 +163,7 @@ long Myint_intlog2(struct Myint* a) {
 
 void Myint_neg(struct Myint* a) {
        if (!Myint_contract(a)) {
-        fprintf(stderr, "ERROR: Failed contract, Myint_intlog2\n");
+        fprintf(stderr, "ERROR: Failed contract, Myint_neg\n");
         return;
     }
     if (a -> int_type == LONG) {
@@ -172,6 +171,20 @@ void Myint_neg(struct Myint* a) {
     } else {
         a -> bigint -> sign *= -1;
     }
+}
+
+char Myint_getsign(struct Myint* a) {
+       if (!Myint_contract(a)) {
+        fprintf(stderr, "ERROR: Failed contract, Myint_getsign\n");
+        return 0;
+    }
+    char a_sign;
+    if (a -> int_type == LONG) {
+        a_sign = a -> sign;
+    } else {
+        a_sign = a -> bigint -> sign;
+    }
+    return a_sign;
 }
 
 struct Myint* Myint_add(struct Myint* a, struct Myint* b) {
@@ -283,19 +296,11 @@ struct Myint* Myint_multiply(struct Myint* a, struct Myint* b) {
         Myint_reduce(b);
     }
     Myint_reduce(c);
-    long a_sign, b_sign;
-    if (a -> int_type == LONG) {
-        a_sign = a -> sign;
+    if (c -> int_type == LONG) {
+        c -> sign = Myint_getsign(a) * Myint_getsign(b);
     } else {
-        a_sign = a -> bigint -> sign;
+        c -> bigint -> sign = Myint_getsign(a) * Myint_getsign(b);
     }
-    if (b -> int_type == LONG) {
-        b_sign = b -> sign;
-    } else {
-        b_sign = b -> bigint -> sign;
-    }
-    c -> sign = (a_sign) * (b_sign);
-    if (c -> bigint) {c -> bigint -> sign = (a_sign) * (b_sign);}
     return c;
 }
 
@@ -361,19 +366,16 @@ struct Myint** Myint_divmod(struct Myint* a, struct Myint* b) {
     if (MEM_LEAK_CHK) {
         fprintf(stderr, "malloc Myint_divmod %li\n", (long) divmod);
     }
-    char a_sign, b_sign;
-    if (a -> int_type == LONG) 
-        {a_sign = a -> sign;} 
-    else 
-        {a_sign = a -> bigint -> sign;}
-    if (b -> int_type == LONG) 
-        {b_sign = b -> sign;} 
-    else 
-        {b_sign = b -> bigint -> sign;}
-    div -> sign = (a_sign) * (b_sign);
-    if (div -> bigint) {div -> bigint -> sign = (a_sign) * (b_sign);}
-    mod -> sign = a_sign;
-    if (mod -> bigint) {mod -> bigint -> sign = a_sign;}
+    if (div -> int_type == LONG) {
+        div -> sign = Myint_getsign(a) * Myint_getsign(b);
+    } else {
+        div -> bigint -> sign = Myint_getsign(a) * Myint_getsign(b);
+    }
+    if (mod -> int_type == LONG) {
+        mod -> sign = Myint_getsign(a);
+    } else {
+        mod -> bigint -> sign = Myint_getsign(a);
+    }
     divmod[0] = div;
     divmod[1] = mod;
     return divmod;
@@ -390,8 +392,9 @@ struct Myint* Myint_gcd(struct Myint* a, struct Myint* b) {
     }
     if (!a_ok || !b_ok) {return NULL;}
     struct Myint* gcd = Myint_constructor();
-    long a_sign = a -> sign, b_sign = b -> sign;
-    a -> sign = 1; b -> sign = 1;
+    char a_sign = Myint_getsign(a), b_sign = Myint_getsign(b);
+    if (a_sign < 0) {Myint_neg(a);}
+    if (b_sign < 0) {Myint_neg(b);}
     if ((a -> int_type == LONG) && (b -> int_type == LONG)) {
         unsigned long next_a = 0;
         unsigned long next_b = b -> my_long;
@@ -417,9 +420,13 @@ struct Myint* Myint_gcd(struct Myint* a, struct Myint* b) {
         Myint_reduce(b);
         Myint_reduce(gcd);
     }
-    a -> sign = a_sign; b -> sign = b_sign;
-    gcd -> sign = 1;
-    if (gcd -> bigint) {gcd -> bigint -> sign = 1;}
+    if (a_sign < 0) {Myint_neg(a);} 
+    if (b_sign < 0) {Myint_neg(b);} 
+    if (gcd -> int_type == LONG) {
+        gcd -> sign = 1;
+    } else {
+        gcd -> bigint -> sign = 1;
+    }
     return gcd;
 }
 
@@ -451,13 +458,10 @@ struct Myint* Myint_bitshift_left(struct Myint* a, unsigned long n) {
         Myint_reduce(a);
         Myint_reduce(b);
     }
-    b -> sign = a -> sign; 
-    if (b -> bigint) {
-        if (a -> bigint) {
-            b -> bigint -> sign = a -> bigint -> sign;
-        } else {
-            b -> bigint -> sign = a -> sign;
-        }
+    if (b -> int_type == LONG) {
+        b -> sign = Myint_getsign(a); 
+    } else {
+        b -> bigint -> sign = Myint_getsign(a);
     }
     return b;
 }
@@ -480,13 +484,10 @@ struct Myint* Myint_bitshift_right(struct Myint* a, unsigned long n) {
         b -> bigint = Bigint_bitshift_right(a -> bigint, n);
         Myint_reduce(b);
     }
-    b -> sign = a -> sign; 
-    if (b -> bigint) {
-        if (a -> bigint) {
-            b -> bigint -> sign = a -> bigint -> sign;
-        } else {
-            b -> bigint -> sign = a -> sign;
-        }
+    if (b -> int_type == LONG) {
+        b -> sign = Myint_getsign(a); 
+    } else {
+        b -> bigint -> sign = Myint_getsign(a);
     }
     return b;
 }
@@ -506,15 +507,15 @@ bool Myint_equal(struct Myint* a, struct Myint* b) {
     if ((a -> int_type == LONG) && (b -> int_type == LONG)) {
         // Make sure that 0 == -0 is True
         if ((a -> my_long == 0) && (b -> my_long == 0)) {return true;}
-        if (a -> sign != b -> sign) {return false;}
+        if (Myint_getsign(a) != Myint_getsign(b)) {return false;}
         return a -> my_long == b -> my_long;
     } else {
+        if (Myint_getsign(a) != Myint_getsign(b)) {return false;}
         if (a -> int_type == LONG) {
             Myint_promote(a);
         } else if (b -> int_type == LONG) {
             Myint_promote(b);
         }
-        if (a -> sign != b -> sign) {return false;}
         return Bigint_equal(a -> bigint, b -> bigint);
     }
     return false;
@@ -532,9 +533,9 @@ bool Myint_lt(struct Myint* a, struct Myint* b) {
     if (!a_ok || !b_ok) {return NULL;}
     Myint_reduce(a);
     Myint_reduce(b);
-    if ((a -> sign > 0) && (b -> sign < 0)) {
+    if ((Myint_getsign(a) > 0) && (Myint_getsign(b) < 0)) {
         return false;
-    } else if ((a -> sign < 0) && (b -> sign > 0)) {
+    } else if ((Myint_getsign(a) < 0) && (Myint_getsign(b) > 0)) {
         return true;
     } else if ((a -> int_type == LONG) && (b -> int_type == LONG)) {
         if (a -> sign > 0) {
@@ -568,20 +569,4 @@ bool Myint_gt(struct Myint* a, struct Myint* b) {
 
 bool Myint_geq(struct Myint* a, struct Myint* b) {
     return Myint_leq(b, a);
-}
-
-int main() {
-    struct Myint* a = Myint_constructor();
-    struct Myint* b = Myint_constructor();
-    struct Myint* c = Myint_constructor();
-    struct Myint* d = Myint_constructor();
-    a -> my_long = 1234567890123456789;
-    b -> my_long = 1234567890123456;
-    a -> sign = -1;
-    // b -> sign = -1;
-    Myint_promote(b);
-    printf("  a: "); Myint_print(a); printf("\n");
-    printf("  b: "); Myint_print(b); printf("\n");
-    printf("%d\n", Myint_gt(a,b));
-    printf("%d\n", Myint_gt(b,a));
 }

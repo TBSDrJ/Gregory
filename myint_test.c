@@ -147,6 +147,22 @@ void arithmetic_checks() {
                 Myint_print(a); printf(" + "); 
                 Myint_print(b); printf(" = ");
                 Myint_print(c); printf("\n");
+                d = Myint_subtract(c, a);
+                if (Myint_equal(d, b)) {
+                    printf("Passes check, (a+b) - a = b\n");
+                } else {
+                    printf("ERROR: (a+b) - a != b, a+b = ");
+                    Myint_print(d); printf("\n");
+                }
+                d = Myint_destructor(d);
+                d = Myint_subtract(c, b);
+                if (Myint_equal(d, a)) {
+                    printf("Passes check, (a+b) - b = a\n");
+                } else {
+                    printf("ERROR: (a+b) - b != a, a+b = ");
+                    Myint_print(d); printf("\n");
+                }
+                d = Myint_destructor(d);
                 c = Myint_destructor(c);
                 if (signs[2*k] < 0) {
                     Myint_neg(a);
@@ -175,6 +191,14 @@ void arithmetic_checks() {
                 Myint_print(a); printf(" - "); 
                 Myint_print(b); printf(" = ");
                 Myint_print(c); printf("\n");
+                d = Myint_add(c, b);
+                if (Myint_equal(d, a)) {
+                    printf("Passes check: (a-b) + b = a");
+                } else {
+                    printf("ERROR: (a-b) + b != a, a-b = ");
+                    Myint_print(d); printf("\n");
+                }
+                d = Myint_destructor(d);
                 c = Myint_destructor(c);
                 if (signs[2*k] < 0) {
                     Myint_neg(a);
@@ -203,6 +227,26 @@ void arithmetic_checks() {
                 Myint_print(a); printf(" * "); 
                 Myint_print(b); printf(" = ");
                 Myint_print(c); printf("\n");
+                if (!Myint_equal(b, zero)) {
+                    d = Myint_divide(c, b);
+                    if (Myint_equal(d, a)) {
+                        printf("Passes check: c//b == a\n");
+                    } else {
+                        printf("ERROR: c//b != a, c//b = ");
+                        Myint_print(d); printf("\n");
+                    }
+                    d = Myint_destructor(d);
+                }
+                if (!Myint_equal(a, zero)) {
+                    d = Myint_divide(c, a);
+                    if (Myint_equal(d, b)) {
+                        printf("Passes check: c//a == b\n");
+                    } else {
+                        printf("ERROR: c//a != b, c//a = ");
+                        Myint_print(d); printf("\n");
+                    }
+                    d = Myint_destructor(d);
+                }
                 c = Myint_destructor(c);
                 if (signs[2*k] < 0) {
                     Myint_neg(a);
@@ -269,12 +313,16 @@ void arithmetic_checks() {
                 Myint_print(a); printf(" %% "); 
                 Myint_print(b); printf(" = ");
                 Myint_print(dm[1]); printf("\n");
-                c = Myint_multiply(dm[0], a);
+                c = Myint_multiply(dm[0], b);
                 d = Myint_add(dm[1], c);
                 if (Myint_equal(d, a)) {
                     printf("Passes check: a = bq + r\n");
                 } else {
-                    printf("ERROR: Fails check: a != bq + r\n");
+                    printf("ERROR: Fails check: a != bq + r: ");
+                    Myint_print(a); printf(" != (");
+                    Myint_print(b); printf(")(");
+                    Myint_print(dm[0]); printf(") + ");
+                    Myint_print(dm[1]); printf("\n");
                 }
                 c = Myint_destructor(c);
                 d = Myint_destructor(d);
