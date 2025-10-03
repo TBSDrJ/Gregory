@@ -295,7 +295,7 @@ struct Myint* Myint_divide(struct Myint* a, struct Myint* b) {
     struct Myint* div = dm[0];
     dm[1] = Myint_destructor(dm[1]);
     if (MEM_LEAK_CHK) {
-        fprintf(stderr, "free Myint_divmod %li\n", (long) a);
+        fprintf(stderr, "free Myint_divmod %li\n", (long) dm);
     }
     free(dm); dm = NULL;
     return div;
@@ -306,7 +306,7 @@ struct Myint* Myint_mod(struct Myint* a, struct Myint* b) {
     struct Myint* mod = dm[1];
     dm[0] = Myint_destructor(dm[0]);
     if (MEM_LEAK_CHK) {
-        fprintf(stderr, "free Myint_divmod %li\n", (long) a);
+        fprintf(stderr, "free Myint_divmod %li\n", (long) dm);
     }
     free(dm); dm = NULL;
     return mod;
