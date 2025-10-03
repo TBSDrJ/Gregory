@@ -2,8 +2,8 @@
 
 // If this is set to 1, it is intended that you redirect stderr to tmp.txt e.g.:
 //      ./bigint_test.out 2> tmp.txt
-// The #define MEM_LEAK_CHK in myint.c also needs to be set to 1.
-#define MEM_LEAK_CHK 0
+// The #define MEM_LEAK_CHK in myint.c also needs to be set to 1.  And good idea to do bigint.c also.
+#define MEM_LEAK_CHK 1
 #define EXS 5
 
 struct Myint* m_0() {
@@ -42,6 +42,9 @@ struct Myint* m_4() {
 
 struct Myint** m_n() {
     struct Myint** mn = malloc(EXS * sizeof(struct Myint*));
+    if (MEM_LEAK_CHK) {
+        fprintf(stderr, "malloc mn %li\n", (long) mn);
+    }
     mn[0] = m_0();
     mn[1] = m_1();
     mn[2] = m_2();
@@ -218,6 +221,11 @@ void arithmetic_checks() {
     dm = Myint_divmod(a, b);
     printf("0 // 1 = "); Myint_print(dm[0]); printf("\n");
     printf("0 %% 1 = "); Myint_print(dm[1]); printf("\n");
+    if (MEM_LEAK_CHK) {
+        fprintf(stderr, "free Myint_divmod %li\n", (long) dm);
+    }
+    dm[0] = Myint_destructor(dm[0]);
+    dm[1] = Myint_destructor(dm[1]);
     free(dm); dm = NULL;
     // Interestingly, C evaluates n/0 and n%0 and returns 0, even when n=0
     // Makes for a lot fewer crashes, but is mathematically problematic.
@@ -226,12 +234,22 @@ void arithmetic_checks() {
     dm = Myint_divmod(a, b);
     printf("1 // 0 = "); Myint_print(dm[0]); printf("\n");
     printf("1 %% 0 = "); Myint_print(dm[1]); printf("\n");
+    if (MEM_LEAK_CHK) {
+        fprintf(stderr, "free Myint_divmod %li\n", (long) dm);
+    }
+    dm[0] = Myint_destructor(dm[0]);
+    dm[1] = Myint_destructor(dm[1]);
     free(dm); dm = NULL;
     a = mn[0];
     b = mn[0];
     dm = Myint_divmod(a, b);
     printf("0 // 0 = "); Myint_print(dm[0]); printf("\n");
     printf("0 %% 0 = "); Myint_print(dm[1]); printf("\n");
+    if (MEM_LEAK_CHK) {
+        fprintf(stderr, "free Myint_divmod %li\n", (long) dm);
+    }
+    dm[0] = Myint_destructor(dm[0]);
+    dm[1] = Myint_destructor(dm[1]);
     free(dm); dm = NULL;
     for (long i=1; i<EXS; i++) {
         a = mn[i];
@@ -262,6 +280,9 @@ void arithmetic_checks() {
                 d = Myint_destructor(d);
                 dm[0] = Myint_destructor(dm[0]);
                 dm[1] = Myint_destructor(dm[1]);
+                if (MEM_LEAK_CHK) {
+                    fprintf(stderr, "free Myint_divmod %li\n", (long) dm);
+                }
                 free(dm); dm = NULL;
                 dm = Myint_divmod(b, a);
                 Myint_print(b); printf(" // "); 
@@ -281,6 +302,9 @@ void arithmetic_checks() {
                 d = Myint_destructor(d);
                 dm[0] = Myint_destructor(dm[0]);
                 dm[1] = Myint_destructor(dm[1]);
+                if (MEM_LEAK_CHK) {
+                    fprintf(stderr, "free Myint_divmod %li\n", (long) dm);
+                }
                 free(dm); dm = NULL;
                 if (signs[2*k] < 0) {
                     Myint_neg(a);
@@ -300,14 +324,17 @@ void arithmetic_checks() {
     b = mn[1];
     c = Myint_gcd(a, b);
     printf("gcd(0, 1) = "); Myint_print(c); printf("\n");
+    c = Myint_destructor(c);
     a = mn[1];
     b = mn[0];
     c = Myint_gcd(a, b);
     printf("gcd(1, 0) = "); Myint_print(c); printf("\n");
+    c = Myint_destructor(c);
     a = mn[0];
     b = mn[0];
     c = Myint_gcd(a, b);
     printf("gcd(0, 0) = "); Myint_print(c); printf("\n");
+    c = Myint_destructor(c);
     for (long i=1; i<EXS; i++) {
         a = mn[i];
         for (long j=i; j<EXS; j++) {
@@ -332,6 +359,9 @@ void arithmetic_checks() {
                 }
                 dm[0] = Myint_destructor(dm[0]);
                 dm[1] = Myint_destructor(dm[1]);
+                if (MEM_LEAK_CHK) {
+                    fprintf(stderr, "free Myint_divmod %li\n", (long) dm);
+                }
                 free(dm); dm = NULL;
                 dm = Myint_divmod(b, c);
                 if (Myint_equal(dm[1], zero)) {
@@ -343,6 +373,9 @@ void arithmetic_checks() {
                 c = Myint_destructor(c);
                 dm[0] = Myint_destructor(dm[0]);
                 dm[1] = Myint_destructor(dm[1]);
+                if (MEM_LEAK_CHK) {
+                    fprintf(stderr, "free Myint_divmod %li\n", (long) dm);
+                }
                 free(dm); dm = NULL;
                 c = Myint_gcd(b, a);
                 printf("gcd("); Myint_print(b); printf(", "); 
@@ -357,6 +390,9 @@ void arithmetic_checks() {
                 }
                 dm[0] = Myint_destructor(dm[0]);
                 dm[1] = Myint_destructor(dm[1]);
+                if (MEM_LEAK_CHK) {
+                    fprintf(stderr, "free Myint_divmod %li\n", (long) dm);
+                }
                 free(dm); dm = NULL;
                 dm = Myint_divmod(b, c);
                 if (Myint_equal(dm[1], zero)) {
@@ -368,6 +404,9 @@ void arithmetic_checks() {
                 c = Myint_destructor(c);
                 dm[0] = Myint_destructor(dm[0]);
                 dm[1] = Myint_destructor(dm[1]);
+                if (MEM_LEAK_CHK) {
+                    fprintf(stderr, "free Myint_divmod %li\n", (long) dm);
+                }
                 free(dm); dm = NULL;
                 if (signs[2*k] < 0) {
                     Myint_neg(a);
@@ -415,6 +454,14 @@ void arithmetic_checks() {
         }
     }
 
+    zero = Myint_destructor(zero);
+    for (long i=0; i<EXS; i++) {
+        mn[i] = Myint_destructor(mn[i]);
+    }
+    if (MEM_LEAK_CHK) {
+        fprintf(stderr, "free mn %li\n", (long) mn);
+    }
+    free(mn);
 }    
 
 int main() {

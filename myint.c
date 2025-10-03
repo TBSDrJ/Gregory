@@ -1,6 +1,6 @@
 #include"myint.h"
 
-#define MEM_LEAK_CHK 0
+#define MEM_LEAK_CHK 1
 
 struct Myint* Myint_constructor() {
     struct Myint* a = malloc(sizeof(struct Myint));
@@ -14,10 +14,14 @@ struct Myint* Myint_constructor() {
     return a;
 }
 
-struct Myint* Myint_from_long(long a) {
-    struct Myint* b = Myint_constructor();
-    b -> my_long = a;
-    return b;
+struct Myint* Myint_from_long(long n) {
+    struct Myint* a = Myint_constructor();
+    if (MEM_LEAK_CHK) {
+        fprintf(stderr, "Myint_constructor in Myint_from_long %li %li\n", 
+        n, (long) a);
+    }
+    a -> my_long = n;
+    return a;
 }
 
 struct Myint* Myint_destructor(struct Myint* a) {
@@ -291,7 +295,7 @@ struct Myint* Myint_divide(struct Myint* a, struct Myint* b) {
     struct Myint* div = dm[0];
     dm[1] = Myint_destructor(dm[1]);
     if (MEM_LEAK_CHK) {
-        fprintf(stderr, "free Myint_divide %li\n", (long) a);
+        fprintf(stderr, "free Myint_divmod %li\n", (long) a);
     }
     free(dm); dm = NULL;
     return div;
@@ -302,7 +306,7 @@ struct Myint* Myint_mod(struct Myint* a, struct Myint* b) {
     struct Myint* mod = dm[1];
     dm[0] = Myint_destructor(dm[0]);
     if (MEM_LEAK_CHK) {
-        fprintf(stderr, "free Myint_mod %li\n", (long) a);
+        fprintf(stderr, "free Myint_divmod %li\n", (long) a);
     }
     free(dm); dm = NULL;
     return mod;
@@ -336,7 +340,7 @@ struct Myint** Myint_divmod(struct Myint* a, struct Myint* b) {
         div -> bigint = dm[0];
         mod -> bigint = dm[1];
         if (MEM_LEAK_CHK) {
-            fprintf(stderr, "free Myint_divmod %li\n", (long) a);
+            fprintf(stderr, "free Bigint_divmod %li\n", (long) dm);
         }
         free(dm); dm = NULL;
         Myint_reduce(a);
@@ -346,7 +350,7 @@ struct Myint** Myint_divmod(struct Myint* a, struct Myint* b) {
     }
     struct Myint** divmod = malloc(2*sizeof(struct Myint*));
     if (MEM_LEAK_CHK) {
-        fprintf(stderr, "malloc Myint_divmod %li\n", (long) a);
+        fprintf(stderr, "malloc Myint_divmod %li\n", (long) divmod);
     }
     char a_sign, b_sign;
     if (a -> int_type == LONG) 

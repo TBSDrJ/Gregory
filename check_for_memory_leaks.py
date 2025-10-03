@@ -30,9 +30,8 @@ for line in lines:
             msg = f"freed ptr {ptr} to {s[1]} not in allocated addresses"
             print(msg)
             probs = True
-print(len(addr))
 if addr:
-    print(f"Some addresses not matched.")
+    print(f"\n{len(addr)} addresses not matched.")
     for address in addr:
         found = [line for line in lines if str(address) in line]
         print(found[-1], end="")
