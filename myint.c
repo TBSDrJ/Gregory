@@ -418,6 +418,8 @@ struct Myint* Myint_gcd(struct Myint* a, struct Myint* b) {
         Myint_reduce(gcd);
     }
     a -> sign = a_sign; b -> sign = b_sign;
+    gcd -> sign = 1;
+    if (gcd -> bigint) {gcd -> bigint -> sign = 1;}
     return gcd;
 }
 

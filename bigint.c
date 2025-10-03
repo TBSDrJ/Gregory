@@ -1,7 +1,7 @@
 #include"bigint.h"
 
 #define DEBUG 0
-#define MEM_LEAK_CHK 1
+#define MEM_LEAK_CHK 0
 
 // Functions for Bigint
 struct Bigint* Bigint_constructor() {
@@ -600,6 +600,7 @@ struct Bigint* Bigint_gcd(struct Bigint* a, struct Bigint* b) {
     if (prev_b == a) {
         prev_b = Bigint_deepcopy(a);
     }
+    prev_b -> sign = 1;
     return prev_b;
 }
 
