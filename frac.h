@@ -27,4 +27,7 @@ struct Fraction* Fraction_subtract(struct Fraction* a, struct Fraction* b);
 struct Fraction* Fraction_multiply(struct Fraction* a, struct Fraction* b);
 struct Fraction* Fraction_divide(struct Fraction* a, struct Fraction* b);
 
+// This will test whether a and b as equivalent as well as identical.
+bool Fraction_equal(struct Fraction* a, struct Fraction* b);
+
 #endif

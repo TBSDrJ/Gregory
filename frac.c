@@ -282,3 +282,53 @@ struct Fraction* Fraction_divide(struct Fraction* a, struct Fraction* b) {
     struct Fraction* c = Fraction_from_Myints(c_num, c_den);
     return c;
 }
+
+bool Fraction_equal(struct Fraction* a, struct Fraction* b) {
+    bool fail = false;
+    if (!(Fraction_contract(a))) {
+        fprintf(stderr, 
+                "ERROR: Fraction_contract fails at Fraction_equal, a\n");
+        fail = true;
+    }
+    if (!(Fraction_contract(b))) {
+        fprintf(stderr, 
+                "ERROR: Fraction_contract fails at Fraction_equal, b\n");
+        fail = true;
+    }
+    struct Myint* zero = Myint_from_long(0);
+    if (Myint_equal(a -> denominator, zero)) {
+        fprintf(stderr, "ERROR: Division by zero in Fraction_equal, a\n");
+        fail = true;
+    }
+    if (Myint_equal(b -> denominator, zero)) {
+        fprintf(stderr, "ERROR: Division by zero in Fraction_equal, b\n");
+        fail = true;
+    }
+    if (fail) {return false;}
+    bool eq = false;
+    if (Myint_equal(a -> numerator, zero) && 
+            Myint_equal(a -> numerator, zero)) {
+        eq = true;
+    }
+    zero = Myint_destructor(zero);
+    if (!eq) {
+        struct Myint* c = NULL;
+        struct Myint* d = NULL;
+        bool a_first = false;
+        if (Myint_geq(a -> numerator, b -> numerator)) {
+            c = Myint_divide(a -> numerator, b -> numerator);
+            a_first = true;
+        } else {
+            c = Myint_divide(b -> numerator, a -> numerator);
+        }
+        if (a_first) {
+            d = Myint_divide(a -> denominator, b -> denominator);
+        } else {
+            d = Myint_divide(b -> denominator, a -> denominator);
+        }
+        if (Myint_equal(c, d)) {eq = true;}
+        c = Myint_destructor(c);
+        d = Myint_destructor(d);
+    }
+    return eq;
+}
