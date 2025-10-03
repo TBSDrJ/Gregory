@@ -1,6 +1,6 @@
 #include"myint.h"
 
-#define MEM_LEAK_CHK 1
+#define MEM_LEAK_CHK 0
 
 struct Myint* Myint_constructor() {
     struct Myint* a = malloc(sizeof(struct Myint));
@@ -16,10 +16,6 @@ struct Myint* Myint_constructor() {
 
 struct Myint* Myint_from_long(long n) {
     struct Myint* a = Myint_constructor();
-    if (MEM_LEAK_CHK) {
-        fprintf(stderr, "Myint_constructor in Myint_from_long %li %li\n", 
-        n, (long) a);
-    }
     a -> my_long = n;
     return a;
 }

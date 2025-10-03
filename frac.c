@@ -90,9 +90,8 @@ void Fraction_reduce(struct Fraction* a) {
         return;
     }
     struct Myint* gcd = Myint_gcd(a -> numerator, a -> denominator);
-    struct Myint* one = Myint_constructor();
+    struct Myint* one = Myint_from_long(1);
     struct Myint* tmp = NULL;
-    one -> my_long = 1;
     if (Myint_gt(gcd, one)) {
         tmp = a -> numerator;
         a -> numerator = Myint_divide(a -> numerator, gcd);
@@ -146,55 +145,90 @@ struct Fraction* Fraction_add(struct Fraction* a, struct Fraction* b) {
         fail = true;
     }
     if (fail) {return NULL;}
-    struct Fraction* c = Fraction_constructor();
     struct Fraction* tmp_a = Fraction_deepcopy(a);
     struct Fraction* tmp_b = Fraction_deepcopy(b);
     Fraction_common_denom(a, b);
     // a & b should have the same denominator at this point
-    c -> numerator = Myint_add(a -> numerator, b -> numerator);
-    c -> denominator = Myint_deepcopy(a -> denominator);
-    struct Myint* tmp_num = a -> numerator;
-    struct Myint* tmp_den = a -> denominator;
-    tmp_num = Myint_destructor(tmp_num);
-    tmp_den = Myint_destructor(tmp_den);
+    struct Myint* c_num = Myint_add(a -> numerator, b -> numerator);
+    struct Myint* c_den = Myint_deepcopy(a -> denominator);
+    struct Fraction* c = Fraction_from_Myints(c_num, c_den);
+    a -> numerator = Myint_destructor(a -> numerator);
+    a -> denominator = Myint_destructor(a -> denominator);
     memcpy(a, tmp_a, sizeof(struct Fraction));
-    tmp_num = b -> numerator;
-    tmp_den = b -> denominator;
-    tmp_num = Myint_destructor(tmp_num);
-    tmp_den = Myint_destructor(tmp_den);
+    b -> numerator = Myint_destructor(b -> numerator);
+    b -> denominator = Myint_destructor(b -> denominator);
     memcpy(b, tmp_b, sizeof(struct Fraction));
-    Fraction_reduce(c);
+    if (MEM_LEAK_CHK) {
+        fprintf(stderr, "free Fraction %li\n", (long) tmp_a);
+    }
+    if (MEM_LEAK_CHK) {
+        fprintf(stderr, "free Fraction %li\n", (long) tmp_b);
+    }
+    free(tmp_a); tmp_a = NULL;
+    free(tmp_b); tmp_b = NULL;
+    struct Myint* zero = Myint_from_long(0);
+    if (!Myint_equal(c -> numerator, zero) && 
+            !Myint_equal(c -> denominator, zero)) {
+        Fraction_reduce(c);
+    } else if (!Myint_equal(c -> denominator, zero)) {
+        c -> numerator = Myint_destructor(c -> numerator);
+        c -> denominator = Myint_destructor(c -> denominator);
+        c -> numerator = Myint_from_long(0);
+        c -> denominator = Myint_from_long(1);
+    } else {
+        fprintf(stderr, "ERROR: denominator is zero in Fraction_add\n");
+    }
+    Myint_destructor(zero);
     return c;
 }
 
 struct Fraction* Fraction_subtract(struct Fraction* a, struct Fraction* b) {
     bool fail = false;
     if (!(Fraction_contract(a))) {
-        fprintf(stderr, "Fraction_contract fails at Fraction_subtract, a\n");
+        fprintf(stderr, 
+                "ERROR: Fraction_contract fails at Fraction_subtract, a\n");
         fail = true;
     }
     if (!(Fraction_contract(b))) {
-        fprintf(stderr, "Fraction_contract fails at Fraction_subtract, b\n");
+        fprintf(stderr, 
+                "ERROR: Fraction_contract fails at Fraction_subtract, b\n");
         fail = true;
     }
     if (fail) {return NULL;}
-    struct Fraction* c = Fraction_constructor();
     struct Fraction* tmp_a = Fraction_deepcopy(a);
     struct Fraction* tmp_b = Fraction_deepcopy(b);
     Fraction_common_denom(a, b);
     // a & b should have the same denominator at this point
-    c -> numerator = Myint_subtract(a -> numerator, b -> numerator);
-    c -> denominator = Myint_deepcopy(a -> denominator);
-    struct Myint* tmp_num = a -> numerator;
-    struct Myint* tmp_den = a -> denominator;
-    tmp_num = Myint_destructor(tmp_num);
-    tmp_den = Myint_destructor(tmp_den);
+    struct Myint* c_num = Myint_subtract(a -> numerator, b -> numerator);
+    struct Myint* c_den = Myint_deepcopy(a -> denominator);
+    struct Fraction* c = Fraction_from_Myints(c_num, c_den);
+    a -> numerator = Myint_destructor(a -> numerator);
+    a -> denominator = Myint_destructor(a -> denominator);
     memcpy(a, tmp_a, sizeof(struct Fraction));
-    tmp_num = b -> numerator;
-    tmp_den = b -> denominator;
-    tmp_num = Myint_destructor(tmp_num);
-    tmp_den = Myint_destructor(tmp_den);
+    b -> numerator = Myint_destructor(b -> numerator);
+    b -> denominator = Myint_destructor(b -> denominator);
     memcpy(b, tmp_b, sizeof(struct Fraction));
+    if (MEM_LEAK_CHK) {
+        fprintf(stderr, "free Fraction %li\n", (long) tmp_a);
+    }
+    if (MEM_LEAK_CHK) {
+        fprintf(stderr, "free Fraction %li\n", (long) tmp_b);
+    }
+    free(tmp_a); tmp_a = NULL;
+    free(tmp_b); tmp_b = NULL;
+    struct Myint* zero = Myint_from_long(0);
+    if (!Myint_equal(c -> numerator, zero) && 
+            !Myint_equal(c -> denominator, zero)) {
+        Fraction_reduce(c);
+    } else if (!Myint_equal(c -> denominator, zero)) {
+        c -> numerator = Myint_destructor(c -> numerator);
+        c -> denominator = Myint_destructor(c -> denominator);
+        c -> numerator = Myint_from_long(0);
+        c -> denominator = Myint_from_long(1);
+    } else {
+        fprintf(stderr, "ERROR: denominator is zero in Fraction_subtract\n");
+    }
+    Myint_destructor(zero);
     Fraction_reduce(c);
     return c;
 }
@@ -202,33 +236,37 @@ struct Fraction* Fraction_subtract(struct Fraction* a, struct Fraction* b) {
 struct Fraction* Fraction_multiply(struct Fraction* a, struct Fraction* b) {
     bool fail = false;
     if (!(Fraction_contract(a))) {
-        fprintf(stderr, "Fraction_contract fails at Fraction_multiply, a\n");
+        fprintf(stderr, 
+                "ERROR: Fraction_contract fails at Fraction_multiply, a\n");
         fail = true;
     }
     if (!(Fraction_contract(b))) {
-        fprintf(stderr, "Fraction_contract fails at Fraction_multiply, b\n");
+        fprintf(stderr, 
+                "ERROR: Fraction_contract fails at Fraction_multiply, b\n");
         fail = true;
     }
     if (fail) {return NULL;}
-    struct Fraction* c = Fraction_constructor();
-    c -> numerator = Myint_multiply(a -> numerator, b -> numerator);
-    c -> denominator = Myint_multiply(a -> denominator, b -> denominator);
+    struct Myint* c_num = Myint_multiply(a -> numerator, b -> numerator);
+    struct Myint* c_den = Myint_multiply(a -> denominator, b -> denominator);
+    struct Fraction* c = Fraction_from_Myints(c_num, c_den);
     return c;
 }
 
 struct Fraction* Fraction_divide(struct Fraction* a, struct Fraction* b) {
     bool fail = false;
     if (!(Fraction_contract(a))) {
-        fprintf(stderr, "Fraction_contract fails at Fraction_multiply, a\n");
+        fprintf(stderr, 
+                "ERROR: Fraction_contract fails at Fraction_divide, a\n");
         fail = true;
     }
     if (!(Fraction_contract(b))) {
-        fprintf(stderr, "Fraction_contract fails at Fraction_multiply, b\n");
+        fprintf(stderr, 
+                "ERROR: Fraction_contract fails at Fraction_divide, b\n");
         fail = true;
     }
     if (fail) {return NULL;}
-    struct Fraction* c = Fraction_constructor();
-    c -> numerator = Myint_multiply(a -> numerator, b -> denominator);
-    c -> denominator = Myint_multiply(a -> denominator, b -> numerator);
+    struct Myint* c_num = Myint_multiply(a -> numerator, b -> denominator);
+    struct Myint* c_den = Myint_multiply(a -> denominator, b -> numerator);
+    struct Fraction* c = Fraction_from_Myints(c_num, c_den);
     return c;
 }

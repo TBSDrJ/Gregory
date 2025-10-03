@@ -148,6 +148,9 @@ struct Fraction** f_n() {
 void arithmetic_checks() {
     char signs[8] = {1, 1, 1, -1, -1, 1, -1, -1};
     struct Fraction** fn = f_n();
+    if (MEM_LEAK_CHK) {
+        fprintf(stderr, "fn array initial assign %li\n", (long) fn);
+    }
     struct Fraction* a = NULL;
     struct Fraction* b = NULL;
     struct Fraction* c = NULL;
@@ -164,321 +167,186 @@ void arithmetic_checks() {
         Myint_neg(a -> numerator);
     }
 
-    // deepcopy test
-    printf("\n\nTest deepcopy:\n");
-    for (long i=1; i<5; i++) {
-        a = fn[2*i];
-        // Make 2 copies so that I don't destroy the actual array entry
-        b = Fraction_deepcopy(a);
-        c = Fraction_deepcopy(b);
-        printf("b is deepcopy of fn[%li], c is deepcopy of b.\n", 2*i);
-        printf("b is "); Fraction_print(b); 
-        printf(" at address %li\n", (long) b);
-        printf("c is "); Fraction_print(c); 
-        printf(" at address %li\n", (long) c);
-        printf("\nNow destroy b, see if c still exists.\n");
-        b = Fraction_destructor(b);
-        printf("b is "); Fraction_print(b); 
-        printf(" at address %li\n", (long) b);
-        printf("c is "); Fraction_print(c); 
-        printf(" at address %li\n", (long) c);
-        c = Fraction_destructor(c);
-        printf("\n");
+    // // deepcopy test
+    // printf("\n\nTest deepcopy:\n");
+    // for (long i=1; i<5; i++) {
+    //     a = fn[2*i];
+    //     // Make 2 copies so that I don't destroy the actual array entry
+    //     b = Fraction_deepcopy(a);
+    //     c = Fraction_deepcopy(b);
+    //     printf("b is deepcopy of fn[%li], c is deepcopy of b.\n", 2*i);
+    //     printf("b is "); Fraction_print(b); 
+    //     printf(" at address %li\n", (long) b);
+    //     printf("c is "); Fraction_print(c); 
+    //     printf(" at address %li\n", (long) c);
+    //     printf("\nNow destroy b, see if c still exists.\n");
+    //     b = Fraction_destructor(b);
+    //     printf("b is "); Fraction_print(b); 
+    //     printf(" at address %li\n", (long) b);
+    //     printf("c is "); Fraction_print(c); 
+    //     printf(" at address %li\n", (long) c);
+    //     c = Fraction_destructor(c);
+    //     printf("\n");
+    // }
+
+    // printf("\n\nTest addition:\n");
+    // for (long i=0; i<EXS; i++) {
+    //     a = fn[i];
+    //     for (long j=i; j<EXS; j++) {
+    //         b = Fraction_deepcopy(fn[j]);
+    //         for (long k=0; k<4; k++) {
+    //             if (signs[2*k] < 0) {
+    //                 Myint_neg(a -> numerator);
+    //             }
+    //             if (signs[2*k + 1] < 0) {
+    //                 Myint_neg(b -> numerator);
+    //             }
+    //             c = Fraction_add(a, b);
+    //             Fraction_print(a); printf(" + "); 
+    //             Fraction_print(b); printf(" = ");
+    //             Fraction_print(c); printf("\n");
+    //             c = Fraction_destructor(c);
+    //             if (signs[2*k] < 0) {
+    //                 Myint_neg(a -> numerator);
+    //             }
+    //             if (signs[2*k + 1] < 0) {
+    //                 Myint_neg(b -> numerator);
+    //             }
+    //         }
+    //         b = Fraction_destructor(b);
+    //     }
+    // }
+
+    // printf("\n\nTest subtraction:\n");
+    // for (long i=0; i<EXS; i++) {
+    //     a = fn[i];
+    //     for (long j=i; j<EXS; j++) {
+    //         b = Fraction_deepcopy(fn[j]);
+    //         for (long k=0; k<4; k++) {
+    //             if (signs[2*k] < 0) {
+    //                 Myint_neg(a -> numerator);
+    //             }
+    //             if (signs[2*k + 1] < 0) {
+    //                 Myint_neg(b -> numerator);
+    //             }
+    //             c = Fraction_subtract(a, b);
+    //             Fraction_print(a); printf(" - "); 
+    //             Fraction_print(b); printf(" = ");
+    //             Fraction_print(c); printf("\n");
+    //             c = Fraction_destructor(c);
+    //             if (signs[2*k] < 0) {
+    //                 Myint_neg(a -> numerator);
+    //             }
+    //             if (signs[2*k + 1] < 0) {
+    //                 Myint_neg(b -> numerator);
+    //             }
+    //         }
+    //         b = Fraction_destructor(b);
+    //     }
+    // }
+
+    printf("\n\nTest multiplication:\n");
+    for (long i=0; i<EXS; i++) {
+        a = fn[i];
+        for (long j=i; j<EXS; j++) {
+            b = Fraction_deepcopy(fn[j]);
+            for (long k=0; k<4; k++) {
+                if (signs[2*k] < 0) {
+                    Myint_neg(a -> numerator);
+                }
+                if (signs[2*k + 1] < 0) {
+                    Myint_neg(b -> numerator);
+                }
+                c = Fraction_multiply(a, b);
+                Fraction_print(a); printf(" * "); 
+                Fraction_print(b); printf(" = ");
+                Fraction_print(c); printf("\n");
+                c = Fraction_destructor(c);
+                if (signs[2*k] < 0) {
+                    Myint_neg(a -> numerator);
+                }
+                if (signs[2*k + 1] < 0) {
+                    Myint_neg(b -> numerator);
+                }
+            }
+            b = Fraction_destructor(b);
+        }
     }
 
-//     printf("\n\nTest addition:\n");
-//     for (long i=0; i<EXS; i++) {
-//         a = mn[i];
-//         for (long j=i; j<EXS; j++) {
-//             b = Myint_deepcopy(mn[j]);
-//             for (long k=0; k<4; k++) {
-//                 if (signs[2*k] < 0) {
-//                     Myint_neg(a);
-//                 }
-//                 if (signs[2*k + 1] < 0) {
-//                     Myint_neg(b);
-//                 }
-//                 c = Myint_add(a, b);
-//                 Myint_print(a); printf(" + "); 
-//                 Myint_print(b); printf(" = ");
-//                 Myint_print(c); printf("\n");
-//                 c = Myint_destructor(c);
-//                 if (signs[2*k] < 0) {
-//                     Myint_neg(a);
-//                 }
-//                 if (signs[2*k + 1] < 0) {
-//                     Myint_neg(b);
-//                 }
-//             }
-//             b = Myint_destructor(b);
-//         }
-//     }
+    printf("\n\nTest divide:\n");
+    a = fn[0];
+    b = fn[1];
+    d = Fraction_divide(a, b);
+    printf("0 // 1 = "); Fraction_print(d); printf("\n");
+    d = Fraction_destructor(d);
+    // Interestingly, C evaluates n/0 and n%0 and returns 0, even when n=0
+    // Makes for a lot fewer crashes, but is mathematically problematic.
+    a = fn[1];
+    b = fn[0];
+    d = Fraction_divide(a, b);
+    printf("1 // 0 = "); Fraction_print(d); printf("\n");
+    d = Fraction_destructor(d);
+    a = fn[0];
+    b = fn[0];
+    d = Fraction_divide(a, b);
+    printf("0 // 0 = "); Fraction_print(d); printf("\n");
+    d = Fraction_destructor(d);
+    for (long i=1; i<EXS; i++) {
+        a = fn[i];
+        for (long j=i; j<EXS; j++) {
+            b = Fraction_deepcopy(fn[j]);
+            for (long k=0; k<4; k++) {
+                if (signs[2*k] < 0) {
+                    Myint_neg(a -> numerator);
+                }
+                if (signs[2*k + 1] < 0) {
+                    Myint_neg(b -> numerator);
+                }
+                d = Fraction_divide(a, b);
+                Fraction_print(a); printf(" // "); 
+                Fraction_print(b); printf(" = ");
+                Fraction_print(d); printf("\n");
+                // c = Fraction_multiply(d, a);
+                // if (Fraction_equal(d, a)) {
+                //     printf("Passes check: a = bq\n");
+                // } else {
+                //     printf("ERROR: Fails check: a != bq\n");
+                // }
+                // c = Fraction_destructor(c);
+                d = Fraction_destructor(d);
+                d = Fraction_divide(b, a);
+                Fraction_print(b); printf(" // "); 
+                Fraction_print(a); printf(" = ");
+                Fraction_print(d); printf("\n");
+                // c = Fraction_multiply(d, a);
+                // if (Fraction_equal(d, b)) {
+                //     printf("Passes check: b = aq\n");
+                // } else {
+                //     printf("ERROR: Fails check: b != aq\n");
+                // }
+                // c = Fraction_destructor(c);
+                d = Fraction_destructor(d);
+                if (signs[2*k] < 0) {
+                    Myint_neg(a -> numerator);
+                }
+                if (signs[2*k + 1] < 0) {
+                    Myint_neg(b -> numerator);
+                }
+            }
+            b = Fraction_destructor(b);
+        }
+    }
 
-//     printf("\n\nTest subtraction:\n");
-//     for (long i=0; i<EXS; i++) {
-//         a = mn[i];
-//         for (long j=i; j<EXS; j++) {
-//             b = Myint_deepcopy(mn[j]);
-//             for (long k=0; k<4; k++) {
-//                 if (signs[2*k] < 0) {
-//                     Myint_neg(a);
-//                 }
-//                 if (signs[2*k + 1] < 0) {
-//                     Myint_neg(b);
-//                 }
-//                 c = Myint_subtract(a, b);
-//                 Myint_print(a); printf(" - "); 
-//                 Myint_print(b); printf(" = ");
-//                 Myint_print(c); printf("\n");
-//                 c = Myint_destructor(c);
-//                 if (signs[2*k] < 0) {
-//                     Myint_neg(a);
-//                 }
-//                 if (signs[2*k + 1] < 0) {
-//                     Myint_neg(b);
-//                 }
-//             }
-//             b = Myint_destructor(b);
-//         }
-//     }
-
-//     printf("\n\nTest multiplication:\n");
-//     for (long i=0; i<EXS; i++) {
-//         a = mn[i];
-//         for (long j=i; j<EXS; j++) {
-//             b = Myint_deepcopy(mn[j]);
-//             for (long k=0; k<4; k++) {
-//                 if (signs[2*k] < 0) {
-//                     Myint_neg(a);
-//                 }
-//                 if (signs[2*k + 1] < 0) {
-//                     Myint_neg(b);
-//                 }
-//                 c = Myint_multiply(a, b);
-//                 Myint_print(a); printf(" * "); 
-//                 Myint_print(b); printf(" = ");
-//                 Myint_print(c); printf("\n");
-//                 c = Myint_destructor(c);
-//                 if (signs[2*k] < 0) {
-//                     Myint_neg(a);
-//                 }
-//                 if (signs[2*k + 1] < 0) {
-//                     Myint_neg(b);
-//                 }
-//             }
-//             b = Myint_destructor(b);
-//         }
-//     }
-
-//     printf("\n\nTest divmod:\n");
-//     a = mn[0];
-//     b = mn[1];
-//     dm = Myint_divmod(a, b);
-//     printf("0 // 1 = "); Myint_print(dm[0]); printf("\n");
-//     printf("0 %% 1 = "); Myint_print(dm[1]); printf("\n");
-//     free(dm); dm = NULL;
-//     // Interestingly, C evaluates n/0 and n%0 and returns 0, even when n=0
-//     // Makes for a lot fewer crashes, but is mathematically problematic.
-//     a = mn[1];
-//     b = mn[0];
-//     dm = Myint_divmod(a, b);
-//     printf("1 // 0 = "); Myint_print(dm[0]); printf("\n");
-//     printf("1 %% 0 = "); Myint_print(dm[1]); printf("\n");
-//     free(dm); dm = NULL;
-//     a = mn[0];
-//     b = mn[0];
-//     dm = Myint_divmod(a, b);
-//     printf("0 // 0 = "); Myint_print(dm[0]); printf("\n");
-//     printf("0 %% 0 = "); Myint_print(dm[1]); printf("\n");
-//     free(dm); dm = NULL;
-//     for (long i=1; i<EXS; i++) {
-//         a = mn[i];
-//         for (long j=i; j<EXS; j++) {
-//             b = Myint_deepcopy(mn[j]);
-//             for (long k=0; k<4; k++) {
-//                 if (signs[2*k] < 0) {
-//                     Myint_neg(a);
-//                 }
-//                 if (signs[2*k + 1] < 0) {
-//                     Myint_neg(b);
-//                 }
-//                 dm = Myint_divmod(a, b);
-//                 Myint_print(a); printf(" // "); 
-//                 Myint_print(b); printf(" = ");
-//                 Myint_print(dm[0]); printf("\n");
-//                 Myint_print(a); printf(" %% "); 
-//                 Myint_print(b); printf(" = ");
-//                 Myint_print(dm[1]); printf("\n");
-//                 c = Myint_multiply(dm[0], a);
-//                 d = Myint_add(dm[1], c);
-//                 if (Myint_equal(d, a)) {
-//                     printf("Passes check: a = bq + r\n");
-//                 } else {
-//                     printf("ERROR: Fails check: a != bq + r\n");
-//                 }
-//                 c = Myint_destructor(c);
-//                 d = Myint_destructor(d);
-//                 dm[0] = Myint_destructor(dm[0]);
-//                 dm[1] = Myint_destructor(dm[1]);
-//                 free(dm); dm = NULL;
-//                 dm = Myint_divmod(b, a);
-//                 Myint_print(b); printf(" // "); 
-//                 Myint_print(a); printf(" = ");
-//                 Myint_print(dm[0]); printf("\n");
-//                 Myint_print(b); printf(" %% "); 
-//                 Myint_print(a); printf(" = ");
-//                 Myint_print(dm[1]); printf("\n");
-//                 c = Myint_multiply(dm[0], a);
-//                 d = Myint_add(dm[1], c);
-//                 if (Myint_equal(d, b)) {
-//                     printf("Passes check: b = aq + r\n");
-//                 } else {
-//                     printf("ERROR: Fails check: b != aq + r\n");
-//                 }
-//                 c = Myint_destructor(c);
-//                 d = Myint_destructor(d);
-//                 dm[0] = Myint_destructor(dm[0]);
-//                 dm[1] = Myint_destructor(dm[1]);
-//                 free(dm); dm = NULL;
-//                 if (signs[2*k] < 0) {
-//                     Myint_neg(a);
-//                 }
-//                 if (signs[2*k + 1] < 0) {
-//                     Myint_neg(b);
-//                 }
-//             }
-//             b = Myint_destructor(b);
-//         }
-//     }
-
-//     printf("\n\nTest gcd:\n");
-//     // These are similar to the divmod results dividing by zero: they don't 
-//     //      crash, but are mathematically problematic.
-//     a = mn[0];
-//     b = mn[1];
-//     c = Myint_gcd(a, b);
-//     printf("gcd(0, 1) = "); Myint_print(c); printf("\n");
-//     a = mn[1];
-//     b = mn[0];
-//     c = Myint_gcd(a, b);
-//     printf("gcd(1, 0) = "); Myint_print(c); printf("\n");
-//     a = mn[0];
-//     b = mn[0];
-//     c = Myint_gcd(a, b);
-//     printf("gcd(0, 0) = "); Myint_print(c); printf("\n");
-//     for (long i=1; i<EXS; i++) {
-//         a = mn[i];
-//         for (long j=i; j<EXS; j++) {
-//             b = Myint_deepcopy(mn[j]);
-//             for (long k=0; k<4; k++) {
-//                 if (signs[2*k] < 0) {
-//                     Myint_neg(a);
-//                 }
-//                 if (signs[2*k + 1] < 0) {
-//                     Myint_neg(b);
-//                 }
-//                 c = Myint_gcd(a, b);
-//                 printf("gcd("); Myint_print(a); printf(", "); 
-//                 Myint_print(b); printf(") = ");
-//                 Myint_print(c); printf("\n");
-//                 dm = Myint_divmod(a, c);
-//                 if (Myint_equal(dm[1], zero)) {
-//                     printf("Passes check: a %% gcd(a, b) == 0\n");
-//                 } else {
-//                     printf("ERROR: Fails check: a %% gcd(a, b) !=0\n");
-//                     printf("Got "); Myint_print(c); printf(" instead.\n");
-//                 }
-//                 dm[0] = Myint_destructor(dm[0]);
-//                 dm[1] = Myint_destructor(dm[1]);
-//                 free(dm); dm = NULL;
-//                 dm = Myint_divmod(b, c);
-//                 if (Myint_equal(dm[1], zero)) {
-//                     printf("Passes check: b %% gcd(a, b) == 0\n");
-//                 } else {
-//                     printf("ERROR: Fails check: b %% gcd(a, b) !=0\n");
-//                     printf("Got "); Myint_print(c); printf(" instead.\n");
-//                 }
-//                 c = Myint_destructor(c);
-//                 dm[0] = Myint_destructor(dm[0]);
-//                 dm[1] = Myint_destructor(dm[1]);
-//                 free(dm); dm = NULL;
-//                 c = Myint_gcd(b, a);
-//                 printf("gcd("); Myint_print(b); printf(", "); 
-//                 Myint_print(a); printf(") = ");
-//                 Myint_print(c); printf("\n");
-//                 dm = Myint_divmod(a, c);
-//                 if (Myint_equal(dm[1], zero)) {
-//                     printf("Passes check: a %% gcd(a, b) == 0\n");
-//                 } else {
-//                     printf("ERROR: Fails check: a %% gcd(a, b) != 0\n");
-//                     printf("Got "); Myint_print(c); printf(" instead.\n");
-//                 }
-//                 dm[0] = Myint_destructor(dm[0]);
-//                 dm[1] = Myint_destructor(dm[1]);
-//                 free(dm); dm = NULL;
-//                 dm = Myint_divmod(b, c);
-//                 if (Myint_equal(dm[1], zero)) {
-//                     printf("Passes check: b %% gcd(a, b) == 0\n");
-//                 } else {
-//                     printf("ERROR: Fails check: b %% gcd(a, b) !=0\n");
-//                     printf("Got "); Myint_print(c); printf(" instead.\n");
-//                 }
-//                 c = Myint_destructor(c);
-//                 dm[0] = Myint_destructor(dm[0]);
-//                 dm[1] = Myint_destructor(dm[1]);
-//                 free(dm); dm = NULL;
-//                 if (signs[2*k] < 0) {
-//                     Myint_neg(a);
-//                 }
-//                 if (signs[2*k + 1] < 0) {
-//                     Myint_neg(b);
-//                 }
-//             }
-//             b = Myint_destructor(b);
-//         }
-//     }
-
-//     printf("\n\nTest intlog2:\n");
-//     for (long i=0; i<EXS; i++) {
-//         a = mn[i];
-//         n = Myint_intlog2(a);
-//         printf("Largest nonzero bit of "); Myint_print(a); 
-//         printf(" = %li\n", n); 
-//         Myint_neg(a);
-//         n = Myint_intlog2(a);
-//         printf("Largest nonzero bit of "); Myint_print(a); 
-//         printf(" = %li\n", n); 
-//         Myint_neg(a);
-//     }
-
-//     printf("\n\nTest bitshift_left:\n");
-//     for (long i=0; i<EXS; i++) {
-//         a = mn[i];
-//         for (long j=0; j<5; j++) {
-//             b = Myint_bitshift_left(a, bitshifts[j]);
-//             Myint_print(a); printf(" << %li = ", bitshifts[j]);
-//             Myint_print(b); printf("\n");
-//             b = Myint_destructor(b);
-//         }
-//     }
-
-//     printf("\n\nTest bitshift_right:\n");
-//     for (long i=0; i<EXS; i++) {
-//         a = mn[i];
-//         for (long j=0; j<5; j++) {
-//             b = Myint_bitshift_right(a, bitshifts[j]);
-//             Myint_print(a); printf(" >> %li = ", bitshifts[j]);
-//             Myint_print(b); printf("\n");
-//             b = Myint_destructor(b);
-//         }
-//     }
     for (long i=0; i<EXS; i++) {
         fn[i] = Fraction_destructor(fn[i]);
     }
     if (MEM_LEAK_CHK) {
         fprintf(stderr, "free fn_array %li\n", (long) fn);
     }
-    free(fn); fn = NULL;
+    if (MEM_LEAK_CHK) {
+        fprintf(stderr, "fn array at end %li\n", (long) fn);
+    }
+   free(fn); fn = NULL;
 }    
 
 int main() {

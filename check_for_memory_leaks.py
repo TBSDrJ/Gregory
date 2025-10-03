@@ -15,17 +15,21 @@ with open('tmp.txt', 'r') as f:
     lines = list(f.readlines())
 probs = False
 addr = {}
+mallocs = 0
+frees = 0
 for line in lines:
     s = line.split()
     if s[0] == "malloc":
         addr[int(s[2])] = s[1]
+        mallocs += 1
     if s[0] == "free":
         ptr = int(s[2])
+        frees += 1
         if ptr in addr.keys():
             if addr[ptr] == s[1]:
                 del addr[ptr]
             else:
-                print(f"Type mismatch. malloc {addr[ptr]}, free {s[1]}")
+                print(f"Type mismatch. malloc {addr[ptr]}, free {s[1]} {s[2]}")
         else:
             msg = f"freed ptr {ptr} to {s[1]} not in allocated addresses"
             print(msg)
@@ -38,3 +42,4 @@ if addr:
     probs = True
 if not probs:
     print("\nAll memory handled properly.  Whoo-hoo!\n\n")
+print(f"Found {mallocs} mallocs and {frees} frees")
