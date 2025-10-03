@@ -167,83 +167,107 @@ void arithmetic_checks() {
         Myint_neg(a -> numerator);
     }
 
-    // // deepcopy test
-    // printf("\n\nTest deepcopy:\n");
-    // for (long i=1; i<5; i++) {
-    //     a = fn[2*i];
-    //     // Make 2 copies so that I don't destroy the actual array entry
-    //     b = Fraction_deepcopy(a);
-    //     c = Fraction_deepcopy(b);
-    //     printf("b is deepcopy of fn[%li], c is deepcopy of b.\n", 2*i);
-    //     printf("b is "); Fraction_print(b); 
-    //     printf(" at address %li\n", (long) b);
-    //     printf("c is "); Fraction_print(c); 
-    //     printf(" at address %li\n", (long) c);
-    //     printf("\nNow destroy b, see if c still exists.\n");
-    //     b = Fraction_destructor(b);
-    //     printf("b is "); Fraction_print(b); 
-    //     printf(" at address %li\n", (long) b);
-    //     printf("c is "); Fraction_print(c); 
-    //     printf(" at address %li\n", (long) c);
-    //     c = Fraction_destructor(c);
-    //     printf("\n");
-    // }
+    // deepcopy test
+    printf("\n\nTest deepcopy:\n");
+    for (long i=1; i<5; i++) {
+        a = fn[2*i];
+        // Make 2 copies so that I don't destroy the actual array entry
+        b = Fraction_deepcopy(a);
+        c = Fraction_deepcopy(b);
+        printf("b is deepcopy of fn[%li], c is deepcopy of b.\n", 2*i);
+        printf("b is "); Fraction_print(b); 
+        printf(" at address %li\n", (long) b);
+        printf("c is "); Fraction_print(c); 
+        printf(" at address %li\n", (long) c);
+        printf("\nNow destroy b, see if c still exists.\n");
+        b = Fraction_destructor(b);
+        printf("b is "); Fraction_print(b); 
+        printf(" at address %li\n", (long) b);
+        printf("c is "); Fraction_print(c); 
+        printf(" at address %li\n", (long) c);
+        c = Fraction_destructor(c);
+        printf("\n");
+    }
 
-    // printf("\n\nTest addition:\n");
-    // for (long i=0; i<EXS; i++) {
-    //     a = fn[i];
-    //     for (long j=i; j<EXS; j++) {
-    //         b = Fraction_deepcopy(fn[j]);
-    //         for (long k=0; k<4; k++) {
-    //             if (signs[2*k] < 0) {
-    //                 Myint_neg(a -> numerator);
-    //             }
-    //             if (signs[2*k + 1] < 0) {
-    //                 Myint_neg(b -> numerator);
-    //             }
-    //             c = Fraction_add(a, b);
-    //             Fraction_print(a); printf(" + "); 
-    //             Fraction_print(b); printf(" = ");
-    //             Fraction_print(c); printf("\n");
-    //             c = Fraction_destructor(c);
-    //             if (signs[2*k] < 0) {
-    //                 Myint_neg(a -> numerator);
-    //             }
-    //             if (signs[2*k + 1] < 0) {
-    //                 Myint_neg(b -> numerator);
-    //             }
-    //         }
-    //         b = Fraction_destructor(b);
-    //     }
-    // }
+    printf("\n\nTest addition:\n");
+    for (long i=0; i<EXS; i++) {
+        a = fn[i];
+        for (long j=i; j<EXS; j++) {
+            b = Fraction_deepcopy(fn[j]);
+            for (long k=0; k<4; k++) {
+                if (signs[2*k] < 0) {
+                    Myint_neg(a -> numerator);
+                }
+                if (signs[2*k + 1] < 0) {
+                    Myint_neg(b -> numerator);
+                }
+                c = Fraction_add(a, b);
+                Fraction_print(a); printf(" + "); 
+                Fraction_print(b); printf(" = ");
+                Fraction_print(c); printf("\n");
+                d = Fraction_subtract(c, a);
+                if (Fraction_equal(d, b)) {
+                    printf("Passed check: (a+b) - a = b\n");
+                } else {
+                    printf("ERROR: (a+b) - a != b, a+b = ");
+                    Fraction_print(d); printf("\n");
+                }
+                d = Fraction_destructor(d);
+                d = Fraction_subtract(c, b);
+                if (Fraction_equal(d, a)) {
+                    printf("Passed check: (a+b) - b = a\n");
+                } else {
+                    printf("ERROR: (a+b) - b != a, a+b = ");
+                    Fraction_print(d); printf("\n");
+                }
+                d = Fraction_destructor(d);
+                c = Fraction_destructor(c);
+                if (signs[2*k] < 0) {
+                    Myint_neg(a -> numerator);
+                }
+                if (signs[2*k + 1] < 0) {
+                    Myint_neg(b -> numerator);
+                }
+            }
+            b = Fraction_destructor(b);
+        }
+    }
 
-    // printf("\n\nTest subtraction:\n");
-    // for (long i=0; i<EXS; i++) {
-    //     a = fn[i];
-    //     for (long j=i; j<EXS; j++) {
-    //         b = Fraction_deepcopy(fn[j]);
-    //         for (long k=0; k<4; k++) {
-    //             if (signs[2*k] < 0) {
-    //                 Myint_neg(a -> numerator);
-    //             }
-    //             if (signs[2*k + 1] < 0) {
-    //                 Myint_neg(b -> numerator);
-    //             }
-    //             c = Fraction_subtract(a, b);
-    //             Fraction_print(a); printf(" - "); 
-    //             Fraction_print(b); printf(" = ");
-    //             Fraction_print(c); printf("\n");
-    //             c = Fraction_destructor(c);
-    //             if (signs[2*k] < 0) {
-    //                 Myint_neg(a -> numerator);
-    //             }
-    //             if (signs[2*k + 1] < 0) {
-    //                 Myint_neg(b -> numerator);
-    //             }
-    //         }
-    //         b = Fraction_destructor(b);
-    //     }
-    // }
+    printf("\n\nTest subtraction:\n");
+    for (long i=0; i<EXS; i++) {
+        a = fn[i];
+        for (long j=i; j<EXS; j++) {
+            b = Fraction_deepcopy(fn[j]);
+            for (long k=0; k<4; k++) {
+                if (signs[2*k] < 0) {
+                    Myint_neg(a -> numerator);
+                }
+                if (signs[2*k + 1] < 0) {
+                    Myint_neg(b -> numerator);
+                }
+                c = Fraction_subtract(a, b);
+                Fraction_print(a); printf(" - "); 
+                Fraction_print(b); printf(" = ");
+                Fraction_print(c); printf("\n");
+                d = Fraction_add(c, b);
+                if (Fraction_equal(d, a)) {
+                    printf("Passes check: (a-b) + b = a\n");
+                } else {
+                    printf("ERROR: (a-b) + b != a, a-b = ");
+                    Fraction_print(d); printf("\n");
+                }
+                d = Fraction_destructor(d);
+                c = Fraction_destructor(c);
+                if (signs[2*k] < 0) {
+                    Myint_neg(a -> numerator);
+                }
+                if (signs[2*k + 1] < 0) {
+                    Myint_neg(b -> numerator);
+                }
+            }
+            b = Fraction_destructor(b);
+        }
+    }
 
     printf("\n\nTest multiplication:\n");
     for (long i=0; i<EXS; i++) {
@@ -261,6 +285,28 @@ void arithmetic_checks() {
                 Fraction_print(a); printf(" * "); 
                 Fraction_print(b); printf(" = ");
                 Fraction_print(c); printf("\n");
+                if (i > 0 && j > 0) {
+                    d = Fraction_divide(c, b);
+                    Fraction_reduce(d);
+                    if (Fraction_equal(d, a)) {
+                        printf("Passes check: ab // b = a\n");
+                    } else {
+                        printf("ERROR: Fails check: ab // b = ");
+                        Fraction_print(d);
+                        printf(" != a\n");
+                    }
+                    d = Fraction_destructor(d);
+                    d = Fraction_divide(c, a);
+                    Fraction_reduce(d);
+                    if (Fraction_equal(d, b)) {
+                        printf("Passes check: ab // a = b\n");
+                    } else {
+                        printf("ERROR: Fails check: ab // a =\n");
+                        Fraction_print(d);
+                        printf(" != b\n");
+                    }
+                    d = Fraction_destructor(d);
+                }
                 c = Fraction_destructor(c);
                 if (signs[2*k] < 0) {
                     Myint_neg(a -> numerator);
@@ -303,28 +349,31 @@ void arithmetic_checks() {
                     Myint_neg(b -> numerator);
                 }
                 d = Fraction_divide(a, b);
+                Fraction_reduce(d);
                 Fraction_print(a); printf(" // "); 
                 Fraction_print(b); printf(" = ");
                 Fraction_print(d); printf("\n");
-                // c = Fraction_multiply(d, a);
-                // if (Fraction_equal(d, a)) {
-                //     printf("Passes check: a = bq\n");
-                // } else {
-                //     printf("ERROR: Fails check: a != bq\n");
-                // }
-                // c = Fraction_destructor(c);
+                c = Fraction_multiply(d, b);
+                fprintf(stderr, "i: %li, j: %li, k: %li\n", i, j, k);
+                if (Fraction_equal(c, a)) {
+                    printf("Passes check: a = bq\n");
+                } else {
+                    printf("ERROR: Fails check: a != bq\n");
+                }
+                c = Fraction_destructor(c);
                 d = Fraction_destructor(d);
                 d = Fraction_divide(b, a);
+                Fraction_reduce(d);
                 Fraction_print(b); printf(" // "); 
                 Fraction_print(a); printf(" = ");
                 Fraction_print(d); printf("\n");
-                // c = Fraction_multiply(d, a);
-                // if (Fraction_equal(d, b)) {
-                //     printf("Passes check: b = aq\n");
-                // } else {
-                //     printf("ERROR: Fails check: b != aq\n");
-                // }
-                // c = Fraction_destructor(c);
+                c = Fraction_multiply(d, a);
+                if (Fraction_equal(c, b)) {
+                    printf("Passes check: b = aq\n");
+                } else {
+                    printf("ERROR: Fails check: b != aq\n");
+                }
+                c = Fraction_destructor(c);
                 d = Fraction_destructor(d);
                 if (signs[2*k] < 0) {
                     Myint_neg(a -> numerator);
