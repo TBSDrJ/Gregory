@@ -121,3 +121,23 @@ class Polynomial:
                 self.coeffs.pop(-1)
                 if len(self.coeffs) == 1:
                     break
+
+    def subs(self, val: int) -> int:
+        """Substitute val into self."""
+        if not isinstance(val, int):
+            msg = "Polynomial.subs() only accepts int as input."
+            raise ValueError(msg)
+        result = self.coeffs[0]
+        for i in range(1, len(self.coeffs)):
+            result += self.coeffs[i] * val**i
+        return result
+    
+    def der(self) -> "Polynomial":
+        """Calculate the derivative of self."""
+        d = Polynomial()
+        d.coeffs = []
+        for i in range(1, len(self.coeffs)):
+            d.coeffs.append(i*self.coeffs[i])
+        if len(d.coeffs) == 0:
+            d.coeffs = [0]
+        return d
