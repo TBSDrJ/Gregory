@@ -21,7 +21,7 @@ f_8: num & den more than 64 bits, num > den, not in lowest terms
 // I decided to just use the arithmetic checks as the memory leak checks.
 
 struct Fraction* f_0() {
-    struct Myint* n = Myint_constructor();
+    struct Myint* n = Myint_from_long(0);
     struct Myint* d = Myint_from_long(1);
     struct Fraction* a = Fraction_from_Myints(n, d);
     a -> numerator = n;
@@ -146,11 +146,8 @@ struct Fraction** f_n() {
 }
 
 void arithmetic_checks() {
-    char signs[8] = {1, 1, 1, -1, -1, 1, -1, -1};
+    int signs[8] = {1, 1, 1, -1, -1, 1, -1, -1};
     struct Fraction** fn = f_n();
-    if (MEM_LEAK_CHK) {
-        fprintf(stderr, "fn array initial assign %li\n", (long) fn);
-    }
     struct Fraction* a = NULL;
     struct Fraction* b = NULL;
     struct Fraction* c = NULL;
@@ -354,7 +351,6 @@ void arithmetic_checks() {
                 Fraction_print(b); printf(" = ");
                 Fraction_print(d); printf("\n");
                 c = Fraction_multiply(d, b);
-                fprintf(stderr, "i: %li, j: %li, k: %li\n", i, j, k);
                 if (Fraction_equal(c, a)) {
                     printf("Passes check: a = bq\n");
                 } else {
@@ -392,10 +388,7 @@ void arithmetic_checks() {
     if (MEM_LEAK_CHK) {
         fprintf(stderr, "free fn_array %li\n", (long) fn);
     }
-    if (MEM_LEAK_CHK) {
-        fprintf(stderr, "fn array at end %li\n", (long) fn);
-    }
-   free(fn); fn = NULL;
+    free(fn); fn = NULL;
 }    
 
 int main() {

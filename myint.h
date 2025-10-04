@@ -16,7 +16,7 @@ error checking.
 
 struct Myint {
     enum _type_t {LONG, BIGINT} int_type;
-    char sign;
+    int sign;
     unsigned long my_long;
     struct Bigint* bigint;
 };
@@ -37,7 +37,7 @@ struct Myint* Myint_deepcopy(struct Myint* a);
 long Myint_intlog2(struct Myint* a);
 // Negates in the correct place, depending on int_type
 void Myint_neg(struct Myint* a);
-char Myint_getsign(struct Myint* a);
+int Myint_getsign(struct Myint* a);
 struct Myint* Myint_add(struct Myint* a, struct Myint* b);
 struct Myint* Myint_subtract(struct Myint* a, struct Myint* b);
 struct Myint* Myint_multiply(struct Myint* a, struct Myint* b);

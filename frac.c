@@ -1,6 +1,6 @@
 #include"frac.h"
 
-#define MEM_LEAK_CHK 1
+#define MEM_LEAK_CHK 0
 
 struct Fraction* Fraction_constructor() {
     struct Myint* numerator = Myint_constructor();

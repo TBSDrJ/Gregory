@@ -7,9 +7,9 @@ bigint:
 	gcc -shared bigint.o -o libbigint.so
 
 bigint-test:
-	gcc -c -fPIC -O2 bigint.c -o bigint.o
+	gcc -c -fPIC bigint.c -o bigint.o
 	gcc -shared bigint.o -o libbigint.so
-	gcc bigint_test.c -O2 -L. -lbigint -o bigint_test.out
+	gcc bigint_test.c -L. -lbigint -o bigint_test.out
 	./bigint_test.out
 
 myint:

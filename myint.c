@@ -173,12 +173,12 @@ void Myint_neg(struct Myint* a) {
     }
 }
 
-char Myint_getsign(struct Myint* a) {
+int Myint_getsign(struct Myint* a) {
        if (!Myint_contract(a)) {
         fprintf(stderr, "ERROR: Failed contract, Myint_getsign\n");
         return 0;
     }
-    char a_sign;
+    int a_sign;
     if (a -> int_type == LONG) {
         a_sign = a -> sign;
     } else {
@@ -392,7 +392,7 @@ struct Myint* Myint_gcd(struct Myint* a, struct Myint* b) {
     }
     if (!a_ok || !b_ok) {return NULL;}
     struct Myint* gcd = Myint_constructor();
-    char a_sign = Myint_getsign(a), b_sign = Myint_getsign(b);
+    int a_sign = Myint_getsign(a), b_sign = Myint_getsign(b);
     if (a_sign < 0) {Myint_neg(a);}
     if (b_sign < 0) {Myint_neg(b);}
     if ((a -> int_type == LONG) && (b -> int_type == LONG)) {

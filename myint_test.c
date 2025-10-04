@@ -3,7 +3,7 @@
 // If this is set to 1, it is intended that you redirect stderr to tmp.txt e.g.:
 //      ./bigint_test.out 2> tmp.txt
 // The #define MEM_LEAK_CHK in myint.c also needs to be set to 1.  And good idea to do bigint.c also.
-#define MEM_LEAK_CHK 1
+#define MEM_LEAK_CHK 0
 #define EXS 5
 
 struct Myint* m_0() {
@@ -53,52 +53,8 @@ struct Myint** m_n() {
     return mn;
 }
 
-void memory_leak_checks() {
-    struct Myint* a = m_3();
-    struct Myint* b = Myint_deepcopy(a);
-    struct Myint* c = Myint_add(a, b);
-    struct Myint* d = Myint_multiply(a, b);
-    struct Myint* e = Myint_subtract(d, c);
-    struct Myint* f = Myint_gcd(d, e);
-    struct Myint** dm = Myint_divmod(d, e);
-    struct Myint* g = dm[0];
-    struct Myint* h = dm[1];
-    struct Myint* i = m_2();
-    struct Myint* j = Myint_gcd(d, i);
-    struct Myint* k = Myint_bitshift_left(d, 100);
-    struct Myint* l = Myint_bitshift_right(d, 100);
-    printf("a: "); Myint_print(a); printf("\n");
-    printf("b: "); Myint_print(b); printf("\n");
-    printf("c: "); Myint_print(c); printf("\n");
-    printf("d: "); Myint_print(d); printf("\n");
-    printf("e: "); Myint_print(e); printf("\n");
-    printf("f: "); Myint_print(f); printf("\n");
-    printf("g: "); Myint_print(g); printf("\n");
-    printf("h: "); Myint_print(h); printf("\n");
-    printf("i: "); Myint_print(i); printf("\n");
-    printf("j: "); Myint_print(j); printf("\n");
-    printf("k: "); Myint_print(k); printf("\n");
-    printf("l: "); Myint_print(l); printf("\n");
-    a = Myint_destructor(a);
-    b = Myint_destructor(b);
-    c = Myint_destructor(c);
-    d = Myint_destructor(d);
-    e = Myint_destructor(e);
-    f = Myint_destructor(f);
-    g = Myint_destructor(g);
-    h = Myint_destructor(h);
-    i = Myint_destructor(i);
-    j = Myint_destructor(j);
-    k = Myint_destructor(k);
-    l = Myint_destructor(l);
-    if (MEM_LEAK_CHK) {
-        fprintf(stderr, "free dm-from-Myint_divmod-test %li\n", (long) dm);
-    }
-    free(dm); dm = NULL;
-}
-
 void arithmetic_checks() {
-    char signs[8] = {1, 1, 1, -1, -1, 1, -1, -1};
+    int signs[8] = {1, 1, 1, -1, -1, 1, -1, -1};
     struct Myint** mn = m_n();
     struct Myint* a = NULL;
     struct Myint* b = NULL;
@@ -193,7 +149,7 @@ void arithmetic_checks() {
                 Myint_print(c); printf("\n");
                 d = Myint_add(c, b);
                 if (Myint_equal(d, a)) {
-                    printf("Passes check: (a-b) + b = a");
+                    printf("Passes check: (a-b) + b = a\n");
                 } else {
                     printf("ERROR: (a-b) + b != a, a-b = ");
                     Myint_print(d); printf("\n");
@@ -489,6 +445,14 @@ void arithmetic_checks() {
             Myint_print(b); printf("\n");
             b = Myint_destructor(b);
         }
+        Myint_neg(a);
+        for (long j=0; j<5; j++) {
+            b = Myint_bitshift_left(a, bitshifts[j]);
+            Myint_print(a); printf(" << %li = ", bitshifts[j]);
+            Myint_print(b); printf("\n");
+            b = Myint_destructor(b);
+        }
+        Myint_neg(a);
     }
 
     printf("\n\nTest bitshift_right:\n");
@@ -500,6 +464,14 @@ void arithmetic_checks() {
             Myint_print(b); printf("\n");
             b = Myint_destructor(b);
         }
+        Myint_neg(a);
+        for (long j=0; j<5; j++) {
+            b = Myint_bitshift_right(a, bitshifts[j]);
+            Myint_print(a); printf(" >> %li = ", bitshifts[j]);
+            Myint_print(b); printf("\n");
+            b = Myint_destructor(b);
+        }
+        Myint_neg(a);
     }
 
     zero = Myint_destructor(zero);
@@ -513,6 +485,5 @@ void arithmetic_checks() {
 }    
 
 int main() {
-    // memory_leak_checks();
     arithmetic_checks();
 }

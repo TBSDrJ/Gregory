@@ -19,7 +19,7 @@ struct Entry_long;
 
 struct Bigint {
     // sign should always be +1 or -1.
-    char sign;
+    int sign;
     struct Entry_long* head;
     struct Entry_long* tail;
     unsigned long len;
