@@ -41,6 +41,10 @@ class TestPolynomial(unittest.TestCase):
         self.assertEqual(self.ex_5, Polynomial([0, 0, 0, 0, 0, 1]))
         for i in range(len(self.exs)):
             self.assertEqual(self.exs[i], eval(repr(self.exs[i])))
+        self.assertEqual(Polynomial([0, 0]), Polynomial([0]))
+        self.assertEqual(Polynomial([0]), Polynomial([0, 0]))
+        self.assertEqual(Polynomial([1, 1]), Polynomial([1, 1, 0, 0, 0, 0, 0]))
+        self.assertEqual(Polynomial([1, 1, 0, 0, 0, 0, 0]), Polynomial([1, 1]))
 
     def test_coeffs_validation(self):
         self.assertEqual(Polynomial(), Polynomial([0]))
@@ -48,3 +52,30 @@ class TestPolynomial(unittest.TestCase):
         self.assertRaises(ValueError, Polynomial, "x")
         self.assertRaises(ValueError, Polynomial, [1.1])
 
+    def test_dunder_add(self):
+        for i in range(len(self.exs)):
+            self.assertEqual(self.exs[0] + self.exs[i], self.exs[i])
+        self.assertEqual(self.exs[1] + self.exs[1], Polynomial([2]))
+        self.assertEqual(self.exs[1] + self.exs[2], Polynomial([2, 1]))
+        self.assertEqual(self.exs[1] + self.exs[3], Polynomial([0, -1]))
+        self.assertEqual(self.exs[1] + self.exs[4], 
+                Polynomial([2, -2, 3, -4, 5, -6]))
+        self.assertEqual(self.exs[1] + self.exs[5], 
+                Polynomial([1, 0, 0, 0, 0, 1]))
+        self.assertEqual(self.exs[2] + self.exs[2], Polynomial([2, 2]))
+        self.assertEqual(self.exs[2] + self.exs[3], Polynomial([0]))
+        self.assertEqual(self.exs[2] + self.exs[4], 
+                Polynomial([2, -1, 3, -4, 5, -6]))
+        self.assertEqual(self.exs[2] + self.exs[5], 
+                Polynomial([1, 1, 0, 0, 0, 1]))
+        self.assertEqual(self.exs[3] + self.exs[3], Polynomial([-2, -2]))
+        self.assertEqual(self.exs[3] + self.exs[4], 
+                Polynomial([0, -3, 3, -4, 5, -6]))
+        self.assertEqual(self.exs[3] + self.exs[5], 
+                Polynomial([-1, -1, 0, 0, 0, 1]))
+        self.assertEqual(self.exs[4] + self.exs[4], 
+                Polynomial([2, -4, 6, -8, 10, -12]))
+        self.assertEqual(self.exs[4] + self.exs[5], 
+                Polynomial([1, -2, 3, -4, 5, -5]))
+        self.assertEqual(self.exs[5] + self.exs[5], 
+                Polynomial([0, 0, 0, 0, 0, 2]))

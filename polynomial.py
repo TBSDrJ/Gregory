@@ -19,6 +19,8 @@ class Polynomial:
         return f"Polynomial({self.coeffs})"
 
     def __eq__(self, other: "Polynomial") -> bool:
+        self.eliminate_zeros()
+        other.eliminate_zeros()
         return self.coeffs == other.coeffs
 
     @property
@@ -46,4 +48,24 @@ class Polynomial:
         self._coeffs = new_coeffs
 
     def __add__(self, other: "Polynomial") -> "Polynomial":
-        pass
+        sum = Polynomial()
+        sum.coeffs = []
+        for n in range(min(len(self.coeffs), len(other.coeffs))):
+            sum.coeffs.append(self.coeffs[n] + other.coeffs[n])
+        n += 1
+        # One or the other or both of these will have an empty range
+        for m in range(n, len(self.coeffs)):
+            sum.coeffs.append(self.coeffs[m])
+        for m in range(n, len(other.coeffs)):
+            sum.coeffs.append(other.coeffs[m])
+        return sum
+
+    def eliminate_zeros(self) -> None:
+        """Remove any zero terms above the largest non-zero term.
+        
+        If largest non-zero term is degree zero, keep it even if it's zero."""
+        if len(self.coeffs) > 1:
+            while (self.coeffs[-1] == 0):
+                self.coeffs.pop(-1)
+                if len(self.coeffs) == 1:
+                    break
