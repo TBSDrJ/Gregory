@@ -85,8 +85,13 @@ all-tests:
 	gcc -shared polynomial.o -L. -lbigint -lmyint -o libpolynomial.so
 	gcc bigint_test.c -L. -lbigint -o bigint_test.out
 	gcc myint_test.c -L. -lmyint -lbigint -o myint_test.out
-	gcc frac_test.c -L. -lmyint -lbigint -o frac_test.out
+	gcc frac_test.c -L. -lmyint -lbigint -lfrac -o frac_test.out
 	gcc polynomial_test.c  -L. -lbigint -lmyint -lpolynomial -o polynomial_test.out
+	./bigint_test.out 1> tmp.tests.txt 2> tmp.ptrs.txt
+	./myint_test.out 1>> tmp.tests.txt 2>> tmp.ptrs.txt
+	./frac_test.out 1>> tmp.tests.txt 2>> tmp.ptrs.txt
+	python check_for_memory_leaks.py
+	cat tmp.tests.txt | grep ERROR
 
 clean:
 	rm *.o
@@ -176,12 +181,17 @@ all-tests-mac:
 	gcc -shared myint.o -L. -lbigint -o libmyint.dylib
 	gcc -c -fPIC frac.c -o frac.o
 	gcc -shared frac.o -L. -lbigint -lmyint -o libfrac.dylib
-	gcc -c -fPIC polynomial.c -o polynomial.o
-	gcc -shared polynomial.o -L. -lbigint -lmyint -o libpolynomial.dylib
+# 	gcc -c -fPIC polynomial.c -o polynomial.o
+# 	gcc -shared polynomial.o -L. -lbigint -lmyint -o libpolynomial.dylib
 	gcc bigint_test.c -L. -lbigint -o bigint_test.out
 	gcc myint_test.c -L. -lmyint -lbigint -o myint_test.out
-	gcc frac_test.c -L. -lmyint -lbigint -o frac_test.out
-	gcc polynomial_test.c  -L. -lbigint -lmyint -lpolynomial -o polynomial_test.out
+	gcc frac_test.c -L. -lmyint -lbigint -lfrac -o frac_test.out
+# 	gcc polynomial_test.c  -L. -lbigint -lmyint -lpolynomial -o polynomial_test.out
+	./bigint_test.out 1> tmp.tests.txt 2> tmp.ptrs.txt
+	./myint_test.out 1>> tmp.tests.txt 2>> tmp.ptrs.txt
+	./frac_test.out 1>> tmp.tests.txt 2>> tmp.ptrs.txt
+	python check_for_memory_leaks.py
+	cat tmp.tests.txt | grep ERROR
 
 clean-mac:
 	rm *.o

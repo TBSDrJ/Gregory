@@ -11,7 +11,7 @@ Then compile and run using, e.g. ./bigint.out > tmp.txt
 and then just run this program with no command-line arguments.
 """
 
-with open('tmp.txt', 'r') as f:
+with open('tmp.ptrs.txt', 'r') as f:
     lines = list(f.readlines())
 probs = False
 addr = {}
