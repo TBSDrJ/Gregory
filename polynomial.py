@@ -1,3 +1,5 @@
+from typing import Callable
+
 class Polynomial:
     def __init__(self, coeffs: list[int] = [0]):
         # My intent is that coeffs[n] is the degree n term.  Notice that this
@@ -47,18 +49,51 @@ class Polynomial:
                     raise ValueError(msg)
         self._coeffs = new_coeffs
 
-    def __add__(self, other: "Polynomial") -> "Polynomial":
-        sum = Polynomial()
-        sum.coeffs = []
+    def _add_sub(self, operation: Callable, other: "Polynomial"):
+        if operation not in [int.__add__, int.__sub__]:
+            msg = "Method Polynomial._add_sub expected either int.__add__ or"
+            msg += "int.__sub__."
+            raise ValueError(msg)
+        result = Polynomial()
+        result.coeffs = []
         for n in range(min(len(self.coeffs), len(other.coeffs))):
-            sum.coeffs.append(self.coeffs[n] + other.coeffs[n])
+            result.coeffs.append(operation(self.coeffs[n], other.coeffs[n]))
         n += 1
         # One or the other or both of these will have an empty range
         for m in range(n, len(self.coeffs)):
-            sum.coeffs.append(self.coeffs[m])
+            result.coeffs.append(self.coeffs[m])
         for m in range(n, len(other.coeffs)):
-            sum.coeffs.append(other.coeffs[m])
-        return sum
+            if operation == int.__add__:
+                result.coeffs.append(other.coeffs[m])
+            else:
+                result.coeffs.append(-other.coeffs[m])
+        return result
+
+    def __add__(self, other: "Polynomial | int") -> "Polynomial":
+        if isinstance(other, Polynomial):
+            return self._add_sub(int.__add__, other)
+        elif isinstance(other, int):
+            return self._add_sub(int.__add__, Polynomial(other))
+        else:
+            msg = "Addition for Polynomial only defined for another Polynomial "
+            msg += "or an int."
+            raise ValueError(msg)
+
+    def __sub__(self, other: "Polynomial | int") -> "Polynomial":
+        if isinstance(other, Polynomial):
+            return self._add_sub(int.__sub__, other)
+        elif isinstance(other, int):
+            return self._add_sub(int.__sub__, Polynomial(other))
+        else:
+            msg = "Subtraction for Polynomial only defined for another "
+            msg += "Polynomial or an int."
+            raise ValueError(msg)
+
+    def __radd__(self, other: "Polynomial | int") -> "Polynomial":
+        return self + other
+
+    # def __rsub__(self, other: "Polynomial | int") -> "Polynomial":
+    #     return (-1)*(self - other)
 
     def eliminate_zeros(self) -> None:
         """Remove any zero terms above the largest non-zero term.
