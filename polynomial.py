@@ -79,6 +79,9 @@ class Polynomial:
             msg += "or an int."
             raise ValueError(msg)
 
+    def __radd__(self, other: "Polynomial | int") -> "Polynomial":
+        return self + other
+
     def __sub__(self, other: "Polynomial | int") -> "Polynomial":
         if isinstance(other, Polynomial):
             return self._add_sub(int.__sub__, other)
@@ -89,11 +92,25 @@ class Polynomial:
             msg += "Polynomial or an int."
             raise ValueError(msg)
 
-    def __radd__(self, other: "Polynomial | int") -> "Polynomial":
-        return self + other
+    def __rsub__(self, other: "Polynomial | int") -> "Polynomial":
+        return (-1)*(self - other)
 
-    # def __rsub__(self, other: "Polynomial | int") -> "Polynomial":
-    #     return (-1)*(self - other)
+    def __mul__(self, other: "Polynomial | int") -> "Polynomial":
+        if isinstance(other, int):
+            other = Polynomial(other)
+        elif not isinstance(other, Polynomial):
+            msg = "Multiplication for Polynomial only defined for another "
+            msg += "Polynomial or an int."
+            raise ValueError(msg)
+        result = Polynomial()
+        result.coeffs = [0] * (len(self.coeffs) + len(other.coeffs) - 1)
+        for i in range(len(self.coeffs)):
+            for j in range(len(other.coeffs)):
+                result.coeffs[i+j] += self.coeffs[i] * other.coeffs[j]
+        return result
+
+    def __rmul__(self, other: "Polynomial | int") -> "Polynomial":
+        return self * other
 
     def eliminate_zeros(self) -> None:
         """Remove any zero terms above the largest non-zero term.
