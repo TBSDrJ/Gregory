@@ -6,7 +6,8 @@ quite a bit: down to 2 hours, 36 minutes, which is about a 20% speed increase.
 
 Then it occurred to me to use the -O2 flag (not sure why I didn't do this 
 earlier) and that sped it up to under 20 minutes!  (18:45.3). This is a more 
-than 8x speed-up, which is spectacular.
+than 8x speed-up, which is spectacular.  Then, I plugged my computer in, which
+switches it to 'High Power' mode, and this reduced it 17:47.5.
 
 The numerator and denominator, in lowest terms, are 14,438-bit 
 integers.  So the arbitrary precision integers were pretty necessary.

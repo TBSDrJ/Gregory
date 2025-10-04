@@ -10,13 +10,13 @@ int main() {
     a -> denominator -> my_long = 1;
     b -> numerator -> my_long = 0;
     b -> denominator -> my_long = 1;
-    for (long i=2; i<10000; i++) {
+    for (long i=2; i<1000; i++) {
         tmp = b;
         b = Fraction_add(a, b);
         tmp = Fraction_destructor(tmp);
         a -> denominator -> my_long = i;
         a -> numerator -> sign *= -1;
-        printf("%li\r", i); fflush(stdout);
+        // printf("%li\r", i); fflush(stdout);
     }
     Fraction_print(a); printf("\n");
     Fraction_print(b); printf("\n");
