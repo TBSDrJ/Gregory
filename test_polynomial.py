@@ -2,7 +2,6 @@ import unittest
 from polynomial import Polynomial
 
 class TestPolynomial(unittest.TestCase):
-
     def setUp(self):
         num_exs = 6
         self.ex_0 = Polynomial([0])
@@ -14,6 +13,10 @@ class TestPolynomial(unittest.TestCase):
         self.exs = []
         for i in range(num_exs):
             self.exs.append(eval(f"self.ex_{i}"))
+
+    def test_dunder_init(self):
+        for ex in self.exs:
+            self.assertIsInstance(ex, Polynomial)
 
     def test_dunder_str(self):
         """Expecting human-readable string."""
