@@ -81,7 +81,7 @@ Specifically, I am developing an arbitrary-precision library for integers, integ
 
 I've obviously been testing some as I went along, but I did a pretty terrible job of keeping track of those tests, and ensuring that the tests were thorough.  I've decided to go back and write decent tests for most of the functions, because I should have been doing this all along and now I have regrets.  The functions I am skipping in the test coverage are all used inside the functions that I'm testing, so I'm using that as the tests for those skipped functions, which should be fine, they are all getting tested across a range of scenarios.  
 
-I did tests for `Polynomial`s first because that's where I was when I started to decide to keep track of tests, but then went back. I've finished tests for `Bigint` and `Myint`.  I am now working on tests for `Fraction` and double-check the `Polynomial` tests.  Then, I'll check on portability of the libraries and tests to linux and Windows, and then I'll work on testing and ironing out the soon-to-be-renamed `Queue_2` library and the `rationalfn` library.  Then, finally, I'll be able to start thinking about generating results.  
+I did tests for `Polynomial`s first because that's where I was when I started to decide to keep track of tests, but then went back. I've finished tests for `Bigint`, `Myint` and `Fraction`.  I will double-check the `Polynomial` tests.  I've checked portability of tests to linux; `Bigint`, `Myint` and `Fraction` now pass all tests in linux.  I will test Windows next, and then I'll work on testing and ironing out the soon-to-be-renamed `Queue_2` library and the `rationalfn` library.  Then, finally, I'll be able to start thinking about generating results.  
 
 ### Estimating $\ln(2)$
 
