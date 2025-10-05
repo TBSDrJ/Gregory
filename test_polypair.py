@@ -95,10 +95,11 @@ class TestPolyPair(unittest.TestCase):
             for j in range(len(self.exs)):
                 if i == j:
                     self.assertEqual(self.exs[i], self.exs[j])
-                else:
-                    self.assertNotEqual(self.exs[i], self.exs[j])
         self.assertEqual(0, self.ex_00)
         self.assertEqual(1, self.ex_11)
         self.assertNotEqual(37, self.ex_11)
         self.assertNotEqual(1.0, self.ex_11)
         self.assertNotEqual("x + 1", self.ex_21)
+        # If different only by a negative in both, then also equal
+        self.assertEqual(self.ex_22, self.ex_33)
+        self.assertEqual(self.ex_23, self.ex_32)

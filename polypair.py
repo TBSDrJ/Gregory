@@ -4,7 +4,9 @@ class PolyPair:
     """Represents a pair a(x)b(L), where L = ln(1+x)
     
     This does *not* represent a(x)b(x), if you want that just use a*b
-    or (a, b)."""
+    or (a, b).
+    We don't take derivative here because the result is not a PolyPair. We'll
+    tackle that in the Rational Function library."""
     def __init__(self, a: Polynomial  = Polynomial(), 
             b: Polynomial = Polynomial()):
         self.a = a
@@ -61,5 +63,9 @@ class PolyPair:
             return False
         if self.a == other.a and self.b == other.b:
             return True
+        # (-1)*(-1) cancels
+        elif self.a == (-1)*other.a and self.b ==(-1)*other.b:
+            return True
         else:
             return False
+        
