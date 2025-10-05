@@ -5,7 +5,6 @@ from polypair import PolyPair
 class TestPolyPair(unittest.TestCase):
     def setUp(self):
         num_polys = 6
-        num_exs = 1
         self.p_0 = Polynomial()
         self.p_1 = Polynomial(1)
         self.p_2 = Polynomial([1, 1])
@@ -15,42 +14,22 @@ class TestPolyPair(unittest.TestCase):
         self.p_exs = []
         for i in range(num_polys):
             self.p_exs.append(eval(f"self.p_{i}"))
-        # p_0 paired with anything should just produce 0
+        # p_0 paired with anything should just produce 0 so I only need two
+        #   of these.
         self.ex_00 = PolyPair()
         self.ex_04 = PolyPair(self.p_0, self.p_4)
-        self.ex_11 = PolyPair(self.p_1, self.p_1)
-        self.ex_12 = PolyPair(self.p_1, self.p_2)
-        self.ex_13 = PolyPair(self.p_1, self.p_3)
-        self.ex_14 = PolyPair(self.p_1, self.p_4)
-        self.ex_15 = PolyPair(self.p_1, self.p_5)
-        self.ex_21 = PolyPair(self.p_2, self.p_1)
-        self.ex_22 = PolyPair(self.p_2, self.p_2)
-        self.ex_23 = PolyPair(self.p_2, self.p_3)
-        self.ex_24 = PolyPair(self.p_2, self.p_4)
-        self.ex_25 = PolyPair(self.p_2, self.p_5)
-        self.ex_31 = PolyPair(self.p_3, self.p_1)
-        self.ex_32 = PolyPair(self.p_3, self.p_2)
-        self.ex_33 = PolyPair(self.p_3, self.p_3)
-        self.ex_34 = PolyPair(self.p_3, self.p_4)
-        self.ex_35 = PolyPair(self.p_3, self.p_5)
-        self.ex_41 = PolyPair(self.p_4, self.p_1)
-        self.ex_42 = PolyPair(self.p_4, self.p_2)
-        self.ex_43 = PolyPair(self.p_4, self.p_3)
-        self.ex_44 = PolyPair(self.p_4, self.p_4)
-        self.ex_45 = PolyPair(self.p_4, self.p_5)
-        self.ex_51 = PolyPair(self.p_5, self.p_1)
-        self.ex_52 = PolyPair(self.p_5, self.p_2)
-        self.ex_53 = PolyPair(self.p_5, self.p_3)
-        self.ex_54 = PolyPair(self.p_5, self.p_4)
-        self.ex_55 = PolyPair(self.p_5, self.p_5)
         self.exs = [self.ex_00, self.ex_04]
-        for i in range(1,6):
-            for j in range(1,6):
-                self.exs.append(eval(f"self.ex_{i}{j}"))
+        for i in range(1, num_polys):
+            for j in range(1, num_polys):
+                setattr(self, f"ex_{i}{j}", PolyPair(
+                        getattr(self, f"p_{i}"), getattr(self, f"p_{j}")))
+                self.exs.append(getattr(self, f"ex_{i}{j}"))
 
     def test_dunder_init(self):
         for ex in self.exs:
             self.assertIsInstance(ex, PolyPair)
+            self.assertIsInstance(ex.a, Polynomial)
+            self.assertIsInstance(ex.b, Polynomial)
         self.assertIsInstance(PolyPair(6, 7), PolyPair)
         self.assertIsInstance(PolyPair(37, self.p_5), PolyPair)
         self.assertIsInstance(PolyPair(self.p_5, 37), PolyPair)
@@ -95,6 +74,8 @@ class TestPolyPair(unittest.TestCase):
             for j in range(len(self.exs)):
                 if i == j:
                     self.assertEqual(self.exs[i], self.exs[j])
+                # The converse is not true, for ex: 
+                #   (-x-1)(-L-1) = (x+1)(L+1)
         self.assertEqual(0, self.ex_00)
         self.assertEqual(1, self.ex_11)
         self.assertNotEqual(37, self.ex_11)
