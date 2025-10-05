@@ -42,6 +42,14 @@ class PolyPair:
         new_b = self.validate_input(new_b)
         self._b = new_b
 
+    def __str__(self) -> str:
+        return f"PolyPair: ({self.a})({str(self.b).replace('x', 'L')})"
+
+    def __repr__(self) -> str:
+        s = f"PolyPair(Polynomial({self.a.coeffs}), "
+        s += f"Polynomial({self.b.coeffs}))"
+        return s
+
     def __eq__(self, other):
         if isinstance(other, int):
             if (len(self.a.coeffs) == 1 and len(self.b.coeffs) == 1 and 

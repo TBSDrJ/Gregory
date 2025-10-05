@@ -43,7 +43,7 @@ class TestPolyPair(unittest.TestCase):
         self.ex_53 = PolyPair(self.p_5, self.p_3)
         self.ex_54 = PolyPair(self.p_5, self.p_4)
         self.ex_55 = PolyPair(self.p_5, self.p_5)
-        self.exs = []
+        self.exs = [self.ex_00, self.ex_04]
         for i in range(1,6):
             for j in range(1,6):
                 self.exs.append(eval(f"self.ex_{i}{j}"))
@@ -58,6 +58,37 @@ class TestPolyPair(unittest.TestCase):
         self.assertRaises(ValueError, PolyPair, 1, 1.1)
         self.assertRaises(ValueError, PolyPair, "x", Polynomial())
         self.assertRaises(ValueError, PolyPair, Polynomial(), "x")
+
+    def test_dunder_str(self):
+        for ex in self.exs:
+            self.assertIsInstance(str(ex), str)
+        self.assertEqual(str(self.ex_15), 
+                "PolyPair: (1)(1L^5 + 0L^4 + 0L^3 + 0L^2 + 0L + 0)")
+        self.assertEqual(str(self.ex_51), 
+                "PolyPair: (1x^5 + 0x^4 + 0x^3 + 0x^2 + 0x + 0)(1)")
+        self.assertEqual(str(self.ex_24), 
+                "PolyPair: (1x + 1)(-6L^5 + 5L^4 + -4L^3 + 3L^2 + -2L + 1)")
+        self.assertEqual(str(self.ex_42),
+                "PolyPair: (-6x^5 + 5x^4 + -4x^3 + 3x^2 + -2x + 1)(1L + 1)")
+        self.assertEqual(str(self.ex_33), "PolyPair: (-1x + -1)(-1L + -1)")
+
+    def test_dunder_repr(self):
+        for ex in self.exs:
+            self.assertIsInstance(repr(ex), str)
+            self.assertIsInstance(eval(repr(ex)), PolyPair)
+            self.assertEqual(eval(repr(ex)), ex)
+        self.assertEqual(repr(self.ex_15), 
+                "PolyPair(Polynomial([1]), Polynomial([0, 0, 0, 0, 0, 1]))")
+        repr_str = "PolyPair(Polynomial([1, 1]), "
+        repr_str += "Polynomial([1, -2, 3, -4, 5, -6]))"
+        self.assertEqual(repr(self.ex_24), repr_str)
+        self.assertEqual(repr(self.ex_33), 
+                "PolyPair(Polynomial([-1, -1]), Polynomial([-1, -1]))")
+        repr_str = "PolyPair(Polynomial([1, -2, 3, -4, 5, -6]), "
+        repr_str += "Polynomial([1, 1]))"
+        self.assertEqual(repr(self.ex_42), repr_str)
+        self.assertEqual(repr(self.ex_51), 
+                "PolyPair(Polynomial([0, 0, 0, 0, 0, 1]), Polynomial([1]))")
 
     def test_dunder_eq(self):
         for i in range(len(self.exs)):
