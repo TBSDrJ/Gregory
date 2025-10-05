@@ -21,6 +21,10 @@ class Polynomial:
         return f"Polynomial({self.coeffs})"
 
     def __eq__(self, other: "Polynomial") -> bool:
+        if isinstance(other, int):
+            other = Polynomial(other)
+        elif not isinstance(other, Polynomial):
+            return False
         self.eliminate_zeros()
         other.eliminate_zeros()
         return self.coeffs == other.coeffs

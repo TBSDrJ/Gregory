@@ -48,6 +48,10 @@ class TestPolynomial(unittest.TestCase):
         self.assertEqual(Polynomial([0]), Polynomial([0, 0]))
         self.assertEqual(Polynomial([1, 1]), Polynomial([1, 1, 0, 0, 0, 0, 0]))
         self.assertEqual(Polynomial([1, 1, 0, 0, 0, 0, 0]), Polynomial([1, 1]))
+        self.assertEqual(1, self.ex_1)
+        self.assertNotEqual(1, self.ex_2)
+        self.assertNotEqual("x + 1", self.ex_2)
+        self.assertNotEqual(1.1, self.ex_0)
 
     def test_coeffs_validation(self):
         self.assertEqual(Polynomial(), Polynomial([0]))
