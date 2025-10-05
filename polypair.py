@@ -6,9 +6,10 @@ class PolyPair:
     This does *not* represent a(x)b(x), if you want that just use a*b
     or (a, b).
     We don't take derivative here because the result is not a PolyPair. We'll
-    tackle that in the Rational Function library."""
-    def __init__(self, a: Polynomial  = Polynomial(), 
-            b: Polynomial = Polynomial()):
+    tackle that in the RationalFn library because the derivative of a 
+    RationalFn is another RationalFn."""
+    def __init__(self, a: Polynomial | int= Polynomial(), 
+            b: Polynomial | int = Polynomial()):
         self.a = a
         self.b = b
         # Multiplying by zero makes everything else zero.
