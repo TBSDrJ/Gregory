@@ -51,7 +51,23 @@ class TestPolyPair(unittest.TestCase):
     def test_dunder_init(self):
         for ex in self.exs:
             self.assertIsInstance(ex, PolyPair)
+        self.assertIsInstance(PolyPair(6, 7), PolyPair)
+        self.assertIsInstance(PolyPair(37, self.p_5), PolyPair)
+        self.assertIsInstance(PolyPair(self.p_5, 37), PolyPair)
         self.assertRaises(ValueError, PolyPair, 1.1, 1)
         self.assertRaises(ValueError, PolyPair, 1, 1.1)
         self.assertRaises(ValueError, PolyPair, "x", Polynomial())
         self.assertRaises(ValueError, PolyPair, Polynomial(), "x")
+
+    def test_dunder_eq(self):
+        for i in range(len(self.exs)):
+            for j in range(len(self.exs)):
+                if i == j:
+                    self.assertEqual(self.exs[i], self.exs[j])
+                else:
+                    self.assertNotEqual(self.exs[i], self.exs[j])
+        self.assertEqual(0, self.ex_00)
+        self.assertEqual(1, self.ex_11)
+        self.assertNotEqual(37, self.ex_11)
+        self.assertNotEqual(1.0, self.ex_11)
+        self.assertNotEqual("x + 1", self.ex_21)
