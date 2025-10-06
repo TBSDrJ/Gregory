@@ -18,9 +18,9 @@ class PolyPair:
         self.a = a
         self.b = b
         # Multiplying by zero makes everything else zero.
-        if a == Polynomial() or b == Polynomial():
-            a = Polynomial()
-            b = Polynomial()
+        if self.a == Polynomial() or self.b == Polynomial():
+            self.a = Polynomial()
+            self.b = Polynomial()
 
     def validate_input(self, p: Polynomial | int) -> Polynomial:
         """Make sure that a and b attributes are Polynomials."""

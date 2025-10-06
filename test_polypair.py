@@ -79,6 +79,7 @@ class TestPolyPair(unittest.TestCase):
                 # The converse is not true, for ex: 
                 #   (-x-1)(-L-1) = (x+1)(L+1)
         self.assertEqual(0, self.ex_00)
+        self.assertEqual(0, self.ex_04)
         self.assertEqual(1, self.ex_11)
         self.assertNotEqual(37, self.ex_11)
         self.assertNotEqual(1.0, self.ex_11)
