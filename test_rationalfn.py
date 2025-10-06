@@ -199,9 +199,28 @@ class TestRationalFn(unittest.TestCase):
                 1, self.p_3, self.p_4))
         self.assertEqual(RationalFn(0, 1, 1, 1), RationalFn(0, 0, 1, 1))
         self.assertEqual(RationalFn(1, 0, 1, 1), RationalFn(0, 0, 1, 1))
+        self.assertEqual(RationalFn(0, 1, self.pp_45), RationalFn(0, 0, 1, 1))
         self.assertEqual(RationalFn(0, self.p_2, self.p_3, self.p_4), 
                 RationalFn(0, 0, self.pp_34))
         self.assertEqual(RationalFn(self.p_2, self.p_3, 4, 5), 
                 RationalFn(self.pp_23, 4, 5))
         self.assertEqual(RationalFn(2, 3, self.pp_45), RationalFn(2, 3,
                 self.p_4, self.p_5))
+
+    def test_dunder_add(self):
+        # Start with cases with RationalFn + RationalFn.
+        self.assertEqual(self.rf_2445 + self.rf_2245, RationalFn(
+                self.p_2, self.p_2 + self.p_4, self.pp_45))
+        self.assertEqual(self.rf_2245 + self.rf_4245, RationalFn(
+                self.p_2 + self.p_4, self.p_2, self.pp_45))
+        # If both a and b match, select a, add self.b + other.b
+        self.assertEqual(self.rf_2345 + self.rf_2345, RationalFn(
+                self.p_2, Polynomial([-2, -2]), self.pp_45))
+        # If result is zero
+        self.assertEqual(self.rf_2345 + self.rf_3345, self.rf_0111)
+        self.assertEqual(self.rf_3345 + self.rf_2345, self.rf_0111)
+        self.assertEqual(self.rf_3245 + self.rf_3345, self.rf_0111)
+        self.assertEqual(self.rf_3345 + self.rf_3245, self.rf_0111)
+        # RationalFn + PolyPair
+        # RationalFn + Polynomial
+        # RationalFn + int

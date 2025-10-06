@@ -54,6 +54,8 @@ class RationalFn:
         if self.a == Polynomial() or self.b == Polynomial():
             self.a = Polynomial()
             self.b = Polynomial()
+            self.c = Polynomial(1)
+            self.d = Polynomial(1)
         if self.cd == PolyPair():
             msg = "PolyPair in the denominator == 0."
             raise ZeroDivisionError(msg)
@@ -78,3 +80,24 @@ class RationalFn:
         if self.d != other.d: eq = False
         return eq
 
+    def __add__(self, other) -> "RationalFn | list[RationalFn]":
+        """Only add if a, c, d match or b, c, d match. Else return pair."""
+        result = RationalFn()
+        if self.a == other.a and self.c == other.c and self.d == other.d:
+            result.a = self.a
+            result.b = self.b + other.b
+            result.c = self.c
+            result.d = self.d
+            result.b.eliminate_zeros()
+        elif self.b == other.b and self.c == other.c and self.d == other.d:
+            result.a = self.a + other.a
+            result.b = self.b
+            result.c = self.c
+            result.d = self.d
+            result.a.eliminate_zeros()
+        if result.a == Polynomial() or result.b == Polynomial():
+            result.a = Polynomial()
+            result.b = Polynomial()
+            result.c = Polynomial(1)
+            result.d = Polynomial(1)
+        return result
