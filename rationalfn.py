@@ -54,3 +54,18 @@ class RationalFn:
         if self.cd == PolyPair():
             msg = "PolyPair in the denominator == 0."
             raise ZeroDivisionError(msg)
+
+    def __str__(self) -> str:
+        b = str(self.b).replace("x", "L")
+        d = str(self.d).replace("x", "L")
+        s = f"RationalFn: ({self.a})({b}) / ({str(self.c)})({d})"
+        return s
+
+    def __repr__(self) -> str:
+        s = f"RationalFn(Polynomial({self.a.coeffs}), "
+        s += f"Polynomial({self.b.coeffs}), Polynomial({self.c.coeffs}), "
+        s += f"Polynomial({self.d.coeffs}))"
+        return s
+
+    def __eq__(self, other) -> bool:
+        return False

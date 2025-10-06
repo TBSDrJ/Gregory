@@ -25,6 +25,7 @@ class TestRationalFn(unittest.TestCase):
         self.rf_exs = []
         for i in range(0, self.num_polys):
             for j in range(0, self.num_polys):
+                # Switch to 1 because moving into the denominator
                 for k in range(1, self.num_polys):
                     for m in range(1, self.num_polys):
                         setattr(self, f"rf_{i}{j}{k}{m}", RationalFn(
@@ -135,3 +136,21 @@ class TestRationalFn(unittest.TestCase):
                             f"rf_{i}{j}{k}{m}"), "c"), Polynomial)
                         self.assertIsInstance(getattr(getattr(self, 
                             f"rf_{i}{j}{k}{m}"), "d"), Polynomial)
+
+    def test_dunder_str(self):
+        # The second Polynomial in the numerator gets converted to 0 because
+        #   anything*0 = 0, in PolyPair.__init__().
+        self.assertEqual(str(self.rf_0111), "RationalFn: (0)(0) / (1)(1)")
+        self.assertEqual(str(self.rf_2233), 
+                "RationalFn: (1x + 1)(1L + 1) / (-1x + -1)(-1L + -1)")
+        
+    def test_dunder_repr(self):
+        for i in range(0, self.num_polys):
+            for j in range(0, self.num_polys):
+                for k in range(1, self.num_polys):
+                    for m in range(1, self.num_polys):
+                        self.assertIsInstance(eval(repr(eval(
+                                f"self.rf_{i}{j}{k}{m}"))), RationalFn)
+
+    def test_dunder_eq(self):
+        pass
