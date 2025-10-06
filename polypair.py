@@ -4,12 +4,17 @@ class PolyPair:
     """Represents a pair a(x)b(L), where L = ln(1+x)
     
     This does *not* represent a(x)b(x), if you want that just use a*b
-    or (a, b).
+        or (a, b).
     We don't take derivative here because the result is not a PolyPair. We'll
-    tackle that in the RationalFn library because the derivative of a 
-    RationalFn is another RationalFn."""
-    def __init__(self, a: Polynomial | int= Polynomial(), 
-            b: Polynomial | int = Polynomial()):
+        tackle that in the RationalFn library because the derivative of a 
+        RationalFn is another RationalFn.
+    We use Polynomial() as the first default and Polynomial(1) as the
+        second so we can easily handle a single input, which is assigned to a;
+        then ab = a if b is empty.  If both are empty, we want the result to 
+        be zero, which is handled by the default for a being Polynomial().
+    """
+    def __init__(self, a: Polynomial | int = Polynomial(), 
+            b: Polynomial | int = Polynomial(1)):
         self.a = a
         self.b = b
         # Multiplying by zero makes everything else zero.

@@ -33,6 +33,8 @@ class TestPolyPair(unittest.TestCase):
         self.assertIsInstance(PolyPair(6, 7), PolyPair)
         self.assertIsInstance(PolyPair(37, self.p_5), PolyPair)
         self.assertIsInstance(PolyPair(self.p_5, 37), PolyPair)
+        self.assertIsInstance(PolyPair(1), PolyPair)
+        self.assertIsInstance(PolyPair(self.p_2), PolyPair)
         self.assertRaises(ValueError, PolyPair, 1.1, 1)
         self.assertRaises(ValueError, PolyPair, 1, 1.1)
         self.assertRaises(ValueError, PolyPair, "x", Polynomial())
@@ -84,3 +86,5 @@ class TestPolyPair(unittest.TestCase):
         # If different only by a negative in both, then also equal
         self.assertEqual(self.ex_22, self.ex_33)
         self.assertEqual(self.ex_23, self.ex_32)
+        self.assertEqual(PolyPair(1), PolyPair(1, 1))
+        self.assertEqual(PolyPair(self.p_2), PolyPair(self.p_2, 1))
