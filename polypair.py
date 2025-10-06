@@ -74,4 +74,9 @@ class PolyPair:
             return True
         else:
             return False
-        
+
+    def __bool__(self) -> bool:
+        if self == 0:
+            return False
+        else:
+            return True

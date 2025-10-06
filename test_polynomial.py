@@ -184,3 +184,7 @@ class TestPolynomial(unittest.TestCase):
         self.assertEqual(self.exs[3].der(), Polynomial([-1]))
         self.assertEqual(self.exs[4].der(), Polynomial([-2, 6, -12, 20, -30]))
         self.assertEqual(self.exs[5].der(), Polynomial([0, 0, 0, 0, 5]))
+
+    def test_bool(self):
+        self.assertFalse(Polynomial())
+        self.assertTrue(Polynomial(1))

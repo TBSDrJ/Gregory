@@ -29,6 +29,12 @@ class Polynomial:
         other.eliminate_zeros()
         return self.coeffs == other.coeffs
 
+    def __bool__(self) -> bool:
+        if self == 0:
+            return False
+        else:
+            return True
+
     @property
     def coeffs(self):
         return self._coeffs

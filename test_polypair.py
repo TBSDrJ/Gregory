@@ -89,3 +89,7 @@ class TestPolyPair(unittest.TestCase):
         self.assertEqual(self.ex_23, self.ex_32)
         self.assertEqual(PolyPair(1), PolyPair(1, 1))
         self.assertEqual(PolyPair(self.p_2), PolyPair(self.p_2, 1))
+
+    def test_dunder_bool(self):
+        self.assertFalse(PolyPair())
+        self.assertTrue(PolyPair(1))
