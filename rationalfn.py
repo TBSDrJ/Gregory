@@ -51,6 +51,9 @@ class RationalFn:
         self.b = polynomials[1]
         self.c = polynomials[2]
         self.d = polynomials[3]
+        if self.a == Polynomial() or self.b == Polynomial():
+            self.a = Polynomial()
+            self.b = Polynomial()
         if self.cd == PolyPair():
             msg = "PolyPair in the denominator == 0."
             raise ZeroDivisionError(msg)
@@ -68,4 +71,10 @@ class RationalFn:
         return s
 
     def __eq__(self, other) -> bool:
-        return False
+        eq = True
+        if self.a != other.a: eq = False
+        if self.b != other.b: eq = False
+        if self.c != other.c: eq = False
+        if self.d != other.d: eq = False
+        return eq
+

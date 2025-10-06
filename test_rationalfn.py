@@ -153,4 +153,55 @@ class TestRationalFn(unittest.TestCase):
                                 f"self.rf_{i}{j}{k}{m}"))), RationalFn)
 
     def test_dunder_eq(self):
-        pass
+        self.assertEqual(RationalFn(), RationalFn(0, 0, 1, 1))
+        # If one int/Polynomial is provided, args 2-4 are assumed to be 1
+        self.assertEqual(RationalFn(1), RationalFn(1, 1, 1, 1))
+        self.assertEqual(RationalFn(self.p_2), RationalFn(Polynomial([1, 1]), 
+                1, 1, 1))
+        # If two ints/Polynomials are provided, args 3,4 are assumed to be 1.
+        self.assertEqual(RationalFn(0, 1), RationalFn(0, 0, 1, 1))
+        self.assertEqual(RationalFn(1, 1), RationalFn(1, 1, 1, 1))
+        self.assertEqual(RationalFn(self.p_2, 1), 
+                RationalFn(Polynomial([1, 1]), 1, 1, 1))
+        self.assertEqual(RationalFn(self.p_2, self.p_2), 
+                RationalFn(Polynomial([1, 1]), Polynomial([1, 1]), 1, 1))
+        self.assertEqual(RationalFn(self.pp_22), 
+                RationalFn(Polynomial([1, 1]), Polynomial([1, 1]), 1, 1))
+        # Mostly if three ints/Polynomials are provided, arg 4 is assumed 1.
+        self.assertEqual(RationalFn(0, 1, 1), RationalFn(0, 0, 1, 1))
+        self.assertEqual(RationalFn(1, 0, 1), RationalFn(0, 0, 1, 1))
+        self.assertEqual(RationalFn(1, 2, 3), RationalFn(1, 2, 3, 1))
+        self.assertEqual(RationalFn(self.p_2, 3, 4), 
+                RationalFn(Polynomial([1, 1]), 3, 4, 1))
+        self.assertEqual(RationalFn(2, self.p_3, 4), 
+                RationalFn(2, Polynomial([-1, -1]), 4, 1))
+        self.assertEqual(RationalFn(2, 3, self.p_4), 
+                RationalFn(2, 3, Polynomial([1, -2, 3, -4, 5, -6]), 1))
+        self.assertEqual(RationalFn(self.p_2, self.p_3, 4), 
+                RationalFn(Polynomial([1, 1]), Polynomial([-1, -1]), 4, 1))
+        self.assertEqual(RationalFn(self.p_2, 3, self.p_4), RationalFn(
+                Polynomial([1, 1]), 3, Polynomial([1, -2, 3, -4, 5, -6]), 1))
+        self.assertEqual(RationalFn(2, self.p_3, self.p_4), RationalFn(
+                2, Polynomial([-1, -1]), Polynomial([1, -2, 3, -4, 5, -6]), 1))
+        self.assertEqual(RationalFn(self.p_2, self.p_3, self.p_4), RationalFn(
+                Polynomial([1, 1]), Polynomial([-1, -1]), 
+                Polynomial([1, -2, 3, -4, 5, -6]), 1))
+        self.assertEqual(RationalFn(self.pp_23, 4), 
+                RationalFn(Polynomial([1, 1]), Polynomial([-1, -1]), 4, 1))
+        # In this ex, the 2nd arg should be assumed to be 1.
+        self.assertEqual(RationalFn(2, self.pp_34), RationalFn(2, 1, 
+                self.p_3, self.p_4))
+        # Here, the 4th arg is assumed to be 1.
+        self.assertEqual(RationalFn(self.pp_23, self.p_4), RationalFn(self.p_2,
+                self.p_3, self.p_4, 1))
+        # In this ex, the 2nd arg should be assumed to be 1.
+        self.assertEqual(RationalFn(self.p_2, self.pp_34), RationalFn(self.p_2, 
+                1, self.p_3, self.p_4))
+        self.assertEqual(RationalFn(0, 1, 1, 1), RationalFn(0, 0, 1, 1))
+        self.assertEqual(RationalFn(1, 0, 1, 1), RationalFn(0, 0, 1, 1))
+        self.assertEqual(RationalFn(0, self.p_2, self.p_3, self.p_4), 
+                RationalFn(0, 0, self.pp_34))
+        self.assertEqual(RationalFn(self.p_2, self.p_3, 4, 5), 
+                RationalFn(self.pp_23, 4, 5))
+        self.assertEqual(RationalFn(2, 3, self.pp_45), RationalFn(2, 3,
+                self.p_4, self.p_5))
