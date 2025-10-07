@@ -66,7 +66,7 @@ class Polynomial:
 
     def _add_sub(self, operation: Callable, other: "Polynomial"):
         if operation not in [int.__add__, int.__sub__]:
-            msg = "Method Polynomial._add_sub expected either int.__add__ or"
+            msg = "Method Polynomial._add_sub expected either int.__add__ or "
             msg += "int.__sub__."
             raise ValueError(msg)
         result = Polynomial()
