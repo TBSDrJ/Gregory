@@ -129,7 +129,7 @@ class Polynomial:
             return self._add_sub(int.__sub__, Polynomial(other))
         elif isinstance(other, PolyPair) or isinstance(other, RationalFn):
             # delegate to other.__add__()
-            return other + (-1)*self
+            return (-1)*other + self
         else:
             msg = "Subtraction for Polynomial only defined for another "
             msg += "Polynomial or an int."

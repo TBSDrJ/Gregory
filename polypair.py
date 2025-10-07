@@ -98,7 +98,7 @@ class PolyPair:
             if operation == Polynomial.__add__:
                 return other + self
             else:
-                return other + (-1)*self
+                return (-1)*other + self
         result = PolyPair()
         if isinstance(other, PolyPair):
             if self.a == 0 or self.b == 0:
@@ -134,3 +134,19 @@ class PolyPair:
     def __radd__(self, other: "PolyPair | Polynomial | int"
             ) -> "PolyPair | list[PolyPair]":
         return self + other
+
+    def __sub__(self, other: "RationalFn | PolyPair | Polynomial | int"
+            ) -> "RationalFn | PolyPair | list[PolyPair]":
+        """Add if self.a == other.a or self.b == other.b, else return list.
+        
+        Returns RationalFn if other is a RationalFn. (via delegation)
+        Returns [self, other] if neither a nor b is a common factor.
+        Returns a PolyPair otherwise."""
+        # TODO? If factor is off by a factor instead of exactly equal.
+        if isinstance(other, Polynomial) or isinstance(other, int):
+            other = PolyPair(other)
+        return self._add_sub(Polynomial.__sub__, other)
+
+    def __rsub__(self, other: "PolyPair | Polynomial | int"
+            ) -> "PolyPair | list[PolyPair]":
+        return (-1)*self + other

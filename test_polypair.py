@@ -123,3 +123,34 @@ class TestPolyPair(unittest.TestCase):
         with self.assertRaises(ValueError): 1.0 + self.pp_25
         with self.assertRaises(ValueError): self.pp_25 + "x"
         with self.assertRaises(ValueError): "x" + self.pp_25
+
+    def test_dunder_sub(self):
+        """Includes __rsub__"""
+        # Difference of two PolyPairs
+        self.assertEqual(self.pp_23 - self.pp_13, PolyPair(
+                Polynomial([0, 1]), self.p_3))
+        self.assertEqual(self.pp_32 - self.pp_31, PolyPair(
+                self.p_3, Polynomial([0, 1])))
+        self.assertEqual(self.pp_13 - self.pp_00, self.pp_13)
+        # PolyPair + Polynomial and reverse
+        self.assertEqual(self.pp_23 - self.p_2, PolyPair(
+                self.p_2, self.p_3 - 1))
+        self.assertEqual(self.p_4 - self.pp_43, PolyPair(
+                self.p_4, 1 - self.p_3))
+        self.assertEqual(self.pp_23 - self.pp_45, [self.pp_23, (-1)*self.pp_45])
+        self.assertEqual(self.pp_23 - self.pp_32, [self.pp_23, (-1)*self.pp_32])
+        # PolyPair + int and reverse
+        # Notice that PolyPair(2) = (2)(1), so self.pp_15 + 2 does not share
+        #       a common factor and so won't be added.
+        self.assertEqual(self.pp_15 - 1, PolyPair(1, self.p_5 - 1))
+        self.assertEqual(2 - self.pp_31, PolyPair(2 - self.p_3, 1))
+        # PolyPair - Polynomial and reverse
+        self.assertEqual(self.pp_35 - self.p_3, 
+                PolyPair(self.p_3, self.p_5 - 1))
+        self.assertEqual(self.p_3 - self.pp_35, 
+                PolyPair(self.p_3, 1 - self.p_5))
+        with self.assertRaises(ValueError): self.pp_25 - 1.0
+        with self.assertRaises(ValueError): 1.0 - self.pp_25
+        with self.assertRaises(ValueError): self.pp_25 - "x"
+        with self.assertRaises(ValueError): "x" - self.pp_25
+
