@@ -1,4 +1,9 @@
 from typing import Callable
+# see __add__, __sub__, __mul__ for add'l imports
+# All are just:
+# from polypair import PolyPair
+# from rationalfn import RationalFn
+# with try/except to avoid circular imports.
 
 class Polynomial:
     def __init__(self, coeffs: list[int] = [0]):
@@ -80,10 +85,24 @@ class Polynomial:
         return result
 
     def __add__(self, other: "Polynomial | int") -> "Polynomial":
+        # Avoiding circular imports
+        try:
+            from polypair import PolyPair
+        except ImportError:
+            pass
+        if isinstance(other, int):
+            other = Polynomial(other)
+        try:
+            from rationalfn import RationalFn
+        except ImportError:
+            pass
         if isinstance(other, Polynomial):
             return self._add_sub(int.__add__, other)
         elif isinstance(other, int):
             return self._add_sub(int.__add__, Polynomial(other))
+        elif isinstance(other, PolyPair) or isinstance(other, RationalFn):
+            # delegate to other.__add__()
+            return other + self
         else:
             msg = "Addition for Polynomial only defined for another Polynomial "
             msg += "or an int."
@@ -93,10 +112,24 @@ class Polynomial:
         return self + other
 
     def __sub__(self, other: "Polynomial | int") -> "Polynomial":
+        # Avoiding circular imports
+        try:
+            from polypair import PolyPair
+        except ImportError:
+            pass
+        if isinstance(other, int):
+            other = Polynomial(other)
+        try:
+            from rationalfn import RationalFn
+        except ImportError:
+            pass
         if isinstance(other, Polynomial):
             return self._add_sub(int.__sub__, other)
         elif isinstance(other, int):
             return self._add_sub(int.__sub__, Polynomial(other))
+        elif isinstance(other, PolyPair) or isinstance(other, RationalFn):
+            # delegate to other.__add__()
+            return other + (-1)*self
         else:
             msg = "Subtraction for Polynomial only defined for another "
             msg += "Polynomial or an int."
@@ -106,8 +139,20 @@ class Polynomial:
         return (-1)*(self - other)
 
     def __mul__(self, other: "Polynomial | int") -> "Polynomial":
+        # Avoiding circular imports
+        try:
+            from polypair import PolyPair
+        except ImportError:
+            pass
+        try:
+            from rationalfn import RationalFn
+        except ImportError:
+            pass
         if isinstance(other, int):
             other = Polynomial(other)
+        elif isinstance(other, PolyPair) or isinstance(other, RationalFn):
+            # delegate to other.__mul__()
+            return other * self
         elif not isinstance(other, Polynomial):
             msg = "Multiplication for Polynomial only defined for another "
             msg += "Polynomial or an int."
