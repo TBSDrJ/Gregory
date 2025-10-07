@@ -64,7 +64,9 @@ class Polynomial:
                     raise ValueError(msg)
         self._coeffs = new_coeffs
 
-    def _add_sub(self, operation: Callable, other: "Polynomial"):
+    def _add_sub(self, operation: Callable, other: "Polynomial"
+            ) -> "Polynomial":
+        """Combine work for __add__ and __sub__ to avoid repitition."""
         if operation not in [int.__add__, int.__sub__]:
             msg = "Method Polynomial._add_sub expected either int.__add__ or "
             msg += "int.__sub__."
