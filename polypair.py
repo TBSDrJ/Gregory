@@ -99,7 +99,7 @@ class PolyPair:
         if isinstance(other, Polynomial) or isinstance(other, int):
             other = PolyPair(other)
         result = PolyPair()
-        if isinstance(other, PolyPair) and isinstance(self, PolyPair):
+        if isinstance(other, PolyPair):
             if self.a == 0 or self.b == 0:
                 result = other
             elif other.a == 0 or other.b == 0:
