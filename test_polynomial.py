@@ -89,8 +89,10 @@ class TestPolynomial(unittest.TestCase):
                 Polynomial([1, -2, 3, -4, 5, -5]))
         self.assertEqual(self.exs[5] + self.exs[5], 
                 Polynomial([0, 0, 0, 0, 0, 2]))
-        self.assertRaises(ValueError, Polynomial.__add__, self.exs[0], 1.1)
-        self.assertRaises(ValueError, Polynomial.__radd__, self.exs[0], 1.1)
+        with self.assertRaises(ValueError): self.exs[0] + 1.0
+        with self.assertRaises(ValueError): 1.0 + self.exs[0]
+        with self.assertRaises(ValueError): self.exs[0] + "x"
+        with self.assertRaises(ValueError): "x" + self.exs[0]
 
     def test_dunder_subtract(self):
         # and dunder rsub
@@ -133,8 +135,10 @@ class TestPolynomial(unittest.TestCase):
                 Polynomial([1, -2, 3, -4, 5, -7]))
         self.assertEqual(self.exs[5] - self.exs[4], 
                 Polynomial([-1, 2, -3, 4, -5, 7]))
-        self.assertRaises(ValueError, Polynomial.__sub__, self.exs[0], 1.1)
-        self.assertRaises(ValueError, Polynomial.__rsub__, self.exs[0], 1.1)
+        with self.assertRaises(ValueError): self.exs[0] - 1.0
+        with self.assertRaises(ValueError): 1.0 - self.exs[0]
+        with self.assertRaises(ValueError): self.exs[0] - "x"
+        with self.assertRaises(ValueError): "x" - self.exs[0]
 
     def test_dunder_mul(self):
         for i in range(len(self.exs)):
@@ -158,8 +162,10 @@ class TestPolynomial(unittest.TestCase):
                 Polynomial([0, 0, 0, 0, 0, 1, -2, 3, -4, 5, -6]))
         self.assertEqual(self.exs[5] * self.exs[5], 
                 Polynomial([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]))
-        self.assertRaises(ValueError, Polynomial.__mul__, self.exs[0], 1.1)
-        self.assertRaises(ValueError, Polynomial.__rmul__, self.exs[0], 1.1)
+        with self.assertRaises(ValueError): self.exs[0] * 1.0
+        with self.assertRaises(ValueError): 1.0 * self.exs[0]
+        with self.assertRaises(ValueError): self.exs[0] * "x"
+        with self.assertRaises(ValueError): "x" * self.exs[0]
 
     def test_subs(self):
         for i in range(len(self.exs)):

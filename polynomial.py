@@ -90,22 +90,20 @@ class Polynomial:
             from polypair import PolyPair
         except ImportError:
             pass
-        if isinstance(other, int):
-            other = Polynomial(other)
         try:
             from rationalfn import RationalFn
         except ImportError:
             pass
+        if isinstance(other, int):
+            other = Polynomial(other)
         if isinstance(other, Polynomial):
             return self._add_sub(int.__add__, other)
-        elif isinstance(other, int):
-            return self._add_sub(int.__add__, Polynomial(other))
         elif isinstance(other, PolyPair) or isinstance(other, RationalFn):
             # delegate to other.__add__()
             return other + self
         else:
-            msg = "Addition for Polynomial only defined for another Polynomial "
-            msg += "or an int."
+            msg = "Addition for Polynomial only defined for Polynomial, "
+            msg += "int, PolyPair or RationalFn."
             raise ValueError(msg)
 
     def __radd__(self, other: "Polynomial | int") -> "Polynomial":
