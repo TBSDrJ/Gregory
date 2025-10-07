@@ -80,3 +80,44 @@ class PolyPair:
             return False
         else:
             return True
+
+    def __add__(self, other: "RationalFn | PolyPair | Polynomial | int"
+            ) -> "RationalFn | PolyPair | list[PolyPair]":
+        """Add if self.a == other.a or self.b == other.b, else return list.
+        
+        Returns RationalFn if other is a RationalFn. (via delegation)
+        Returns [self, other] if neither a nor b is a common factor.
+        Returns a PolyPair otherwise."""
+        # TODO? If off by a factor instead of exactly equal.
+        try:
+            from rationalfn import RationalFn
+        except ImportError:
+            pass
+        if isinstance(other, RationalFn):
+            # delegate to RationalFn.__add__()
+            return other + self
+        if isinstance(other, Polynomial) or isinstance(other, int):
+            other = PolyPair(other)
+        result = PolyPair()
+        if isinstance(other, PolyPair) and isinstance(self, PolyPair):
+            if self.a == 0 or self.b == 0:
+                result = other
+            elif other.a == 0 or other.b == 0:
+                result = self
+            elif self.a == other.a:
+                result.a = self.a
+                result.b = self.b + other.b
+            elif self.b == other.b:
+                result.a = self.a + other.a
+                result.b = self.b
+            else:
+                return [self, other]            
+            return result
+        else:
+            msg = "Addition for PolyPair only defined for PolyPair, "
+            msg += "int, Polynomial or RationalFn."
+            raise ValueError(msg)
+
+    def __radd__(self, other: "PolyPair | Polynomial | int"
+            ) -> "PolyPair | list[PolyPair]":
+        return self + other
