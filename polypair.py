@@ -1,3 +1,4 @@
+from typing import Callable
 from polynomial import Polynomial
 
 class PolyPair:
@@ -81,23 +82,23 @@ class PolyPair:
         else:
             return True
 
-    def __add__(self, other: "RationalFn | PolyPair | Polynomial | int"
-            ) -> "RationalFn | PolyPair | list[PolyPair]":
-        """Add if self.a == other.a or self.b == other.b, else return list.
-        
-        Returns RationalFn if other is a RationalFn. (via delegation)
-        Returns [self, other] if neither a nor b is a common factor.
-        Returns a PolyPair otherwise."""
-        # TODO? If off by a factor instead of exactly equal.
+    def _add_sub(self, operation: Callable, other: "Polypair | RationalFn"
+            ) -> "PolyPair | RationalFn":
+        """Combine work from __add__, __sub__ to avoid repitition."""
+        if operation not in [Polynomial.__add__, Polynomial.__sub__]:
+            msg = "Method Polynomial._add_sub expected either "
+            msg += "Polynomial.__add__ or Polynomial.__sub__."
+            raise ValueError(msg)
         try:
             from rationalfn import RationalFn
         except ImportError:
             pass
         if isinstance(other, RationalFn):
             # delegate to RationalFn.__add__()
-            return other + self
-        if isinstance(other, Polynomial) or isinstance(other, int):
-            other = PolyPair(other)
+            if operation == Polynomial.__add__:
+                return other + self
+            else:
+                return other + (-1)*self
         result = PolyPair()
         if isinstance(other, PolyPair):
             if self.a == 0 or self.b == 0:
@@ -106,17 +107,29 @@ class PolyPair:
                 result = self
             elif self.a == other.a:
                 result.a = self.a
-                result.b = self.b + other.b
+                result.b = operation(self.b, other.b)
             elif self.b == other.b:
-                result.a = self.a + other.a
+                result.a = operation(self.a, other.a)
                 result.b = self.b
             else:
                 return [self, other]            
             return result
         else:
-            msg = "Addition for PolyPair only defined for PolyPair, "
-            msg += "int, Polynomial or RationalFn."
+            msg = "Addition/Subtraction for PolyPair only defined for "
+            msg += "PolyPair, int, Polynomial or RationalFn."
             raise ValueError(msg)
+
+    def __add__(self, other: "RationalFn | PolyPair | Polynomial | int"
+            ) -> "RationalFn | PolyPair | list[PolyPair]":
+        """Add if self.a == other.a or self.b == other.b, else return list.
+        
+        Returns RationalFn if other is a RationalFn. (via delegation)
+        Returns [self, other] if neither a nor b is a common factor.
+        Returns a PolyPair otherwise."""
+        # TODO? If factor is off by a factor instead of exactly equal.
+        if isinstance(other, Polynomial) or isinstance(other, int):
+            other = PolyPair(other)
+        return self._add_sub(Polynomial.__add__, other)
 
     def __radd__(self, other: "PolyPair | Polynomial | int"
             ) -> "PolyPair | list[PolyPair]":
