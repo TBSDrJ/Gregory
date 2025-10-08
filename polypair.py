@@ -153,3 +153,27 @@ class PolyPair:
     def __rsub__(self, other: "RationalFn | PolyPair | Polynomial | int"
             ) -> "PolyPair | RationalFn | list[PolyPair]":
         return (-1)*self + other
+
+    def __mul__(self, other: "RationalFn | PolyPair | Polynomial | int"
+            ) -> "PolyPair | RationalFn":
+        try: 
+            from rationalfn import RationalFn
+        except ImportError:
+            pass
+        if isinstance(other, int):
+            return PolyPair(self.a * other, self.b)
+        if isinstance(other, Polynomial):
+            return PolyPair(self.a * other, self.b)
+        if isinstance(other, PolyPair):
+            return PolyPair(self.a * other.a, self.b * other.b)
+        if isinstance(other, RationalFn):
+            # Delegate to RationalFn.__mul__
+            return other * self
+        else:
+            msg = "Multiplication for PolyPair only defined for "
+            msg += "PolyPair, int, Polynomial or RationalFn."
+            raise ValueError(msg)
+
+    def __rmul__(self, other: "RationalFn | PolyPair | Polynomial | int"
+            ) -> "PolyPair | RationalFn":
+        return self * other
