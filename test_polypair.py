@@ -119,6 +119,10 @@ class TestPolyPair(unittest.TestCase):
                 PolyPair(self.p_3, self.p_5 + 1))
         self.assertEqual(self.p_3 + self.pp_35, 
                 PolyPair(self.p_3, self.p_5 + 1))
+        # PolyPair + PolyPair where self.a = n * other.a
+        # self.assertEqual(self.pp_25 + 5*self.pp_24, PolyPair(self.p_2,
+        #         self.p_5 + 5*self.p_4))
+        # self.assertEqual(self.pp_14 + self.pp_24, self.pp_00)
         with self.assertRaises(ValueError): self.pp_25 + 1.0
         with self.assertRaises(ValueError): 1.0 + self.pp_25
         with self.assertRaises(ValueError): self.pp_25 + "x"

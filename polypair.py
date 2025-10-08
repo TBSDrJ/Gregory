@@ -112,7 +112,10 @@ class PolyPair:
                 result.a = operation(self.a, other.a)
                 result.b = self.b
             else:
-                return [self, other]            
+                if operation == Polynomial.__add__:
+                    return [self, other]           
+                else:
+                    return [self, (-1)*other] 
             return result
         else:
             msg = "Addition/Subtraction for PolyPair only defined for "
