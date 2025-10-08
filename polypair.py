@@ -150,6 +150,6 @@ class PolyPair:
             other = PolyPair(other)
         return self._add_sub(Polynomial.__sub__, other)
 
-    def __rsub__(self, other: "PolyPair | Polynomial | int"
-            ) -> "PolyPair | list[PolyPair]":
+    def __rsub__(self, other: "RationalFn | PolyPair | Polynomial | int"
+            ) -> "PolyPair | RationalFn | list[PolyPair]":
         return (-1)*self + other
