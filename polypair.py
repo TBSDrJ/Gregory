@@ -99,19 +99,17 @@ class PolyPair:
                 return other + self
             else:
                 return (-1)*other + self
-        result = PolyPair()
+        result = None
         if isinstance(other, PolyPair):
             if self.a == 0 or self.b == 0:
                 result = other
             elif other.a == 0 or other.b == 0:
                 result = self
             elif self.a == other.a:
-                result.a = self.a
-                result.b = operation(self.b, other.b)
+                result = PolyPair(self.a, operation(self.b, other.b))
             elif self.b == other.b:
-                result.a = operation(self.a, other.a)
-                result.b = self.b
-            else:
+                result = PolyPair(operation(self.a, other.a), self.b)
+            if result is None:
                 if operation == Polynomial.__add__:
                     return [self, other]           
                 else:
