@@ -216,11 +216,11 @@ class TestRationalFn(unittest.TestCase):
         # If both a and b match, select a, add self.b + other.b
         self.assertEqual(self.rf_2345 + self.rf_2345, RationalFn(
                 self.p_2, Polynomial([-2, -2]), self.pp_45))
-        # If result is zero
-        self.assertEqual(self.rf_2345 + self.rf_3345, self.rf_0111)
-        self.assertEqual(self.rf_3345 + self.rf_2345, self.rf_0111)
+        # If result is zero (Doesn't matter if we use rf_0011 = rf_0111)
+        self.assertEqual(self.rf_2345 + self.rf_3345, self.rf_0011)
+        self.assertEqual(self.rf_3345 + self.rf_2345, self.rf_0011)
         self.assertEqual(self.rf_3245 + self.rf_3345, self.rf_0111)
         self.assertEqual(self.rf_3345 + self.rf_3245, self.rf_0111)
-        # RationalFn + PolyPair
-        # RationalFn + Polynomial
-        # RationalFn + int
+        # RationalFn + PolyPair, requires PolyPair.__mul__
+        # RationalFn + Polynomial, requires Polynomial. and PolyPair.__mul__ 
+        # RationalFn + int, requires Polynomial. and PolyPair.__mul__ 

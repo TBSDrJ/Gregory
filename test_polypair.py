@@ -108,10 +108,11 @@ class TestPolyPair(unittest.TestCase):
         self.assertEqual(self.p_4 + self.pp_43, PolyPair(
                 self.p_4, self.p_3 + 1))
         self.assertEqual(self.pp_23 + self.pp_45, [self.pp_23, self.pp_45])
-        self.assertEqual(self.pp_23 + self.pp_32, [self.pp_23, self.pp_32])
+        # This test no longer valid with handling of proportional factors
+        # self.assertEqual(self.pp_23 + self.pp_32, [self.pp_23, self.pp_32])
         # PolyPair + int and reverse
         # Notice that PolyPair(2) = (2)(1), so self.pp_15 + 2 does not share
-        #       a common factor and so won't be added.
+        #       a common factor (see below for handling of that)
         self.assertEqual(self.pp_15 + 1, PolyPair(1, self.p_5 + 1))
         self.assertEqual(2 + self.pp_31, PolyPair(self.p_3 + 2, 1))
         # PolyPair + Polynomial and reverse
@@ -119,10 +120,22 @@ class TestPolyPair(unittest.TestCase):
                 PolyPair(self.p_3, self.p_5 + 1))
         self.assertEqual(self.p_3 + self.pp_35, 
                 PolyPair(self.p_3, self.p_5 + 1))
-        # PolyPair + PolyPair where self.a = n * other.a
-        # self.assertEqual(self.pp_25 + 5*self.pp_24, PolyPair(self.p_2,
-        #         self.p_5 + 5*self.p_4))
-        # self.assertEqual(self.pp_14 + self.pp_24, self.pp_00)
+        # PolyPair + PolyPair where self.a = n * other.a or 
+        #       n * self.a = other.a
+        self.assertEqual(self.pp_25 + PolyPair(5*self.p_2, self.p_4), 
+                PolyPair(self.p_2, self.p_5 + 5*self.p_4))
+        self.assertEqual(PolyPair(5*self.p_2, self.p_4) + self.pp_25, 
+                PolyPair(self.p_2, self.p_5 + 5*self.p_4))
+        self.assertEqual(self.pp_34 + self.pp_24, self.pp_00)
+        self.assertEqual(self.pp_23 + self.pp_32, self.pp_00)
+        # Same for PolyPair + Polynomial
+        self.assertEqual(self.pp_25 + Polynomial([-3, -3]), PolyPair(
+                self.p_3, 3 + (-1)*self.p_5))
+        self.assertEqual(Polynomial([-3, -3]) + self.pp_25, PolyPair(
+                self.p_2, self.p_5 - 3))
+        # And PolyPair + int
+        self.assertEqual(self.pp_15 + 2, PolyPair(1, self.p_5 + 2))
+        self.assertEqual(2 + self.pp_15, PolyPair(1, self.p_5 + 2))
         with self.assertRaises(ValueError): self.pp_25 + 1.0
         with self.assertRaises(ValueError): 1.0 + self.pp_25
         with self.assertRaises(ValueError): self.pp_25 + "x"

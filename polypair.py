@@ -1,3 +1,4 @@
+import math
 from typing import Callable
 from polynomial import Polynomial
 
@@ -82,6 +83,50 @@ class PolyPair:
         else:
             return True
 
+    def _add_sub_prop(self, operation: Callable, other: "PolyPair"
+            ) -> "PolyPair":
+        """Case: Add and sub where self.a or b is proportional other.a or b"""
+        if len(self.a.coeffs) == len(other.a.coeffs):
+            factor_self = math.gcd(*self.a.coeffs)
+            factor_other = math.gcd(*other.a.coeffs)
+            proportional_a = True
+            for i in range(len(self.a.coeffs)):
+                if (abs(self.a.coeffs[i]) // factor_self != 
+                        abs(other.a.coeffs[i]) // factor_other):
+                    proportional_a = False
+            if proportional_a:
+                for i in range(len(self.a.coeffs)):
+                    self.a.coeffs[i] //= factor_self
+                    other.a.coeffs[i] //= factor_other
+                # Might still be off by a negative; math.gcd on returns > 0
+                print(self.a.coeffs, self.b.coeffs, factor_self)
+                if self.a.coeffs[0] == -other.a.coeffs[0]:
+                    factor_self *= -1
+                    for i in range(len(self.a.coeffs)):
+                        self.a.coeffs[i] *= -1
+                    for i in range(len(self.b.coeffs)):
+                        self.b.coeffs[i] *= -1
+                print(self.a.coeffs, self.b.coeffs)
+                self.b *= factor_self
+                other.b *= factor_other
+                return self + other
+        if len(self.b.coeffs) == len(other.b.coeffs):
+            factor_self = math.gcd(*self.b.coeffs)
+            factor_other = math.gcd(*other.b.coeffs)
+            proportional_b = True
+            for i in range(len(self.b.coeffs)):
+                if (self.a.coeffs[i] // factor_self !=
+                        other.a.coeffs[i] // factor_other):
+                    proportional_b = False
+                if proportional_b:
+                    for i in range(len(self.b.coeffs)):
+                        self.b.coeffs[i] //= factor_self
+                        other.b.coeffs[i] //= factor_other
+                    self.a *= factor_self
+                    self.b *= factor_other
+                    return self + other
+        return None
+
     def _add_sub(self, operation: Callable, other: "Polypair | RationalFn"
             ) -> "PolyPair | RationalFn":
         """Combine work from __add__, __sub__ to avoid repitition."""
@@ -109,6 +154,8 @@ class PolyPair:
                 result = PolyPair(self.a, operation(self.b, other.b))
             elif self.b == other.b:
                 result = PolyPair(operation(self.a, other.a), self.b)
+            if result is None:
+                result = self._add_sub_prop(operation, other)
             if result is None:
                 if operation == Polynomial.__add__:
                     return [self, other]           
