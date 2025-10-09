@@ -6,9 +6,17 @@ from typing import Callable
 # with try/except to avoid circular imports.
 
 class Polynomial:
-    def __init__(self, coeffs: list[int] = [0]):
+    def __init__(self, coeffs: list[int] = None):
         # My intent is that coeffs[n] is the degree n term.  Notice that this
         #   means that a degree n polynomial has coeffs list of length n+1.
+
+        # Interesting bug here: If I use coeffs=[0] in the declaration, that
+        #   default [0] is the *same* object from one new Polynomial to
+        #   another.  So, if it isn't reassigned, then changes to one copy
+        #   of it affect other copies of it.  By assigning it like this, then
+        #   each new Polynomial() gets a new [0] that is its own.
+        if coeffs is None:
+            coeffs = [0]
         self.coeffs = coeffs
 
     def __str__(self) -> str:
