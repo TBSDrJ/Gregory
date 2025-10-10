@@ -87,8 +87,28 @@ class TestPolyPair(unittest.TestCase):
         # If different only by a negative in both, then also equal
         self.assertEqual(self.pp_22, self.pp_33)
         self.assertEqual(self.pp_23, self.pp_32)
+        # Check on multiplication by 1 explicitly vs implicitly
         self.assertEqual(PolyPair(1), PolyPair(1, 1))
         self.assertEqual(PolyPair(self.p_2), PolyPair(self.p_2, 1))
+        # Equal if only different by trivial terms
+        self.assertEqual(self.pp_23, PolyPair(Polynomial([1, 1, 0, 0, 0]), 
+                Polynomial([-1, -1, 0, 0])))
+        # Also equal if different by a factor moved from one side to the other
+        # Move common factor left -> right
+        self.assertEqual(PolyPair(Polynomial([4, 6]), Polynomial([8, -10])), 
+                PolyPair(Polynomial([2, 3]), Polynomial([16, -20])))
+        # Move common factor right -> left
+        self.assertEqual(PolyPair(Polynomial([4, 6]), Polynomial([8, -10])), 
+                PolyPair(Polynomial([8, 12]), Polynomial([4, -5])))
+        # Off in only one spot
+        self.assertNotEqual(PolyPair(Polynomial([4, 6]), Polynomial([8, -12])),
+                PolyPair(Polynomial([2, 3]), Polynomial([16, -20])))
+        # Has zero terms
+        self.assertEqual(PolyPair(4*self.p_5, 3*self.p_5), PolyPair(6*self.p_5,
+                2*self.p_5))
+        # Has zero terms, factor is negative
+        self.assertEqual(PolyPair(4*self.p_5, -3*self.p_5), PolyPair(6*self.p_5,
+                -2*self.p_5))
 
     def test_dunder_bool(self):
         self.assertFalse(PolyPair())
@@ -126,8 +146,10 @@ class TestPolyPair(unittest.TestCase):
                 PolyPair(self.p_2, self.p_5 + 5*self.p_4))
         self.assertEqual(PolyPair(5*self.p_2, self.p_4) + self.pp_25, 
                 PolyPair(self.p_2, self.p_5 + 5*self.p_4))
-        self.assertEqual(self.pp_34 + self.pp_24, self.pp_00)
-        self.assertEqual(self.pp_23 + self.pp_32, self.pp_00)
+        self.assertEqual(self.pp_34 + self.pp_25, PolyPair(self.p_3,
+                self.p_4 - self.p_5))
+        self.assertEqual(self.pp_23 + self.pp_32, PolyPair(self.p_2, 
+                2*self.p_3))
         # Same for PolyPair + Polynomial
         self.assertEqual(self.pp_25 + Polynomial([-3, -3]), PolyPair(
                 self.p_3, 3 + (-1)*self.p_5))
@@ -136,6 +158,14 @@ class TestPolyPair(unittest.TestCase):
         # And PolyPair + int
         self.assertEqual(self.pp_15 + 2, PolyPair(1, self.p_5 + 2))
         self.assertEqual(2 + self.pp_15, PolyPair(1, self.p_5 + 2))
+        # Has zero terms and is proportional
+        self.assertEqual(self.pp_54 + PolyPair(-3*self.p_5, self.p_3), 
+                PolyPair(self.p_5, Polynomial([4, 1, 3, -4, 5, -6])))
+        # Has a zero factor and other is proportional
+        self.assertEqual(PolyPair(self.p_0, 2*self.p_3) + PolyPair(self.p_0, 
+                -5*self.p_3), self.pp_00)
+        self.assertEqual(PolyPair(self.p_3, self.p_0) + PolyPair(self.p_3, 
+                self.p_0), self.pp_00)
         with self.assertRaises(ValueError): self.pp_25 + 1.0
         with self.assertRaises(ValueError): 1.0 + self.pp_25
         with self.assertRaises(ValueError): self.pp_25 + "x"
@@ -155,7 +185,8 @@ class TestPolyPair(unittest.TestCase):
         self.assertEqual(self.p_4 - self.pp_43, PolyPair(
                 self.p_4, 1 - self.p_3))
         self.assertEqual(self.pp_23 - self.pp_45, [self.pp_23, (-1)*self.pp_45])
-        self.assertEqual(self.pp_23 - self.pp_32, [self.pp_23, (-1)*self.pp_32])
+        # This test is no longer correct with _add_sub_prop()
+        # self.assertEqual(self.pp_23 - self.pp_32, [self.pp_23, (-1)*self.pp_32])
         # PolyPair + int and reverse
         # Notice that PolyPair(2) = (2)(1), so self.pp_15 + 2 does not share
         #       a common factor and so won't be added.
@@ -166,6 +197,28 @@ class TestPolyPair(unittest.TestCase):
                 PolyPair(self.p_3, self.p_5 - 1))
         self.assertEqual(self.p_3 - self.pp_35, 
                 PolyPair(self.p_3, 1 - self.p_5))
+        # PolyPair - PolyPair where self.a = n * other.a or 
+        #       n * self.a = other.a
+        self.assertEqual(self.pp_25 - PolyPair(5*self.p_2, self.p_4), 
+                PolyPair(self.p_2, self.p_5 - 5*self.p_4))
+        self.assertEqual(PolyPair(5*self.p_2, self.p_4) - self.pp_25, 
+                PolyPair(self.p_2, 5*self.p_4 - self.p_5))
+        self.assertEqual(self.pp_34 - self.pp_25, PolyPair(self.p_3, 
+                self.p_4 + self.p_5))
+        self.assertEqual(self.pp_23 - self.pp_32, self.pp_00)
+        # Same for PolyPair + Polynomial
+        self.assertEqual(self.pp_25 - Polynomial([-3, -3]), PolyPair(
+                self.p_2, 3 + self.p_5))
+        self.assertEqual(Polynomial([-3, -3]) - self.pp_25, PolyPair(
+                self.p_3, 3 + self.p_5))
+        # Has zero terms and is proportional
+        self.assertEqual(self.pp_54 - PolyPair(-3*self.p_5, self.p_3), 
+                PolyPair(self.p_5, Polynomial([-2, -5, 3, -4, 5, -6])))
+        # Has a zero factor and other is proportional
+        self.assertEqual(PolyPair(self.p_0, 2*self.p_3) - PolyPair(self.p_0, 
+                -5*self.p_3), self.pp_00)
+        self.assertEqual(PolyPair(self.p_3, self.p_0) - PolyPair(self.p_3, 
+                self.p_0), self.pp_00)
         with self.assertRaises(ValueError): self.pp_25 - 1.0
         with self.assertRaises(ValueError): 1.0 - self.pp_25
         with self.assertRaises(ValueError): self.pp_25 - "x"

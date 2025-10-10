@@ -69,13 +69,62 @@ class PolyPair:
                 return False
         elif not isinstance(other, PolyPair):
             return False
+        self.a.eliminate_zeros()
+        self.b.eliminate_zeros()
+        other.a.eliminate_zeros()
+        other.b.eliminate_zeros()
         if self.a == other.a and self.b == other.b:
             return True
+        # If either factor of a pair is zero, make both zero.
+        if self.a == Polynomial() or self.b == Polynomial():
+            self.a = Polynomial()
+            self.b = Polynomial()
+        if other.a == Polynomial or other.b == Polynomial():
+            other.a = Polynomial()
+            other.b = Polynomial()
+        # If both self and other are zero
+        if (self.a == other.a and self.b == other.b and self.a ==
+                Polynomial() and self.b == Polynomial()):
+            return True
+        # If one is zero and the other is not.
+        if (self.a == Polynomial() and other.a != Polynomial()):
+            return False
+        if (self.a != Polynomial() and other.a == Polynomial()):
+            return False
         # (-1)*(-1) cancels
         elif self.a == (-1)*other.a and self.b ==(-1)*other.b:
             return True
-        else:
+        if len(self.a.coeffs) != len(other.a.coeffs):
             return False
+        if len(self.b.coeffs) != len(other.b.coeffs):
+            return False
+        # So now we know that the a's have same degree and so do b's.
+        factor_a_self = math.gcd(*self.a.coeffs)
+        factor_a_other = math.gcd(*other.a.coeffs)
+        if (self.a.coeffs[0] >= 0 and other.a.coeffs[0] < 0) or (
+                self.a.coeffs[0] < 0 and other.a.coeffs[0] >= 0):
+            factor_a_other *= -1
+        for i in range(len(self.a.coeffs)):
+            if (self.a.coeffs[i] // factor_a_self != 
+                    other.a.coeffs[i] // factor_a_other):
+                return False
+        factor_b_self = math.gcd(*self.b.coeffs)
+        factor_b_other = math.gcd(*other.b.coeffs)
+        if (self.b.coeffs[0] >= 0 and other.b.coeffs[0] < 0) or (
+                self.b.coeffs[0] < 0 and other.b.coeffs[0] >= 0):
+            factor_b_other *= -1
+        for i in range(len(self.b.coeffs)):
+            if (self.b.coeffs[i] // factor_b_self != 
+                    other.b.coeffs[i] // factor_b_other):
+                return False
+        # Since they have same proportion in all coeffs, only need to check i=0
+        if (self.a.coeffs[0] * factor_a_other == 
+                other.a.coeffs[0] * factor_a_self and
+                self.b.coeffs[0] * factor_b_other == 
+                other.b.coeffs[0] * factor_b_self):
+            return True
+        return False
+
 
     def __bool__(self) -> bool:
         if self == 0:
@@ -86,45 +135,69 @@ class PolyPair:
     def _add_sub_prop(self, operation: Callable, other: "PolyPair"
             ) -> "PolyPair":
         """Case: Add and sub where self.a or b is proportional other.a or b"""
+        match = None
+        non_match = None
         if len(self.a.coeffs) == len(other.a.coeffs):
             factor_self = math.gcd(*self.a.coeffs)
             factor_other = math.gcd(*other.a.coeffs)
-            proportional_a = True
+            # Need to check if they are different by a negative factor.
+            # So find lowest degree where they are both nonzero, and compare.
+            # If they are proportional, it doesn't matter which degree you
+            #   pick, they are all different by the same factor.  
+            # If there is no degree where they are both nonzero, then they are
+            #   certainly not proportional, so if search fails, move on.
+            found = False
             for i in range(len(self.a.coeffs)):
-                if (abs(self.a.coeffs[i]) // factor_self != 
-                        abs(other.a.coeffs[i]) // factor_other):
-                    proportional_a = False
-            if proportional_a:
+                if self.a.coeffs[i] != 0 and other.a.coeffs[i] != 0:
+                    found = True
+                    if ((self.a.coeffs[i] > 0 and other.a.coeffs[i] < 0) or
+                            (self.a.coeffs[i] < 0 and other.a.coeffs[i] > 0)):
+                        factor_other *= -1
+                    break
+            if found:
+                proportional_a = True
                 for i in range(len(self.a.coeffs)):
-                    self.a.coeffs[i] //= factor_self
-                    other.a.coeffs[i] //= factor_other
-                # Might still be off by a negative; math.gcd on returns > 0
-                print(self.a.coeffs, self.b.coeffs, factor_self)
-                if self.a.coeffs[0] == -other.a.coeffs[0]:
-                    factor_self *= -1
-                    for i in range(len(self.a.coeffs)):
-                        self.a.coeffs[i] *= -1
-                    for i in range(len(self.b.coeffs)):
-                        self.b.coeffs[i] *= -1
-                print(self.a.coeffs, self.b.coeffs)
-                self.b *= factor_self
-                other.b *= factor_other
-                return self + other
-        if len(self.b.coeffs) == len(other.b.coeffs):
+                    if (self.a.coeffs[i] // factor_self != 
+                            other.a.coeffs[i] // factor_other):
+                        proportional_a = False
+                if proportional_a:
+                    match = 'a'
+                    non_match = 'b'
+        if match is None and len(self.b.coeffs) == len(other.b.coeffs):
             factor_self = math.gcd(*self.b.coeffs)
             factor_other = math.gcd(*other.b.coeffs)
-            proportional_b = True
+            found = False
             for i in range(len(self.b.coeffs)):
-                if (self.a.coeffs[i] // factor_self !=
-                        other.a.coeffs[i] // factor_other):
-                    proportional_b = False
+                if self.b.coeffs[i] != 0 and other.b.coeffs[i] != 0:
+                    found = True
+                    if ((self.b.coeffs[i] > 0 and other.b.coeffs[i] < 0) or
+                            (self.b.coeffs[i] < 0 and other.b.coeffs[i] > 0)):
+                        factor_other *= -1
+                    break
+            if found:
+                proportional_b = True
+                for i in range(len(self.b.coeffs)):
+                    if (self.b.coeffs[i] // factor_self != 
+                            other.b.coeffs[i] // factor_other):
+                        proportional_b = False
                 if proportional_b:
-                    for i in range(len(self.b.coeffs)):
-                        self.b.coeffs[i] //= factor_self
-                        other.b.coeffs[i] //= factor_other
-                    self.a *= factor_self
-                    self.b *= factor_other
-                    return self + other
+                    match = 'b'
+                    non_match = 'a'
+        if match is not None:
+            result = PolyPair()
+            p_source = getattr(self, match)
+            p_target = getattr(result, match)
+            p_target.coeffs = []
+            q_self = getattr(self, non_match)
+            q_other = getattr(other, non_match)
+            q_target = getattr(result, non_match)
+            for i in range(len(self.a.coeffs)):
+                p_target.coeffs.append(p_source.coeffs[i] // factor_self)
+            q_target = operation(q_self * factor_self, q_other * factor_other)
+            setattr(result, non_match, q_target)
+            result.a.eliminate_zeros()
+            result.b.eliminate_zeros()
+            return result
         return None
 
     def _add_sub(self, operation: Callable, other: "Polypair | RationalFn"
@@ -156,6 +229,10 @@ class PolyPair:
                 result = PolyPair(operation(self.a, other.a), self.b)
             if result is None:
                 result = self._add_sub_prop(operation, other)
+            if result is not None:
+                if result.a == 0 or result.b == 0:
+                    result.a = Polynomial()
+                    result.b = Polynomial()
             if result is None:
                 if operation == Polynomial.__add__:
                     return [self, other]           
