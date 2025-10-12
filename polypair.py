@@ -1,5 +1,7 @@
 import math
 from typing import Callable
+from fractions import Fraction
+
 from polynomial import Polynomial
 
 class PolyPair:
@@ -102,75 +104,11 @@ class PolyPair:
         else:
             return False
 
-
-
     def __bool__(self) -> bool:
         if self == 0:
             return False
         else:
             return True
-
-    def _add_sub_prop(self, operation: Callable, other: "PolyPair"
-            ) -> "PolyPair":
-        """Case: Add and sub where self.a or b is proportional other.a or b"""
-        match = None
-        non_match = None
-        if len(self.a.coeffs) == len(other.a.coeffs):
-            factor_self = math.gcd(*self.a.coeffs)
-            factor_other = math.gcd(*other.a.coeffs)
-            found = False
-            for i in range(len(self.a.coeffs)):
-                if self.a.coeffs[i] != 0 and other.a.coeffs[i] != 0:
-                    found = True
-                    if ((self.a.coeffs[i] > 0 and other.a.coeffs[i] < 0) or
-                            (self.a.coeffs[i] < 0 and other.a.coeffs[i] > 0)):
-                        factor_other *= -1
-                    break
-            if found:
-                proportional_a = True
-                for i in range(len(self.a.coeffs)):
-                    if (self.a.coeffs[i] // factor_self != 
-                            other.a.coeffs[i] // factor_other):
-                        proportional_a = False
-                if proportional_a:
-                    match = 'a'
-                    non_match = 'b'
-        if match is None and len(self.b.coeffs) == len(other.b.coeffs):
-            factor_self = math.gcd(*self.b.coeffs)
-            factor_other = math.gcd(*other.b.coeffs)
-            found = False
-            for i in range(len(self.b.coeffs)):
-                if self.b.coeffs[i] != 0 and other.b.coeffs[i] != 0:
-                    found = True
-                    if ((self.b.coeffs[i] > 0 and other.b.coeffs[i] < 0) or
-                            (self.b.coeffs[i] < 0 and other.b.coeffs[i] > 0)):
-                        factor_other *= -1
-                    break
-            if found:
-                proportional_b = True
-                for i in range(len(self.b.coeffs)):
-                    if (self.b.coeffs[i] // factor_self != 
-                            other.b.coeffs[i] // factor_other):
-                        proportional_b = False
-                if proportional_b:
-                    match = 'b'
-                    non_match = 'a'
-        if match is not None:
-            result = PolyPair()
-            p_source = getattr(self, match)
-            p_target = getattr(result, match)
-            p_target.coeffs = []
-            q_self = getattr(self, non_match)
-            q_other = getattr(other, non_match)
-            q_target = getattr(result, non_match)
-            for i in range(len(self.a.coeffs)):
-                p_target.coeffs.append(p_source.coeffs[i] // factor_self)
-            q_target = operation(q_self * factor_self, q_other * factor_other)
-            setattr(result, non_match, q_target)
-            result.a.eliminate_zeros()
-            result.b.eliminate_zeros()
-            return result
-        return None
 
     def _add_sub(self, operation: Callable, other: "Polypair | RationalFn"
             ) -> "PolyPair | RationalFn":
@@ -192,15 +130,26 @@ class PolyPair:
         result = None
         if isinstance(other, PolyPair):
             if self.a == 0 or self.b == 0:
-                result = other
+                if operation == Polynomial.__add__:
+                    result = other
+                else:
+                    result = (-1)*other
             elif other.a == 0 or other.b == 0:
                 result = self
             elif self.a == other.a:
                 result = PolyPair(self.a, operation(self.b, other.b))
             elif self.b == other.b:
                 result = PolyPair(operation(self.a, other.a), self.b)
-            if result is None:
-                result = self._add_sub_prop(operation, other)
+            elif (factor := self.a.proportional(other.a)):
+                # We know that factor.denominator divides all coeffs of self.a
+                result = PolyPair(Fraction(1, factor.denominator)*self.a, 
+                        operation(factor.denominator*self.b, 
+                        factor.numerator*other.b))
+            elif (factor := self.b.proportional(other.b)):
+                # We know that factor.denominator divides all coeffs of self.a
+                result = PolyPair(Fraction(1, factor.denominator)*self.b, 
+                        operation(factor.denominator*self.a, 
+                        factor.numerator*other.a))
             if result is not None:
                 if result.a == 0 or result.b == 0:
                     result.a = Polynomial()
@@ -248,14 +197,21 @@ class PolyPair:
             ) -> "PolyPair | RationalFn | list[PolyPair]":
         return (-1)*self + other
 
-    def __mul__(self, other: "RationalFn | PolyPair | Polynomial | int"
+    def __mul__(self, other: 
+            "RationalFn | PolyPair | Polynomial | int | Fraction"
             ) -> "PolyPair | RationalFn":
         try: 
             from rationalfn import RationalFn
         except ImportError:
             pass
-        if isinstance(other, int):
-            return PolyPair(self.a * other, self.b)
+        if isinstance(other, int) or isinstance(other, Fraction):
+            factor_a = math.gcd(*self.a.coeffs)
+            factor_b = math.gcd(*self.b.coeffs)
+            if factor_a * factor_b % other.denominator == 0:
+                gcd_a = math.gcd(factor_a, other.denominator)
+            result_a = Fraction(other.numerator, gcd_a) * self.a
+            result_b = Fraction(1, other.denominator // gcd_a) * self.b
+            return PolyPair(result_a, result_b)
         if isinstance(other, Polynomial):
             return PolyPair(self.a * other, self.b)
         if isinstance(other, PolyPair):
@@ -265,9 +221,16 @@ class PolyPair:
             return other * self
         else:
             msg = "Multiplication for PolyPair only defined for "
-            msg += "PolyPair, int, Polynomial or RationalFn."
+            msg += "PolyPair, int, Fraction, Polynomial or RationalFn."
             raise ValueError(msg)
 
-    def __rmul__(self, other: "RationalFn | PolyPair | Polynomial | int"
+    def __rmul__(self, other: 
+            "RationalFn | PolyPair | Polynomial | int | Fraction"
             ) -> "PolyPair | RationalFn":
         return self * other
+    
+    def __pos__(self) -> "polyPair":
+        return self
+        
+    def __neg__(self) -> "PolyPair":
+        return (-1)*self

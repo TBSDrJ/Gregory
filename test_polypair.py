@@ -1,4 +1,6 @@
 import unittest
+from fractions import Fraction
+
 from polynomial import Polynomial
 from polypair import PolyPair
 
@@ -152,7 +154,7 @@ class TestPolyPair(unittest.TestCase):
                 2*self.p_3))
         # Same for PolyPair + Polynomial
         self.assertEqual(self.pp_25 + Polynomial([-3, -3]), PolyPair(
-                self.p_3, 3 + (-1)*self.p_5))
+                self.p_3, 3 + -self.p_5))
         self.assertEqual(Polynomial([-3, -3]) + self.pp_25, PolyPair(
                 self.p_2, self.p_5 - 3))
         # And PolyPair + int
@@ -184,14 +186,15 @@ class TestPolyPair(unittest.TestCase):
                 self.p_2, self.p_3 - 1))
         self.assertEqual(self.p_4 - self.pp_43, PolyPair(
                 self.p_4, 1 - self.p_3))
-        self.assertEqual(self.pp_23 - self.pp_45, [self.pp_23, (-1)*self.pp_45])
+        self.assertEqual(self.pp_23 - self.pp_45, [self.pp_23, -self.pp_45])
         # This test is no longer correct with _add_sub_prop()
-        # self.assertEqual(self.pp_23 - self.pp_32, [self.pp_23, (-1)*self.pp_32])
-        # PolyPair + int and reverse
-        # Notice that PolyPair(2) = (2)(1), so self.pp_15 + 2 does not share
-        #       a common factor and so won't be added.
+        # self.assertEqual(self.pp_23 - self.pp_32, [self.pp_23, -self.pp_32])
+        # PolyPair - int and reverse
         self.assertEqual(self.pp_15 - 1, PolyPair(1, self.p_5 - 1))
         self.assertEqual(2 - self.pp_31, PolyPair(2 - self.p_3, 1))
+        # PolyPair - 0 and reverse
+        self.assertEqual(self.pp_43 - 0, self.pp_43)
+        self.assertEqual(0 - self.pp_43, -self.pp_43)
         # PolyPair - Polynomial and reverse
         self.assertEqual(self.pp_35 - self.p_3, 
                 PolyPair(self.p_3, self.p_5 - 1))
@@ -244,6 +247,22 @@ class TestPolyPair(unittest.TestCase):
         # PolyPair * int and reverse
         self.assertEqual(self.pp_15 * 5, PolyPair(5, self.p_5))
         self.assertEqual(2 * self.pp_31, PolyPair(2 * self.p_3, 1))
+        # PolyPair * Fraction and reverse
+        # Fraction goes evenly into a
+        self.assertEqual(PolyPair(Polynomial([9, -24, 15]), self.p_5) * 
+                Fraction(-2, 3), PolyPair(Polynomial([-6, 16, -10]), self.p_5))
+        self.assertEqual(Fraction(-2, 3) * PolyPair(Polynomial([9, -24, 15]), 
+                self.p_5), PolyPair(Polynomial([-6, 16, -10]), self.p_5))
+        # Fraction goes evenly into b
+        self.assertEqual(PolyPair(self.p_5, Polynomial([9, -24, 15])) * 
+                Fraction(-2, 3), PolyPair(self.p_5, Polynomial([-6, 16, -10])))
+        # Part of Fraction goes evenly into a, part into b
+        self.assertEqual(PolyPair(Polynomial([4, 6]), Polynomial([15, 10])) * 
+                Fraction(-7, 10), PolyPair(Polynomial([-14, -21]), 
+                Polynomial([3, 2])))
+        self.assertEqual(Fraction(-7, 10) * PolyPair(Polynomial([4, 6]), 
+                Polynomial([15, 10])), PolyPair(Polynomial([-14, -21]), 
+                Polynomial([3, 2])))
         # PolyPair * Polynomial and reverse
         self.assertEqual(self.pp_35 * self.p_3, 
                 PolyPair(self.p_3 * self.p_3, self.p_5))
@@ -253,3 +272,5 @@ class TestPolyPair(unittest.TestCase):
         with self.assertRaises(ValueError): 1.0 * self.pp_25
         with self.assertRaises(ValueError): self.pp_25 * "x"
         with self.assertRaises(ValueError): "x" * self.pp_25
+        with self.assertRaises(ValueError): Fraction(2, 3) * PolyPair(
+                Polynomial([8, 6, 4, 2]), PolyPair([2, 4, 6, 8]))
