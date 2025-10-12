@@ -186,6 +186,12 @@ class Polynomial:
     def __rmul__(self, other: "Polynomial | int | Fraction") -> "Polynomial":
         return self * other
 
+    def __pos__(self) -> "Polynomial":
+        return self
+
+    def __neg__(self) -> "Polynomial":
+        return (-1)*self
+
     def eliminate_zeros(self) -> None:
         """Remove any zero terms above the largest non-zero term.
         
