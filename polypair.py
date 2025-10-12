@@ -94,36 +94,14 @@ class PolyPair:
         # (-1)*(-1) cancels
         elif self.a == (-1)*other.a and self.b ==(-1)*other.b:
             return True
-        if len(self.a.coeffs) != len(other.a.coeffs):
+        # If self == other then factor_a, factor_b are reciprocals.
+        if ((factor_a := self.a.proportional(other.a)) and 
+                (factor_b := self.b.proportional(other.b))):
+            if (factor_a * factor_b == 1):
+                return True
+        else:
             return False
-        if len(self.b.coeffs) != len(other.b.coeffs):
-            return False
-        # So now we know that the a's have same degree and so do b's.
-        factor_a_self = math.gcd(*self.a.coeffs)
-        factor_a_other = math.gcd(*other.a.coeffs)
-        if (self.a.coeffs[0] >= 0 and other.a.coeffs[0] < 0) or (
-                self.a.coeffs[0] < 0 and other.a.coeffs[0] >= 0):
-            factor_a_other *= -1
-        for i in range(len(self.a.coeffs)):
-            if (self.a.coeffs[i] // factor_a_self != 
-                    other.a.coeffs[i] // factor_a_other):
-                return False
-        factor_b_self = math.gcd(*self.b.coeffs)
-        factor_b_other = math.gcd(*other.b.coeffs)
-        if (self.b.coeffs[0] >= 0 and other.b.coeffs[0] < 0) or (
-                self.b.coeffs[0] < 0 and other.b.coeffs[0] >= 0):
-            factor_b_other *= -1
-        for i in range(len(self.b.coeffs)):
-            if (self.b.coeffs[i] // factor_b_self != 
-                    other.b.coeffs[i] // factor_b_other):
-                return False
-        # Since they have same proportion in all coeffs, only need to check i=0
-        if (self.a.coeffs[0] * factor_a_other == 
-                other.a.coeffs[0] * factor_a_self and
-                self.b.coeffs[0] * factor_b_other == 
-                other.b.coeffs[0] * factor_b_self):
-            return True
-        return False
+
 
 
     def __bool__(self) -> bool:
@@ -140,12 +118,6 @@ class PolyPair:
         if len(self.a.coeffs) == len(other.a.coeffs):
             factor_self = math.gcd(*self.a.coeffs)
             factor_other = math.gcd(*other.a.coeffs)
-            # Need to check if they are different by a negative factor.
-            # So find lowest degree where they are both nonzero, and compare.
-            # If they are proportional, it doesn't matter which degree you
-            #   pick, they are all different by the same factor.  
-            # If there is no degree where they are both nonzero, then they are
-            #   certainly not proportional, so if search fails, move on.
             found = False
             for i in range(len(self.a.coeffs)):
                 if self.a.coeffs[i] != 0 and other.a.coeffs[i] != 0:
