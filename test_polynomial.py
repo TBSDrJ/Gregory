@@ -163,6 +163,8 @@ class TestPolynomial(unittest.TestCase):
                 Polynomial([0, 0, 0, 0, 0, 1, -2, 3, -4, 5, -6]))
         self.assertEqual(self.p_5 * self.p_5, 
                 Polynomial([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]))
+        self.assertEqual(Fraction(1, 2) * Polynomial([6, 4, 14, 22]), 
+                Polynomial([3, 2, 7, 11]))
         with self.assertRaises(ValueError): self.p_0 * 1.0
         with self.assertRaises(ValueError): 1.0 * self.p_0
         with self.assertRaises(ValueError): self.p_0 * "x"

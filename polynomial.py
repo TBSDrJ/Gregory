@@ -149,7 +149,7 @@ class Polynomial:
     def __rsub__(self, other: "Polynomial | int") -> "Polynomial":
         return (-1)*(self - other)
 
-    def __mul__(self, other: "Polynomial | int") -> "Polynomial":
+    def __mul__(self, other: "Polynomial | int | Fraction") -> "Polynomial":
         # Avoiding circular imports
         try:
             from polypair import PolyPair
@@ -159,8 +159,17 @@ class Polynomial:
             from rationalfn import RationalFn
         except ImportError:
             pass
-        if isinstance(other, int):
-            other = Polynomial(other)
+        result = Polynomial()
+        if isinstance(other, int) or isinstance(other, Fraction):
+            result.coeffs = []
+            for i in range(len(self.coeffs)):
+                prod = self.coeffs[i] * other
+                if int(prod) != prod:
+                    msg = "Can only multiply a Polynomial by a Fraction when "
+                    msg += "when the product in each coefficient is an int."
+                    raise ValueError(msg)
+                result.coeffs.append(int(prod))
+            return result
         elif isinstance(other, PolyPair) or isinstance(other, RationalFn):
             # delegate to other.__mul__()
             return other * self
@@ -168,14 +177,13 @@ class Polynomial:
             msg = "Multiplication for Polynomial only defined for another "
             msg += "Polynomial or an int."
             raise ValueError(msg)
-        result = Polynomial()
         result.coeffs = [0] * (len(self.coeffs) + len(other.coeffs) - 1)
         for i in range(len(self.coeffs)):
             for j in range(len(other.coeffs)):
                 result.coeffs[i+j] += self.coeffs[i] * other.coeffs[j]
         return result
 
-    def __rmul__(self, other: "Polynomial | int") -> "Polynomial":
+    def __rmul__(self, other: "Polynomial | int | Fraction") -> "Polynomial":
         return self * other
 
     def eliminate_zeros(self) -> None:
