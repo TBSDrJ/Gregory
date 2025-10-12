@@ -1,4 +1,6 @@
+import math
 from typing import Callable
+from fractions import Fraction
 # see __add__, __sub__, __mul__ for add'l imports
 # All are just:
 # from polypair import PolyPair
@@ -205,3 +207,41 @@ class Polynomial:
         if len(d.coeffs) == 0:
             d.coeffs = [0]
         return d
+
+    def proportional(self, other: "Polynomial | int") -> Fraction:
+        """Determine if self is proportional to other.
+        
+        Return factor such that self * factor = other. If they are not, then 
+        return 0.  So this works as you would hope/expect:
+                if (factor := p.proportional(q)):"""
+        # If they are not the same degree, they are not proportional.
+        self.eliminate_zeros()
+        other.eliminate_zeros()
+        if len(self.coeffs) != len(other.coeffs):
+            return Fraction()
+        # Get the integer can be factored out. math.gcd() is always non-neg
+        factor_self = math.gcd(*self.coeffs)
+        factor_other = math.gcd(*other.coeffs)
+        if factor_self == 0 or factor_other == 0:
+            return False
+        # Need to check if they are different by a negative factor.
+        # So find lowest degree where they are both nonzero, and compare.
+        # If they are proportional, it doesn't matter which degree you
+        #   pick, they are all different by the same factor.  
+        # If there is no degree where they are both nonzero, then they are
+        #   certainly not proportional, so if search fails, return False.
+        found_nonzero_pair = False
+        for i in range(len(self.coeffs)):
+            if self.coeffs[i] != 0 and other.coeffs[i] != 0:
+                found_nonzero_pair = True
+                if ((self.coeffs[i] > 0 and other.coeffs[i] < 0) or 
+                        (self.coeffs[i] < 0 and other.coeffs[i] > 0)):
+                    factor_self *= -1
+                break
+        if not found_nonzero_pair:
+            return False
+        # If they are proportional, Fraction(factor_other, factor_self) is it.
+        for i in range(len(self.coeffs)):
+            if self.coeffs[i] // factor_self != other.coeffs[i] // factor_other:
+                return False
+        return Fraction(factor_other, factor_self)
