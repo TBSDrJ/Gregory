@@ -209,18 +209,46 @@ class TestRationalFn(unittest.TestCase):
 
     def test_dunder_add(self):
         # Start with cases with RationalFn + RationalFn.
+        # a, c, d match
         self.assertEqual(self.rf_2445 + self.rf_2245, RationalFn(
                 self.p_2, self.p_2 + self.p_4, self.pp_45))
+        # b, c, d match
         self.assertEqual(self.rf_2245 + self.rf_4245, RationalFn(
                 self.p_2 + self.p_4, self.p_2, self.pp_45))
-        # If both a and b match, select a, add self.b + other.b
+        # All 4 match
         self.assertEqual(self.rf_2345 + self.rf_2345, RationalFn(
-                self.p_2, Polynomial([-2, -2]), self.pp_45))
-        # If result is zero (Doesn't matter if we use rf_0011 = rf_0111)
+                self.p_2, 2*self.p_3, self.pp_45))
+        self.assertEqual(self.rf_2345 + self.rf_2345, RationalFn(
+                2*self.p_2, self.p_3, self.pp_45))
+        # Recall that self.p_2 = -self.p_3, some of these use that.
+        # If result is zero (Shouldn't matter what form of zero we use.)
         self.assertEqual(self.rf_2345 + self.rf_3345, self.rf_0011)
-        self.assertEqual(self.rf_3345 + self.rf_2345, self.rf_0011)
-        self.assertEqual(self.rf_3245 + self.rf_3345, self.rf_0111)
-        self.assertEqual(self.rf_3345 + self.rf_3245, self.rf_0111)
-        # RationalFn + PolyPair, requires PolyPair.__mul__
-        # RationalFn + Polynomial, requires Polynomial. and PolyPair.__mul__ 
-        # RationalFn + int, requires Polynomial. and PolyPair.__mul__ 
+        self.assertEqual(self.rf_3345 + self.rf_2345, self.rf_0111)
+        self.assertEqual(self.rf_3245 + self.rf_3345, self.rf_1011)
+        self.assertEqual(self.rf_3345 + self.rf_3245, 0)
+        # One summand is zero
+        self.assertEqual(self.rf_3345 + self.rf_0011, self.rf_3345)
+        self.assertEqual(self.rf_4523 + self.rf_1011, self.rf_4532)
+        # RationalFn + PolyPair
+        self.assertEqual(self.rf_3541 + self.pp_25, RationalFn(self.p_3 +
+                self.p_2*self.p_4, self.p_5, self.p_4))
+        self.assertEqual(self.rf_3541 + self.pp_25, RationalFn(self.p_2*(
+                self.p_4 - 1), self.p_5, self.p_4))
+        self.assertEqual(self.pp_25 + self.rf_3541, RationalFn(self.p_3 +
+                self.p_2*self.p_4, self.p_5, self.p_4))
+        self.assertEqual(self.pp_25 + self.rf_3541, RationalFn(self.p_2*(
+                self.p_4 - 1), self.p_5, self.p_4))
+        self.assertEqual(self.rf_5514 + self.pp_54, RationalFn(self.p_5, 
+                self.p_4*self.p_4 + self.p_5, self.pp_14))
+        self.assertEqual(self.pp_54 + self.rf_5514, RationalFn(self.p_5, 
+                self.p_4*self.p_4 + self.p_5, self.pp_14))
+        # RationalFn + Polynomial
+        self.assertEqual(self.pp_6531 + self.p_6, RationalFn(self.p_6*(
+                self.p_3 + 1), self.p_5, self.p_3))
+        self.assertEqual(self.p_6 + self.pp_6531, RationalFn(self.p_6*(
+                self.p_3 + 1), self.p_5, self.p_3))
+        # RationalFn + int
+        self.assertEqual(self.pp_1513 + 5, RationalFn(1, self.p_5 + 5*self.p_3,
+                self.pp_13))
+        self.assertEqual(5 + self.pp_1513, RationalFn(1, self.p_5 + 5*self.p_3,
+                self.pp_13))

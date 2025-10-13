@@ -1,3 +1,5 @@
+from fractions import Fraction
+
 from polynomial import Polynomial
 from polypair import PolyPair
 
@@ -73,16 +75,34 @@ class RationalFn:
         return s
 
     def __eq__(self, other) -> bool:
-        eq = True
-        if self.a != other.a: eq = False
-        if self.b != other.b: eq = False
-        if self.c != other.c: eq = False
-        if self.d != other.d: eq = False
-        return eq
+        if (isinstance(other, int) or isinstance(other, Polynomial) or 
+                isinstance(other, PolyPair)):
+            other = RationalFn(other)
+        if self.ab == 0 and other.ab == 0:
+            return True
+        if self.ab == other.ab and self.cd == other.cd:
+            return True
+        factor_a = self.a.proportional(other.a)
+        factor_b = self.a.proportional(other.b)
+        factor_c = self.a.proportional(other.c)
+        factor_d = self.a.proportional(other.d)
+        if factor_a and factor_b and factor_c and factor_d:
+            if (factor_a * factor_b)/(factor_c * factor_d) == 1:
+                return True 
+        return False
 
-    def __add__(self, other) -> "RationalFn | list[RationalFn]":
-        """Only add if a, c, d match or b, c, d match. Else return pair."""
+    def __add__(self, other: "RationalFn | int | Polynomial | PolyPair"
+            ) -> "RationalFn | list[RationalFn]":
+        if (isinstance(other, int) or isinstance(other, Polynomial) or 
+                isinstance(other, PolyPair)):
+            other = RationalFn(other)
+        if self == 0:
+            return other
+        if other == 0:
+            return self
         result = RationalFn()
+        factor_a = self.a.proportional(other.a)
+        factor_b = self.b.proportional(other.b)
         if self.a == other.a and self.c == other.c and self.d == other.d:
             result.a = self.a
             result.b = self.b + other.b
@@ -95,9 +115,15 @@ class RationalFn:
             result.c = self.c
             result.d = self.d
             result.a.eliminate_zeros()
+        elif self.c == other.c and self.d == other.d and factor_a:
+            result = RationalFn(self.ab + other.ab, self.cd)
+        elif self.c == other.c and self.d == other.d and factor_b:
+            result = RationalFn(self.ab + other.ab, self.cd)
         if result.a == Polynomial() or result.b == Polynomial():
             result.a = Polynomial()
             result.b = Polynomial()
             result.c = Polynomial(1)
             result.d = Polynomial(1)
+        result.ab = PolyPair(result.a, result.b)
+        result.cd = PolyPair(result.c, result.d)
         return result
