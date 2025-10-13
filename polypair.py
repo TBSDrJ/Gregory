@@ -64,7 +64,7 @@ class PolyPair:
 
     def __eq__(self, other):
         if isinstance(other, int):
-            if (len(self.a.coeffs) == 1 and len(self.b.coeffs) == 1 and 
+            if self.a.deg == 0 and self.b.deg == 1 and 
                     other == self.a.coeffs[0]*self.b.coeffs[0]):
                 return True
             else:
