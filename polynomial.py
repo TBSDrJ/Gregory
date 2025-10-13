@@ -74,6 +74,10 @@ class Polynomial:
                     raise ValueError(msg)
         self._coeffs = new_coeffs
 
+    @property
+    def deg(self):
+        return len(self.coeffs) - 1
+
     def _add_sub(self, operation: Callable, other: "Polynomial"
             ) -> "Polynomial":
         """Combine work for __add__ and __sub__ to avoid repitition."""
@@ -196,10 +200,10 @@ class Polynomial:
         """Remove any zero terms above the largest non-zero term.
         
         If largest non-zero term is degree zero, keep it even if it's zero."""
-        if len(self.coeffs) > 1:
+        if self.deg > 0:
             while (self.coeffs[-1] == 0):
                 self.coeffs.pop(-1)
-                if len(self.coeffs) == 1:
+                if self.deg == 0:
                     break
 
     def subs(self, val: int) -> int:
@@ -231,7 +235,7 @@ class Polynomial:
         # If they are not the same degree, they are not proportional.
         self.eliminate_zeros()
         other.eliminate_zeros()
-        if len(self.coeffs) != len(other.coeffs):
+        if self.deg != other.deg:
             return Fraction()
         # Get the integer can be factored out. math.gcd() is always non-neg
         factor_self = math.gcd(*self.coeffs)
