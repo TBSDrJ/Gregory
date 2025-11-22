@@ -151,9 +151,19 @@ class TestRationalFn(unittest.TestCase):
                     for m in range(1, self.num_polys):
                         self.assertIsInstance(eval(repr(eval(
                                 f"self.rf_{i}{j}{k}{m}"))), RationalFn)
+                        # Depends on __eq__
+                        self.assertEqual(eval(f"self.rf_{i}{j}{k}{m}"), 
+                                eval(repr(eval(f"self.rf_{i}{j}{k}{m}"))))
 
     def test_dunder_eq(self):
-        self.assertEqual(RationalFn(), RationalFn(0, 0, 1, 1))
+        # Test that things that should be equal to zero actually are.
+        self.assertEqual(0, RationalFn())
+        self.assertEqual(0, RationalFn(0, 0, 1, 1))
+        self.assertEqual(0, RationalFn(0, self.p_5, self.p_1, self.p_1))
+        self.assertEqual(0, RationalFn(self.p_3, 0, self.p_4, self.p_5))
+        self.assertEqual(0, RationalFn(self.p_0, self.p_5, self.p_1, self.p_1))
+        self.assertEqual(0, RationalFn(self.p_3, self.p_0, self.p_4, self.p_5))
+        self.assertEqual(0, RationalFn(self.pp_40, self.pp_23))
         # If one int/Polynomial is provided, args 2-4 are assumed to be 1
         self.assertEqual(RationalFn(1), RationalFn(1, 1, 1, 1))
         self.assertEqual(RationalFn(self.p_2), RationalFn(Polynomial([1, 1]), 
@@ -220,18 +230,18 @@ class TestRationalFn(unittest.TestCase):
                 self.p_2, 2*self.p_3, self.pp_45))
         self.assertEqual(self.rf_2345 + self.rf_2345, RationalFn(
                 2*self.p_2, self.p_3, self.pp_45))
-        # Recall that self.p_2 = -self.p_3, some of these use that.
-        # If result is zero (Shouldn't matter what form of zero we use.)
-        self.assertEqual(self.rf_2345 + self.rf_3345, self.rf_0011)
-        self.assertEqual(self.rf_3345 + self.rf_2345, self.rf_0111)
-        self.assertEqual(self.rf_3245 + self.rf_3345, self.rf_1011)
+        # Recall that self.p_2 = -self.p_3, the next batch uses that.
+        self.assertEqual(self.rf_2345 + self.rf_3345, 0)
+        self.assertEqual(self.rf_3345 + self.rf_2345, 0)
+        self.assertEqual(self.rf_3245 + self.rf_3345, 0)
         self.assertEqual(self.rf_3345 + self.rf_3245, 0)
         # One summand is zero
         self.assertEqual(self.rf_3345 + self.rf_0011, self.rf_3345)
         self.assertEqual(self.rf_4523 + self.rf_1011, self.rf_4532)
         # RationalFn + PolyPair
-        self.assertEqual(self.rf_3541 + self.pp_25, RationalFn(self.p_3 +
-                self.p_2*self.p_4, self.p_5, self.p_4))
+        self.assertEqual(self.rf_3541 + self.pp_25, RationalFn((self.p_3 +
+                self.p_2), self.p_4, self.p_5, self.p_4))
+        # These are failing, I think the issue is here not there
         self.assertEqual(self.rf_3541 + self.pp_25, RationalFn(self.p_2*(
                 self.p_4 - 1), self.p_5, self.p_4))
         self.assertEqual(self.pp_25 + self.rf_3541, RationalFn(self.p_3 +
@@ -243,12 +253,14 @@ class TestRationalFn(unittest.TestCase):
         self.assertEqual(self.pp_54 + self.rf_5514, RationalFn(self.p_5, 
                 self.p_4*self.p_4 + self.p_5, self.pp_14))
         # RationalFn + Polynomial
-        self.assertEqual(self.pp_6531 + self.p_6, RationalFn(self.p_6*(
-                self.p_3 + 1), self.p_5, self.p_3))
-        self.assertEqual(self.p_6 + self.pp_6531, RationalFn(self.p_6*(
-                self.p_3 + 1), self.p_5, self.p_3))
+        # These are failing, LHS is showing zero, but that's not right.
+        self.assertEqual(self.rf_5431 + self.p_5, RationalFn(self.p_5, 
+                self.p_4 + 1, self.p_3, self.p_1))
+        self.assertEqual(self.p_5 + self.rf_5431, RationalFn(self.p_5,
+                self.p_4 + 1, self.p_3, self.p_1))
         # RationalFn + int
-        self.assertEqual(self.pp_1513 + 5, RationalFn(1, self.p_5 + 5*self.p_3,
+        # These are failing, NotImplementedError
+        self.assertEqual(self.rf_1513 + 5, RationalFn(1, self.p_5 + 5*self.p_3,
                 self.pp_13))
-        self.assertEqual(5 + self.pp_1513, RationalFn(1, self.p_5 + 5*self.p_3,
+        self.assertEqual(5 + self.rf_1513, RationalFn(1, self.p_5 + 5*self.p_3,
                 self.pp_13))
