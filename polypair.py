@@ -94,6 +94,10 @@ class PolyPair:
     """
     def __init__(self, a: Polynomial | int = Polynomial(), 
             b: Polynomial | int = Polynomial(1)):
+        """Constructor for Polypair.
+        
+        Will only accept Polynomial or int for each argument.
+        After construction, self.a and self.b are both of type Polynomial."""
         self.a = a
         self.b = b
         # Multiplying by zero makes everything else zero.
@@ -189,24 +193,16 @@ class PolyPair:
         else:
             return True
 
-    def _add_sub(self, operation: Callable, other: "Polypair | RationalFn"
-            ) -> "PolyPair | RationalFn":
+    def _add_sub(self, operation: Callable, other: "PolyPair | Polynomial | int"
+            ) -> "PolyPair":
         """Combine work from __add__, __sub__ to avoid repitition."""
-        if operation not in [Polynomial.__add__, Polynomial.__sub__]:
-            msg = "Method Polynomial._add_sub expected either "
-            msg += "Polynomial.__add__ or Polynomial.__sub__."
+        if operation not in [PolyPair.__add__, PolyPair.__sub__]:
+            msg = "Method PolyPair._add_sub expected either "
+            msg += "PolyPair.__add__ or PolyPair.__sub__."
             raise ValueError(msg)
-        try:
-            from rationalfn import RationalFn
-        except ImportError:
-            pass
-        if isinstance(other, RationalFn):
-            # delegate to RationalFn.__add__()
-            if operation == Polynomial.__add__:
-                return other + self
-            else:
-                return (-1)*other + self
         result = None
+        if isinstance(other, int) or isinstance(other, Polynomial):
+            other = PolyPair(other)
         if isinstance(other, PolyPair):
             if self.a == 0 or self.b == 0:
                 if operation == Polynomial.__add__:
@@ -241,48 +237,39 @@ class PolyPair:
             return result
         else:
             msg = "Addition/Subtraction for PolyPair only defined for "
-            msg += "PolyPair, int, Polynomial or RationalFn."
+            msg += "PolyPair, int, or Polynomial."
             raise ValueError(msg)
 
-    def __add__(self, other: "RationalFn | PolyPair | Polynomial | int"
-            ) -> "RationalFn | PolyPair | list[PolyPair]":
-        """Add if self.a == other.a or self.b == other.b, else return list.
+    def __add__(self, other: "PolyPair | Polynomial | int"
+            ) -> "PolyPair | list[PolyPair]":
+        """Add if a's or b's are proportional by a constant, else return list.
         
-        Returns RationalFn if other is a RationalFn. (via delegation)
         Returns [self, other] if neither a nor b is a common factor.
         Returns a PolyPair otherwise."""
-        # TODO? If factor is off by a factor instead of exactly equal.
         if isinstance(other, Polynomial) or isinstance(other, int):
             other = PolyPair(other)
-        return self._add_sub(Polynomial.__add__, other)
+        return self._add_sub(PolyPair.__add__, other)
 
     def __radd__(self, other: "PolyPair | Polynomial | int"
             ) -> "PolyPair | list[PolyPair]":
         return self + other
 
-    def __sub__(self, other: "RationalFn | PolyPair | Polynomial | int"
-            ) -> "RationalFn | PolyPair | list[PolyPair]":
-        """Add if self.a == other.a or self.b == other.b, else return list.
+    def __sub__(self, other: "PolyPair | Polynomial | int"
+            ) -> "PolyPair | list[PolyPair]":
+        """Add if a's and b's are proportional by a constant, else return list.
         
-        Returns RationalFn if other is a RationalFn. (via delegation)
         Returns [self, other] if neither a nor b is a common factor.
         Returns a PolyPair otherwise."""
-        # TODO? If factor is off by a factor instead of exactly equal.
         if isinstance(other, Polynomial) or isinstance(other, int):
             other = PolyPair(other)
-        return self._add_sub(Polynomial.__sub__, other)
+        return self._add_sub(PolyPair.__sub__, other)
 
-    def __rsub__(self, other: "RationalFn | PolyPair | Polynomial | int"
-            ) -> "PolyPair | RationalFn | list[PolyPair]":
+    def __rsub__(self, other: "PolyPair | Polynomial | int"
+            ) -> "PolyPair | list[PolyPair]":
         return (-1)*self + other
 
-    def __mul__(self, other: 
-            "RationalFn | PolyPair | Polynomial | int | Fraction"
-            ) -> "PolyPair | RationalFn":
-        try: 
-            from rationalfn import RationalFn
-        except ImportError:
-            pass
+    def __mul__(self, other:  "PolyPair | Polynomial | int | Fraction"
+            ) -> "PolyPair":
         if isinstance(other, int) or isinstance(other, Fraction):
             factor_a = math.gcd(*self.a.coeffs)
             factor_b = math.gcd(*self.b.coeffs)
@@ -295,20 +282,16 @@ class PolyPair:
             return PolyPair(self.a * other, self.b)
         if isinstance(other, PolyPair):
             return PolyPair(self.a * other.a, self.b * other.b)
-        if isinstance(other, RationalFn):
-            # Delegate to RationalFn.__mul__
-            return other * self
         else:
             msg = "Multiplication for PolyPair only defined for "
-            msg += "PolyPair, int, Fraction, Polynomial or RationalFn."
+            msg += "PolyPair, int, Fraction, or Polynomial."
             raise ValueError(msg)
 
-    def __rmul__(self, other: 
-            "RationalFn | PolyPair | Polynomial | int | Fraction"
-            ) -> "PolyPair | RationalFn":
+    def __rmul__(self, other: "PolyPair | Polynomial | int | Fraction"
+            ) -> "PolyPair":
         return self * other
     
-    def __pos__(self) -> "polyPair":
+    def __pos__(self) -> "PolyPair":
         return self
         
     def __neg__(self) -> "PolyPair":
