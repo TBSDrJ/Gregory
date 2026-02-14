@@ -1,25 +1,12 @@
 import math
 from typing import Callable
 from fractions import Fraction
-# see __eq__, __add__, __sub__, __mul__ for add'l imports
-# All are just:
-# from polypair import PolyPair
-# from rationalfn import RationalFn
-# with try/except to avoid circular imports.
-
-# TODO: I think this should all be ok with Fraction instead of int coefficients.
-#   That would require update to the README from ℤ[x] to ℚ[x].
 
 class Polynomial:
     def __init__(self, coeffs: list[int] = None):
         # My intent is that coeffs[n] is the degree n term.  Notice that this
-        #   means that a degree n polynomial has coeffs list of length n+1.
-
-        # Interesting bug here: If I use coeffs=[0] in the declaration, that
-        #   default [0] is the *same* object from one new Polynomial to
-        #   another.  So, if it isn't reassigned, then changes to one copy
-        #   of it affect other copies of it.  By assigning it like this, then
-        #   each new Polynomial() gets a new [0] that is its own.
+        #   means that a degree n polynomial has coeffs list of length n+1.  I 
+        #   had some fun bugs in C by forgetting this.
         if coeffs is None:
             coeffs = [0]
         self.coeffs = coeffs
@@ -39,25 +26,8 @@ class Polynomial:
         return f"Polynomial({self.coeffs})"
 
     def __eq__(self, other: "Polynomial") -> bool:
-        try:
-            from polypair import PolyPair
-        except ImportError:
-            pass
-        try:
-            from rationalfn import RationalFn
-        except ImportError:
-            pass
         if isinstance(other, int):
             other = Polynomial(other)
-        elif isinstance(other, PolyPair):
-            if (
-                isinstance(other.b, int) or 
-                (isinstance(other.b, Polynomial) and other.b.deg == 0)
-            ):
-                other = other.a * other.b
-            else:
-                return False
-        #TODO: RationalFn
         elif not isinstance(other, Polynomial):
             return False
         self.eliminate_zeros()
@@ -121,68 +91,30 @@ class Polynomial:
         return result
 
     def __add__(self, other: "Polynomial | int") -> "Polynomial":
-        # Avoiding circular imports
-        try:
-            from polypair import PolyPair
-        except ImportError:
-            pass
-        try:
-            from rationalfn import RationalFn
-        except ImportError:
-            pass
         if isinstance(other, int):
             other = Polynomial(other)
         if isinstance(other, Polynomial):
             return self._add_sub(int.__add__, other)
-        elif isinstance(other, PolyPair) or isinstance(other, RationalFn):
-            # delegate to other.__add__()
-            return other + self
         else:
-            msg = "Addition for Polynomial only defined for Polynomial, "
-            msg += "int, PolyPair or RationalFn."
+            msg = "+ with Polynomial only defined for int, Polynomial."
             raise ValueError(msg)
 
     def __radd__(self, other: "Polynomial | int") -> "Polynomial":
         return self + other
 
     def __sub__(self, other: "Polynomial | int") -> "Polynomial":
-        # Avoiding circular imports
-        try:
-            from polypair import PolyPair
-        except ImportError:
-            pass
-        if isinstance(other, int):
-            other = Polynomial(other)
-        try:
-            from rationalfn import RationalFn
-        except ImportError:
-            pass
         if isinstance(other, Polynomial):
             return self._add_sub(int.__sub__, other)
         elif isinstance(other, int):
             return self._add_sub(int.__sub__, Polynomial(other))
-        elif isinstance(other, PolyPair) or isinstance(other, RationalFn):
-            # delegate to other.__add__()
-            other.b *= -1
-            return other + self
         else:
-            msg = "Subtraction for Polynomial only defined for another "
-            msg += "Polynomial or an int."
+            msg = "- with Polynomial only defined for int, Polynomial."
             raise ValueError(msg)
 
     def __rsub__(self, other: "Polynomial | int") -> "Polynomial":
         return (-1)*(self - other)
 
     def __mul__(self, other: "Polynomial | int | Fraction") -> "Polynomial":
-        # Avoiding circular imports
-        try:
-            from polypair import PolyPair
-        except ImportError:
-            pass
-        try:
-            from rationalfn import RationalFn
-        except ImportError:
-            pass
         result = Polynomial()
         if isinstance(other, int) or isinstance(other, Fraction):
             result.coeffs = []
@@ -194,12 +126,9 @@ class Polynomial:
                     raise ValueError(msg)
                 result.coeffs.append(int(prod))
             return result
-        elif isinstance(other, PolyPair) or isinstance(other, RationalFn):
-            # delegate to other.__mul__()
-            return other * self
         elif not isinstance(other, Polynomial):
-            msg = "Multiplication for Polynomial only defined for another "
-            msg += "Polynomial or an int."
+            msg = "* with Polynomial only defined for int, Fraction, "
+            msg += "or Polynomial."
             raise ValueError(msg)
         result.coeffs = [0] * (len(self.coeffs) + len(other.coeffs) - 1)
         for i in range(len(self.coeffs)):
