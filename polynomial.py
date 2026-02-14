@@ -1,7 +1,7 @@
 import math
 from typing import Callable
 from fractions import Fraction
-# see __add__, __sub__, __mul__ for add'l imports
+# see __eq__, __add__, __sub__, __mul__ for add'l imports
 # All are just:
 # from polypair import PolyPair
 # from rationalfn import RationalFn
@@ -39,8 +39,25 @@ class Polynomial:
         return f"Polynomial({self.coeffs})"
 
     def __eq__(self, other: "Polynomial") -> bool:
+        try:
+            from polypair import PolyPair
+        except ImportError:
+            pass
+        try:
+            from rationalfn import RationalFn
+        except ImportError:
+            pass
         if isinstance(other, int):
             other = Polynomial(other)
+        elif isinstance(other, PolyPair):
+            if (
+                isinstance(other.b, int) or 
+                (isinstance(other.b, Polynomial) and other.b.deg == 0)
+            ):
+                other = other.a * other.b
+            else:
+                return False
+        #TODO: RationalFn
         elif not isinstance(other, Polynomial):
             return False
         self.eliminate_zeros()

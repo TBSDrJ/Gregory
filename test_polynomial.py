@@ -3,6 +3,10 @@ from polynomial import Polynomial
 from fractions import Fraction
 
 class TestPolynomial(unittest.TestCase):
+    """Test the Polynomial class.
+
+    NB: The cases where a Polynomial method needs to interact with a PolyPair
+    or a RationalFn, these are tested in those respective unit tests. """
     def setUp(self):
         num_exs = 6
         self.p_0 = Polynomial([0])

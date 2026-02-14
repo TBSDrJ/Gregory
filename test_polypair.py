@@ -74,45 +74,59 @@ class TestPolyPair(unittest.TestCase):
                 "PolyPair(Polynomial([0, 0, 0, 0, 0, 1]), Polynomial([1]))")
 
     def test_dunder_eq(self):
+        """Test __eq__.
+        
+        NB: Exs with a Polynomial on the left are actually testing
+        Polynomial.__eq__() not PolyPair.__eq__()."""
+        # A: Easy test: Every pre-made test PolyPair is equal to itself.
         for i in range(len(self.pp_exs)):
-            for j in range(len(self.pp_exs)):
-                if i == j:
-                    self.assertEqual(self.pp_exs[i], self.pp_exs[j])
-                # The converse is not always true, for ex: 
-                #   (-x-1)(-L-1) = (x+1)(L+1)
+            self.assertEqual(self.pp_exs[i], self.pp_exs[i])
+            # The converse is not always true, for ex: 
+            #   (-x-1)(-L-1) = (x+1)(L+1)
+        # B: Any PolyPair with a 0 as one factor should be equal to 0.
         self.assertEqual(0, self.pp_00)
         self.assertEqual(0, self.pp_04)
+        # C: 1 as an int or Polynomial should be equal to 1 as a PolyPair.
         self.assertEqual(1, self.pp_11)
+        self.assertEqual(self.pp_11, self.p_1)
+        self.assertEqual(self.p_1, self.pp_11)
+        # D: PolyPair(Polynomial, 1) should == Polynomial
+        for p in self.p_exs:
+            self.assertEqual(PolyPair(p, 1), p)
+            self.assertEqual(p, PolyPair(p, 1))
+        # E: Some exs that should be not equal.
         self.assertNotEqual(37, self.pp_11)
         self.assertNotEqual(1.0, self.pp_11)
         self.assertNotEqual("x + 1", self.pp_21)
-        # If different only by a negative in both, then also equal
+        # F: If different only by a negative in both, then also equal
         self.assertEqual(self.pp_22, self.pp_33)
         self.assertEqual(self.pp_23, self.pp_32)
-        # Check on multiplication by 1 explicitly vs implicitly
+        # G: Check on multiplication by 1 explicitly vs implicitly
         self.assertEqual(PolyPair(1), PolyPair(1, 1))
         self.assertEqual(PolyPair(self.p_2), PolyPair(self.p_2, 1))
-        # Equal if only different by trivial terms
+        # H: Equal if only different by trivial terms
         self.assertEqual(self.pp_23, PolyPair(Polynomial([1, 1, 0, 0, 0]), 
                 Polynomial([-1, -1, 0, 0])))
-        # Also equal if different by a factor moved from one side to the other
+        # I: Also equal if different by a numerical factor moved from one
+        #   side to the other
         # Move common factor left -> right
         self.assertEqual(PolyPair(Polynomial([4, 6]), Polynomial([8, -10])), 
                 PolyPair(Polynomial([2, 3]), Polynomial([16, -20])))
         # Move common factor right -> left
         self.assertEqual(PolyPair(Polynomial([4, 6]), Polynomial([8, -10])), 
                 PolyPair(Polynomial([8, 12]), Polynomial([4, -5])))
-        # Off in only one spot
+        # J: Off in only one spot
         self.assertNotEqual(PolyPair(Polynomial([4, 6]), Polynomial([8, -12])),
                 PolyPair(Polynomial([2, 3]), Polynomial([16, -20])))
-        # Has zero terms
+        # K: Has zero terms
         self.assertEqual(PolyPair(4*self.p_5, 3*self.p_5), PolyPair(6*self.p_5,
                 2*self.p_5))
-        # Has zero terms, factor is negative
+        # L: Has zero terms, factor is negative
         self.assertEqual(PolyPair(4*self.p_5, -3*self.p_5), PolyPair(6*self.p_5,
                 -2*self.p_5))
-        # PolyPair has second poly const
+        # M: PolyPair has second poly const
         self.assertEqual(PolyPair(self.p_5, 5), 5*self.p_5)
+        self.assertEqual(5*self.p_5, PolyPair(self.p_5, 5))
 
     def test_dunder_bool(self):
         self.assertFalse(PolyPair())
