@@ -7,6 +7,9 @@ from fractions import Fraction
 # from rationalfn import RationalFn
 # with try/except to avoid circular imports.
 
+# TODO: I think this should all be ok with Fraction instead of int coefficients.
+#   That would require update to the README from ℤ[x] to ℚ[x].
+
 class Polynomial:
     def __init__(self, coeffs: list[int] = None):
         # My intent is that coeffs[n] is the degree n term.  Notice that this
@@ -227,21 +230,23 @@ class Polynomial:
         return d
 
     def proportional(self, other: "Polynomial | int") -> Fraction:
-        """Determine if self is proportional to other.
+        """Determine if self is proportional to other by a Fraction.
+        TODO? Maybe handle some simple polynomial factors.
         
         Return factor such that self * factor = other. If they are not, then 
-        return 0.  So this works as you would hope/expect:
-                if (factor := p.proportional(q)):"""
+        return None.  So this works as you would hope/expect:
+            if (factor := p.proportional(q)):"""
         # If they are not the same degree, they are not proportional.
         self.eliminate_zeros()
         other.eliminate_zeros()
         if self.deg != other.deg:
-            return Fraction()
-        # Get the integer can be factored out. math.gcd() is always non-neg
+            return None
+        # Get the largest integer can be factored out of each.
+        # NB: math.gcd() is always non-neg
         factor_self = math.gcd(*self.coeffs)
         factor_other = math.gcd(*other.coeffs)
         if factor_self == 0 or factor_other == 0:
-            return False
+            return None
         # Need to check if they are different by a negative factor.
         # So find lowest degree where they are both nonzero, and compare.
         # If they are proportional, it doesn't matter which degree you
@@ -257,9 +262,9 @@ class Polynomial:
                     factor_self *= -1
                 break
         if not found_nonzero_pair:
-            return False
+            return None
         # If they are proportional, Fraction(factor_other, factor_self) is it.
         for i in range(len(self.coeffs)):
             if self.coeffs[i] // factor_self != other.coeffs[i] // factor_other:
-                return False
+                return None
         return Fraction(factor_other, factor_self)

@@ -201,12 +201,12 @@ class TestPolynomial(unittest.TestCase):
     def test_proportional(self):
         self.assertEqual(self.p_2.proportional(self.p_2), Fraction(1))
         self.assertEqual(self.p_2.proportional(self.p_3), Fraction(-1))
-        self.assertEqual(self.p_2.proportional(self.p_4), 0)
+        self.assertEqual(self.p_2.proportional(self.p_4), None)
         # Leading zeros
         self.assertEqual((-3*self.p_5).proportional(2*self.p_5), Fraction(-2, 3))
-        # Proportional by variabl should return 0 (here using x^4, x^5)
+        # Proportional by variable should return 0 (here using x^4, x^5)
         self.assertEqual(Polynomial([0, 0, 0, 0, 1]).proportional(
-                self.p_5), 0)
+                self.p_5), None)
         # Extra trivial zeros
         self.assertEqual(Polynomial([0, 0, 2, 0, 0]).proportional(
                 Polynomial([0, 0, -7])), Fraction(-7, 2))
