@@ -4,6 +4,81 @@ from fractions import Fraction
 
 from polynomial import Polynomial
 
+def poly__eq__(self, other: "Polynomial | PolyPair") -> bool:
+    if isinstance(other, int):
+        other = Polynomial(other)
+    elif isinstance(other, PolyPair):
+        if (
+            isinstance(other.b, int) or 
+            (isinstance(other.b, Polynomial) and other.b.deg == 0)
+        ):
+            other = other.a * other.b
+        else:
+            return False
+    elif not isinstance(other, Polynomial):
+        return False
+    self.eliminate_zeros()
+    other.eliminate_zeros()
+    return self.coeffs == other.coeffs
+
+def poly__add__(self, other: "PolyPair | Polynomial | int") -> "Polynomial":
+    if isinstance(other, int):
+        other = Polynomial(other)
+    if isinstance(other, Polynomial):
+        return self._add_sub(int.__add__, other)
+    elif isinstance(other, PolyPair):
+        # delegate to PolyPair.__add__()
+        return other + self
+    else:
+        msg = "+ with Polynomial only defined for int, Polynomial, "
+        msg += "and PolyPair."
+        raise ValueError(msg)
+
+def poly__sub__(self, other: "PolyPair | Polynomial | int") -> "Polynomial":
+    if isinstance(other, Polynomial):
+        return self._add_sub(int.__sub__, other)
+    elif isinstance(other, int):
+        return self._add_sub(int.__sub__, Polynomial(other))
+    elif isinstance(other, PolyPair):
+        # delegate to PolyPair.__add__()
+        other.b *= -1
+        return other + self
+    else:
+        msg = "- with Polynomial only defined for int, Polynomial, "
+        msg += "and PolyPair."
+        raise ValueError(msg)
+
+def poly__mul__(self, other: "PolyPair | Polynomial | int | Fraction"
+        ) -> "Polynomial":
+    result = Polynomial()
+    if isinstance(other, int) or isinstance(other, Fraction):
+        result.coeffs = []
+        for i in range(len(self.coeffs)):
+            prod = self.coeffs[i] * other
+            if int(prod) != prod:
+                msg = "Can only multiply a Polynomial by a Fraction when "
+                msg += "when the product in each coefficient is an int."
+                raise ValueError(msg)
+            result.coeffs.append(int(prod))
+        return result
+    elif isinstance(other, PolyPair):
+        # delegate to PolyPair.__mul__()
+        return other * self
+    elif not isinstance(other, Polynomial):
+        msg = "* with Polynomial only defined for int, Polynomial, "
+        msg += "and PolyPair."
+        raise ValueError(msg)
+    result.coeffs = [0] * (len(self.coeffs) + len(other.coeffs) - 1)
+    for i in range(len(self.coeffs)):
+        for j in range(len(other.coeffs)):
+            result.coeffs[i+j] += self.coeffs[i] * other.coeffs[j]
+    return result
+
+Polynomial.__eq__ = poly__eq__
+Polynomial.__add__ = poly__add__
+Polynomial.__sub__ = poly__sub__
+Polynomial.__mul__ = poly__mul__
+
 class PolyPair:
     """Represents a pair a(x)b(L), where L = ln(1+x)
     
