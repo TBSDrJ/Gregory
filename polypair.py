@@ -69,6 +69,10 @@ class PolyPair:
                 return True
             else:
                 return False
+        elif isinstance(other, Polynomial):
+            if self.b.deg > 0:
+                return False
+            return True if self.a * self.b == other else False
         elif not isinstance(other, PolyPair):
             return False
         self.a.eliminate_zeros()

@@ -78,7 +78,7 @@ class TestPolyPair(unittest.TestCase):
             for j in range(len(self.pp_exs)):
                 if i == j:
                     self.assertEqual(self.pp_exs[i], self.pp_exs[j])
-                # The converse is not true, for ex: 
+                # The converse is not always true, for ex: 
                 #   (-x-1)(-L-1) = (x+1)(L+1)
         self.assertEqual(0, self.pp_00)
         self.assertEqual(0, self.pp_04)
@@ -111,6 +111,8 @@ class TestPolyPair(unittest.TestCase):
         # Has zero terms, factor is negative
         self.assertEqual(PolyPair(4*self.p_5, -3*self.p_5), PolyPair(6*self.p_5,
                 -2*self.p_5))
+        # PolyPair has second poly const
+        self.assertEqual(PolyPair(self.p_5, 5), 5*self.p_5)
 
     def test_dunder_bool(self):
         self.assertFalse(PolyPair())
