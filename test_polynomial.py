@@ -173,6 +173,10 @@ class TestPolynomial(unittest.TestCase):
         with self.assertRaises(ValueError): 1.0 * self.p_0
         with self.assertRaises(ValueError): self.p_0 * "x"
         with self.assertRaises(ValueError): "x" * self.p_0
+        self.assertEqual(Fraction(1, 2) * Polynomial([6, 4, 0, -12, 82]),
+                Polynomial([3, 2, 0, -6, 41]))
+        with self.assertRaises(ValueError): 
+            Fraction(1, 2) * Polynomial([5, 4, 0, -12, 82])
 
     def test_subs(self):
         for i in range(len(self.p_exs)):
