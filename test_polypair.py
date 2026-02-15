@@ -129,6 +129,17 @@ class TestPolyPair(unittest.TestCase):
         # M: PolyPair has second poly const
         self.assertEqual(PolyPair(self.p_5, 5), 5*self.p_5)
         self.assertEqual(5*self.p_5, PolyPair(self.p_5, 5))
+        # Check to make sure none of the examples were modified
+        self.assertEqual(self.p_0, Polynomial())
+        self.assertEqual(self.p_1, Polynomial(1))
+        self.assertEqual(self.p_2, Polynomial([1, 1]))
+        self.assertEqual(self.p_3, Polynomial([-1, -1]))
+        self.assertEqual(self.p_4, Polynomial([1, -2, 3, -4, 5, -6]))
+        self.assertEqual(self.p_5, Polynomial([0, 0, 0, 0, 0, 1]))
+        for i in range(len(self.p_exs) - 1):
+            for j in range(len(self.p_exs) - 1):
+                self.assertEqual(PolyPair(self.p_exs[i+1], self.p_exs[j+1]), 
+                        self.pp_exs[2 + i*(len(self.p_exs)-1) + j])
 
     def test_dunder_bool(self):
         self.assertFalse(PolyPair())
@@ -197,6 +208,17 @@ class TestPolyPair(unittest.TestCase):
         with self.assertRaises(ValueError): 1.0 + self.pp_25
         with self.assertRaises(ValueError): self.pp_25 + "x"
         with self.assertRaises(ValueError): "x" + self.pp_25
+        # Check to make sure none of the examples were modified
+        self.assertEqual(self.p_0, Polynomial())
+        self.assertEqual(self.p_1, Polynomial(1))
+        self.assertEqual(self.p_2, Polynomial([1, 1]))
+        self.assertEqual(self.p_3, Polynomial([-1, -1]))
+        self.assertEqual(self.p_4, Polynomial([1, -2, 3, -4, 5, -6]))
+        self.assertEqual(self.p_5, Polynomial([0, 0, 0, 0, 0, 1]))
+        for i in range(len(self.p_exs) - 1):
+            for j in range(len(self.p_exs) - 1):
+                self.assertEqual(PolyPair(self.p_exs[i+1], self.p_exs[j+1]), 
+                        self.pp_exs[2 + i*(len(self.p_exs)-1) + j])
 
     def test_dunder_sub(self):
         """Includes __rsub__"""
@@ -235,6 +257,8 @@ class TestPolyPair(unittest.TestCase):
                 self.p_2, 3 + self.p_5))
         self.assertEqual(Polynomial([-3, -3]) - self.pp_25, PolyPair(
                 self.p_2, -self.p_5 - 3))
+        self.assertEqual(self.pp_25 - self.p_2, PolyPair(self.p_2, 
+                -1 + self.p_5))
         # And PolyPair - int
         self.assertEqual(self.pp_15 - 2, PolyPair(1, self.p_5 - 2))
         self.assertEqual(2 - self.pp_15, PolyPair(1, -self.p_5 + 2))
@@ -260,6 +284,17 @@ class TestPolyPair(unittest.TestCase):
         with self.assertRaises(ValueError): 1.0 - self.pp_25
         with self.assertRaises(ValueError): self.pp_25 - "x"
         with self.assertRaises(ValueError): "x" - self.pp_25
+        # Check to make sure none of the examples were modified
+        self.assertEqual(self.p_0, Polynomial())
+        self.assertEqual(self.p_1, Polynomial(1))
+        self.assertEqual(self.p_2, Polynomial([1, 1]))
+        self.assertEqual(self.p_3, Polynomial([-1, -1]))
+        self.assertEqual(self.p_4, Polynomial([1, -2, 3, -4, 5, -6]))
+        self.assertEqual(self.p_5, Polynomial([0, 0, 0, 0, 0, 1]))
+        for i in range(len(self.p_exs) - 1):
+            for j in range(len(self.p_exs) - 1):
+                self.assertEqual(PolyPair(self.p_exs[i+1], self.p_exs[j+1]), 
+                        self.pp_exs[2 + i*(len(self.p_exs)-1) + j])
 
     def test_dunder_mul(self):
         """Includes rmul"""
@@ -308,3 +343,14 @@ class TestPolyPair(unittest.TestCase):
         with self.assertRaises(ValueError): "x" * self.pp_25
         with self.assertRaises(ValueError): Fraction(2, 3) * PolyPair(
                 Polynomial([8, 6, 4, 2]), PolyPair([2, 4, 6, 8]))
+        # Check to make sure none of the examples were modified
+        self.assertEqual(self.p_0, Polynomial())
+        self.assertEqual(self.p_1, Polynomial(1))
+        self.assertEqual(self.p_2, Polynomial([1, 1]))
+        self.assertEqual(self.p_3, Polynomial([-1, -1]))
+        self.assertEqual(self.p_4, Polynomial([1, -2, 3, -4, 5, -6]))
+        self.assertEqual(self.p_5, Polynomial([0, 0, 0, 0, 0, 1]))
+        for i in range(len(self.p_exs) - 1):
+            for j in range(len(self.p_exs) - 1):
+                self.assertEqual(PolyPair(self.p_exs[i+1], self.p_exs[j+1]), 
+                        self.pp_exs[2 + i*(len(self.p_exs)-1) + j])
