@@ -183,10 +183,10 @@ class PolyPair:
                         (factor.denominator*self.b)._add_sub(operation, 
                         factor.numerator*other.b))
             elif (factor := self.b.proportional(other.b)):
-                # We know that factor.denominator divides all coeffs of self.a
-                result = PolyPair(Fraction(1, factor.denominator)*self.b, 
-                        factor.denominator*self.a._add_sub(operation, 
-                        factor.numerator*other.a))
+                # We know that factor.denominator divides all coeffs of self.b
+                result = PolyPair((factor.denominator*self.a)._add_sub(
+                        operation, factor.numerator*other.a), Fraction(1, 
+                        factor.denominator)*self.b)
             if result is not None:
                 if result.a == 0 or result.b == 0:
                     result.a = Polynomial()
