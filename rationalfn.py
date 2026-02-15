@@ -3,6 +3,70 @@ from fractions import Fraction
 from polynomial import Polynomial
 from polypair import PolyPair
 
+polynomial__eq__old = Polynomial.__eq__
+polynomial__add__old = Polynomial.__add__
+polynomial__sub__old = Polynomial.__sub__
+polynomial__mul__old = Polynomial.__mul__
+
+def polynomial__eq__new(self, other: "RationalFn | PolyPair | Polynomial | int"
+        ) -> bool:
+    if isinstance(other, RationalFn):
+        if (
+            (isinstance(other.b, Polynomial) and other.b.deg == 0) or 
+            isinstance(other.b, int)
+        ):
+            other_b = other.b.coeffs[0]
+        else:
+            return False
+        if (
+            (isinstance(other.c, Polynomial) and other.c.deg == 0) or 
+            isinstance(other.c, int)
+        ):
+            other_bc = Fraction(other_b, other.c.coeffs[0])
+        else:
+            return False
+        if (
+            (isinstance(other.d, Polynomial) and other.d.deg == 0) or 
+            isinstance(other.d, int)
+        ):
+            other_bcd = other_bc / other.d.coeffs[0]
+            try:
+                other = other.a * other_bcd
+            # In Polynomial * Fraction, if any coeff is not an int after 
+            #   multiplying, a ValueError is thrown.
+            except ValueError:
+                return False
+        else:
+            return False
+    return polynomial__eq__old(self, other)
+
+def polynomial__add__new(self, other: "RationalFn | PolyPair | Polynomial | int"
+        ) -> "RationalFn | PolyPair | Polynomial":
+    if isinstance(other, RationalFn):
+        # delegate to RationalFn.__add__()
+        return other + self
+    return polynomial__add__old(self, other)
+
+def polynomial__sub__new(self, other: "RationalFn | PolyPair | Polynomial | int"
+        ) -> "RationalFn | PolyPair | Polynomial":
+    if isinstance(other, RationalFn):
+        # delegate to PolyPair.__add__()
+        return (-1*other) + self
+    return polynomial__sub__old(self, other)
+
+def polynomial__mul__new(self, 
+        other: "RationalFn | PolyPair | Polynomial | int | Fraction"
+        ) -> "RationalFn | PolyPair | Polynomial":
+    if isinstance(other, RationalFn):
+        # delegate to PolyPair.__mul__()
+        return other * self
+    return polynomial__mul__old(self, other)
+
+Polynomial.__eq__ = polynomial__eq__new
+Polynomial.__add__ = polynomial__add__new
+Polynomial.__sub__ = polynomial__sub__new
+Polynomial.__mul__ = polynomial__mul__new
+
 class RationalFn:
     def __init__(self, *args):
         polynomials = []
