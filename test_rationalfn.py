@@ -221,54 +221,36 @@ class TestRationalFn(unittest.TestCase):
         self.assertEqual(self.p_2, RationalFn(self.p_2, 1, 1, 1))
         self.assertEqual(3*self.p_5, RationalFn(self.p_5, 12, 2, 2))
 
-#     def test_dunder_add(self):
-#         # Start with cases with RationalFn + RationalFn.
-#         # a, c, d match
-#         self.assertEqual(self.rf_2445 + self.rf_2245, RationalFn(
-#                 self.p_2, self.p_2 + self.p_4, self.pp_45))
-#         # b, c, d match
-#         self.assertEqual(self.rf_2245 + self.rf_4245, RationalFn(
-#                 self.p_2 + self.p_4, self.p_2, self.pp_45))
-#         # All 4 match
-#         self.assertEqual(self.rf_2345 + self.rf_2345, RationalFn(
-#                 self.p_2, 2*self.p_3, self.pp_45))
-#         self.assertEqual(self.rf_2345 + self.rf_2345, RationalFn(
-#                 2*self.p_2, self.p_3, self.pp_45))
-#         self.assertEqual(self.rf_2345 + self.rf_2345, RationalFn(
-#                 2*self.pp_23, self.pp_45))
-#         # Put this one in when __rmul__ is written.
-#         # self.assertEqual(self.rf_2345 + self.rf_2345, 2*self.rf_2345)
-#         # Recall that self.p_2 = -self.p_3, the next batch uses that.
-#         self.assertEqual(self.rf_2345 + self.rf_3345, 0)
-#         self.assertEqual(self.rf_3345 + self.rf_2345, 0)
-#         self.assertEqual(self.rf_3245 + self.rf_3345, 0)
-#         self.assertEqual(self.rf_3345 + self.rf_3245, 0)
-#         # One summand is zero
-#         self.assertEqual(self.rf_3345 + self.rf_0011, self.rf_3345)
-#         self.assertEqual(self.rf_4523 + self.rf_1011, self.rf_4532)
-#         # RationalFn + PolyPair
-#         self.assertEqual(self.rf_3541 + self.pp_25, RationalFn((self.p_3 +
-#                 self.p_2), self.p_4, self.p_5, self.p_4))
-#         # These are failing, I think the issue is here not there
-#         self.assertEqual(self.rf_3541 + self.pp_25, RationalFn(self.p_2*(
-#                 self.p_4 - 1), self.p_5, self.p_4))
-#         self.assertEqual(self.pp_25 + self.rf_3541, RationalFn(self.p_3 +
-#                 self.p_2*self.p_4, self.p_5, self.p_4))
-#         self.assertEqual(self.pp_25 + self.rf_3541, RationalFn(self.p_2*(
-#                 self.p_4 - 1), self.p_5, self.p_4))
-#         self.assertEqual(self.rf_5514 + self.pp_54, RationalFn(self.p_5, 
-#                 self.p_4*self.p_4 + self.p_5, self.pp_14))
-#         self.assertEqual(self.pp_54 + self.rf_5514, RationalFn(self.p_5, 
-#                 self.p_4*self.p_4 + self.p_5, self.pp_14))
-#         # RationalFn + Polynomial
-#         # These are failing, LHS is showing zero, but that's not right.
-#         self.assertEqual(self.rf_5431 + self.p_5, RationalFn(self.p_5, 
-#                 self.p_4 + 1, self.p_3, self.p_1))
-#         self.assertEqual(self.p_5 + self.rf_5431, RationalFn(self.p_5,
-#                 self.p_4 + 1, self.p_3, self.p_1))
-#         # RationalFn + int
-#         # These are failing, NotImplementedError
-#         self.assertEqual(self.rf_1513 + 5, RationalFn(1, self.p_5 + 5*self.p_3,
-#                 self.pp_13))
-#         self.assertEqual(5 + self.rf_1513, RationalFn(1, self.p_5 + 5*self.p_3,
-#                 self.pp_13))
+    def test_dunder_add(self):
+        # Start with cases with RationalFn + RationalFn.
+        # a, c, d match
+        self.assertEqual(self.rf_2445 + self.rf_2245, RationalFn(
+                self.p_2, self.p_2 + self.p_4, self.pp_45))
+        # b, c, d match
+        self.assertEqual(self.rf_2245 + self.rf_4245, RationalFn(
+                self.p_2 + self.p_4, self.p_2, self.pp_45))
+        # All 4 match
+        self.assertEqual(self.rf_2345 + self.rf_2345, RationalFn(
+                self.p_2, 2*self.p_3, self.pp_45))
+        self.assertEqual(self.rf_2345 + self.rf_2345, RationalFn(
+                2*self.p_2, self.p_3, self.pp_45))
+        self.assertEqual(self.rf_2345 + self.rf_2345, RationalFn(
+                2*self.pp_23, self.pp_45))
+        # Recall that self.p_2 = -self.p_3, the next batch uses that.
+        self.assertEqual(self.rf_2345 + self.rf_3345, 0)
+        self.assertEqual(self.rf_3345 + self.rf_2345, 0)
+        self.assertEqual(self.rf_3245 + self.rf_3345, 0)
+        self.assertEqual(self.rf_3345 + self.rf_3245, 0)
+        # One summand is zero
+        self.assertEqual(self.rf_3345 + self.rf_0011, self.rf_3345)
+        self.assertEqual(self.rf_4523 + self.rf_1011, self.rf_4532)
+        # RationalFn + PolyPair
+        print()
+        print(self.rf_3541 + PolyPair(Polynomial([2, 1]), self.p_5))
+        print()
+        print(RationalFn(Polynomial([-1, -4, 1, -2, -6, -7, -6]), self.p_5, 
+                self.pp_41))
+        print()
+        self.assertEqual(self.rf_3541 + PolyPair(Polynomial([2, 1]), self.p_5),
+                RationalFn(Polynomial([-1, -4, 1, -2, -6, -7, -6]), self.p_5, 
+                self.pp_41))
