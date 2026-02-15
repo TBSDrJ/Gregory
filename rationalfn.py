@@ -85,7 +85,6 @@ PolyPair.__mul__ = polypair__mul__new
 class RationalFn:
     def __init__(self, *args):
         polynomials = []
-        polypairs = []
         msg_0 = "RationalFn() takes up to 4 inputs.  These can be "
         msg_0 += "int, Polynomial or PolyPair (counts as 2).\n"
         for arg in args:
@@ -98,20 +97,11 @@ class RationalFn:
                     if len(polynomials) < 3:
                         if len(polynomials) == 1:
                             polynomials.append(Polynomial(1))
-                            polypairs.append(PolyPair(polynomials[0], 
-                                    polynomials[1]))
                         polynomials.append(arg.a)
                         polynomials.append(arg.b)
-                        polypairs.append(arg)
                 else:
                     msg_1 = f"Received argument {arg} of type {type(arg)}.\n"
                     raise ValueError(msg_0 + msg_1)
-                if len(polynomials) == 2 and len(polypairs) == 0: 
-                    polypairs.append(PolyPair(polynomials[0], 
-                            polynomials[1]))
-                elif len(polynomials) == 4 and len(polypairs) == 1:
-                    polypairs.append(PolyPair(polynomials[2], 
-                            polynomials[3]))
             else:
                 msg_2 = f"Received too many arguments: {args}\n"
                 raise ValueError(msg_0 + msg_2)
@@ -120,14 +110,6 @@ class RationalFn:
                 polynomials.append(Polynomial(0))
             else:
                 polynomials.append(Polynomial(1))
-            if len(polynomials) == 2 and len(polypairs) == 0: 
-                polypairs.append(PolyPair(polynomials[0], 
-                        polynomials[1]))
-            elif len(polynomials) == 4 and len(polypairs) == 1:
-                polypairs.append(PolyPair(polynomials[2], 
-                        polynomials[3]))
-        self.ab = polypairs[0]
-        self.cd = polypairs[1]
         self.a = polynomials[0]
         self.b = polynomials[1]
         self.c = polynomials[2]
@@ -159,11 +141,35 @@ class RationalFn:
 
     @property
     def ab(self):
-        return self._ab
+        if ("a" in dir(self) and isinstance(self.a, Polynomial) and
+                "b" in dir(self) and isinstance(self.b, Polynomial)):
+            return PolyPair(self.a, self.b)
+        msg = "Cannot produce PolyPair attribute ab because "
+        if "a" not in dir(self):
+            msg += "a is not assigned "
+        if "a" in dir(self) and not isinstance(self.a, Polynomial):
+            msg += "a is not a Polynomial "
+        if "b" not in dir(self):
+            msg += "b is not assigned "
+        if "b" in dir(self) and not isinstance(self.b, Polhynomial):
+            msg += "b is not a Polynomial "
+        raise ValueError(msg)
 
     @property
     def cd(self):
-        return self._cd
+        if ("c" in dir(self) and isinstance(self.c, Polynomial) and
+                "d" in dir(self) and isinstance(self.d, Polynomial)):
+            return PolyPair(self.c, self.d)
+        msg = "Cannot produce PolyPair attribute cd because "
+        if "c" not in dir(self):
+            msg += "c is not assigned "
+        if "c" in dir(self) and not isinstance(self.c, Polynomial):
+            msg += "c is not a Polynomial "
+        if "d" not in dir(self):
+            msg += "d is not assigned "
+        if "d" in dir(self) and not isinstance(self.d, Polhynomial):
+            msg += "d is not a Polynomial "
+        raise ValueError(msg)
 
     @a.setter
     def a(self, new_a):
@@ -187,13 +193,19 @@ class RationalFn:
 
     @ab.setter
     def ab(self, new_ab):
-        new_ab = self.validate_polypair(new_ab)
-        self._ab = new_ab
-
+        # Let PolyPair constructor do error handling
+        if not isinstance(new_ab, PolyPair):
+            new_ab = PolyPair(new_ab)
+        self._a = new_ab.a
+        self._b = new_ab.b
+    
     @cd.setter
     def cd(self, new_cd):
-        new_cd = self.validate_polypair(new_cd)
-        self._cd = new_cd
+        # Let PolyPair constructor do error handling
+        if not isinstance(new_cd, PolyPair):
+            new_cd = PolyPair(new_cd)
+        self._c = new_cd.a
+        self._d = new_cd.b
 
     def validate_polynomial(self, p: Polynomial | int) -> Polynomial:
         """Make sure that a and b attributes are Polynomials."""
@@ -204,7 +216,6 @@ class RationalFn:
             msg += f"or Polynomial.  Found {p}, {type(p)} instead."
             raise ValueError(msg)
         return p
-
 
     def validate_polypair(self, p: Polynomial | int) -> Polynomial:
         """Make sure that a and b attributes are Polynomials."""
@@ -237,9 +248,9 @@ class RationalFn:
         if self.ab == other.ab and self.cd == other.cd:
             return True
         factor_a = self.a.proportional(other.a)
-        factor_b = self.a.proportional(other.b)
-        factor_c = self.a.proportional(other.c)
-        factor_d = self.a.proportional(other.d)
+        factor_b = self.b.proportional(other.b)
+        factor_c = self.c.proportional(other.c)
+        factor_d = self.d.proportional(other.d)
         if factor_a and factor_b and factor_c and factor_d:
             if (factor_a * factor_b)/(factor_c * factor_d) == 1:
                 return True 
@@ -257,6 +268,7 @@ class RationalFn:
         result = RationalFn()
         factor_a = self.a.proportional(other.a)
         factor_b = self.b.proportional(other.b)
+        # First, all the easy cases where there are exact common factors
         if self.a == other.a and self.c == other.c and self.d == other.d:
             result.a = self.a
             result.b = self.b + other.b
@@ -278,6 +290,4 @@ class RationalFn:
             result.b = Polynomial()
             result.c = Polynomial(1)
             result.d = Polynomial(1)
-        result.ab = PolyPair(result.a, result.b)
-        result.cd = PolyPair(result.c, result.d)
         return result
