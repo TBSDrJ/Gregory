@@ -266,8 +266,7 @@ class RationalFn:
         if other == 0:
             return self
         result = RationalFn()
-        factor_a = self.a.proportional(other.a)
-        factor_b = self.b.proportional(other.b)
+        result_found = False
         # First, all the easy cases where there are exact common factors
         if self.a == other.a and self.c == other.c and self.d == other.d:
             result.a = self.a
@@ -275,19 +274,67 @@ class RationalFn:
             result.c = self.c
             result.d = self.d
             result.b.eliminate_zeros()
+            result_found = True
         elif self.b == other.b and self.c == other.c and self.d == other.d:
             result.a = self.a + other.a
             result.b = self.b
             result.c = self.c
             result.d = self.d
             result.a.eliminate_zeros()
-        elif self.c == other.c and self.d == other.d and factor_a:
-            result = RationalFn(self.ab + other.ab, self.cd)
-        elif self.c == other.c and self.d == other.d and factor_b:
-            result = RationalFn(self.ab + other.ab, self.cd)
+            result_found = True
+        # Separate later cases to avoid the calculation if not needed.
+        if not result_found:
+            factor_a = self.a.proportional(other.a)
+            factor_b = self.b.proportional(other.b)
+            if self.c == other.c and self.d == other.d and factor_a:
+                result = RationalFn(self.ab + other.ab, self.cd)
+                result_found = True
+            elif self.c == other.c and self.d == other.d and factor_b:
+                result = RationalFn(self.ab + other.ab, self.cd)
+                result_found = True
+        
         if result.a == Polynomial() or result.b == Polynomial():
             result.a = Polynomial()
             result.b = Polynomial()
             result.c = Polynomial(1)
             result.d = Polynomial(1)
         return result
+
+    def common_denominator(self, other: "RationalFn"
+            ) -> "(RationalFn, RationalFn)":
+        """If a common denominator can be found, return both with it.
+        
+        A common denominator will be found if, for each of c & d, one of the
+            two RationalFns has deg = 0 there or the pair is proportional.
+        Returns None if no common denominator of this kind can be found.
+        Does not modify the inputs in place, creates new RationalFn instances
+            with the common denominator if one can be found."""
+        # Get simplest case out of the way
+        if self.c == other.c and self.d == other.d:
+            return self, other
+        if self.c.deg == 0 or other.c.deg == 0:
+            if self.d == other.d:
+                new_self = RationalFn(other.c * self.a, self.b, 
+                        self.c * other.c, self.d)
+                new_other = RationalFn(self.c * other.a, self.b, 
+                        self.c * other.c, other.d)
+                return new_self, new_other
+        if self.d.deg == 0 or other.d.deg == 0:
+            if self.c == other.c:
+                new_self = RationalFn(self.a, other.d * self.b,
+                        self.c, other.d * self.d)
+                new_other = RationalFn(other.a, self.d * other.b,
+                        other.c, self.d * other.d)
+                return new_self, new_other
+        if ((factor_c := self.c.proportional(other.c))
+            and (factor_d := self.d.proportional(other.d))):
+                new_self = RationalFn(
+                        factor_c.numerator*self.a, factor_d.numerator*self.b, 
+                        factor_c.numerator*self.c, factor_d.numerator*self.d)
+                new_other = RationalFn(
+                        factor_c.denominator*other.a, 
+                        factor_d.denominator*other.b, 
+                        factor_c.denominator*other.c, 
+                        factor_d.denominator*other.d)
+                return new_self, new_other
+        return None

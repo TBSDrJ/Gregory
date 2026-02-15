@@ -6,13 +6,14 @@ from rationalfn import RationalFn
 
 class TestRationalFn(unittest.TestCase):
     def setUp(self):
-        self.num_polys = 6
+        self.num_polys = 7
         self.p_0 = Polynomial()
         self.p_1 = Polynomial(1)
         self.p_2 = Polynomial([1, 1])
         self.p_3 = Polynomial([-1, -1])
         self.p_4 = Polynomial([1, -2, 3, -4, 5, -6])
         self.p_5 = Polynomial([0, 0, 0, 0, 0, 1])
+        self.p_6 = Polynomial([2, 1])
         self.p_exs = []
         for i in range(self.num_polys):
             self.p_exs.append(eval(f"self.p_{i}"))
@@ -245,12 +246,83 @@ class TestRationalFn(unittest.TestCase):
         self.assertEqual(self.rf_3345 + self.rf_0011, self.rf_3345)
         self.assertEqual(self.rf_4523 + self.rf_1011, self.rf_4532)
         # RationalFn + PolyPair
-        print()
-        print(self.rf_3541 + PolyPair(Polynomial([2, 1]), self.p_5))
-        print()
-        print(RationalFn(Polynomial([-1, -4, 1, -2, -6, -7, -6]), self.p_5, 
-                self.pp_41))
-        print()
-        self.assertEqual(self.rf_3541 + PolyPair(Polynomial([2, 1]), self.p_5),
-                RationalFn(Polynomial([-1, -4, 1, -2, -6, -7, -6]), self.p_5, 
-                self.pp_41))
+        # print()
+        # print(self.rf_3541 + PolyPair(Polynomial([2, 1]), self.p_5))
+        # print()
+        # print(RationalFn(Polynomial([-1, -4, 1, -2, -6, -7, -6]), self.p_5, 
+        #         self.pp_41))
+        # print()
+        # self.assertEqual(self.rf_3541 + PolyPair(Polynomial([2, 1]), self.p_5),
+        #         RationalFn(Polynomial([-1, -4, 1, -2, -6, -7, -6]), self.p_5, 
+        #         self.pp_41))
+    
+    def test_common_denominator(self):
+        p_5_by_neg6 = Polynomial([0, 0, 0, 0, 0, -6])
+        # A: Can't be found
+        self.assertIsNone(self.rf_1145.common_denominator(self.rf_1154))
+        self.assertIsNone(self.rf_1124.common_denominator(self.rf_1165))
+        # B: Exact same denominator.
+        self.assertEqual(self.rf_1125.common_denominator(self.rf_1125), 
+                (self.rf_1125, self.rf_1125))
+        # C: One factor in one denominator is 1.
+        self.assertEqual(self.rf_1145.common_denominator(self.rf_1115), 
+                (self.rf_1145, self.rf_4145))
+        self.assertEqual(self.rf_1145.common_denominator(self.rf_1141), 
+                (self.rf_1145, self.rf_1545))
+        self.assertEqual(self.rf_2245.common_denominator(self.rf_2215), 
+                (self.rf_2245, RationalFn(self.p_2*self.p_4, self.p_2,
+                self.pp_45)))
+        self.assertEqual(self.rf_2245.common_denominator(self.rf_2241), 
+                (self.rf_2245, RationalFn(self.p_2, self.p_2*self.p_5,
+                self.pp_45)))
+        # D: One factor in one denominator has degree 0, but not =1.
+        self.assertEqual(self.rf_1145.common_denominator(RationalFn(1, 1,
+                3, self.p_5)), (RationalFn(3, 1, 3*self.p_4, self.p_5),
+                RationalFn(self.p_4, 1, 3*self.p_4, self.p_5)))
+        self.assertEqual(self.rf_1145.common_denominator(RationalFn(1, 1,
+                self.p_4, -7)), (RationalFn(-7, 1, self.p_4, -7*self.p_5),
+                RationalFn(1, self.p_5, self.p_4, -7*self.p_5)))
+        self.assertEqual(self.rf_2245.common_denominator(RationalFn(self.pp_22,
+                3, self.p_5)), (RationalFn(3*self.p_2, self.p_2, 3*self.p_4, 
+                self.p_5), RationalFn(self.p_4*self.p_2, self.p_2, 3*self.p_4, 
+                self.p_5)))
+        self.assertEqual(self.rf_2245.common_denominator(RationalFn(self.pp_22,
+                self.p_4, -7)), (RationalFn(-7*self.p_2, self.p_2, self.p_4, 
+                -7*self.p_5), RationalFn(self.p_2, self.p_2*self.p_5, self.p_4, 
+                -7*self.p_5)))
+        # E: One factor is same, other is proportional.
+        self.assertEqual(self.rf_1125.common_denominator(self.rf_1135), 
+                (self.rf_1125, RationalFn(-1, 1, self.pp_25)))
+        self.assertEqual(self.rf_1152.common_denominator(self.rf_1153), 
+                (self.rf_1152, RationalFn(-1, 1, self.pp_52)))
+        self.assertEqual(self.rf_1125.common_denominator(RationalFn(1, 1,
+                self.p_2, p_5_by_neg6)), (RationalFn(-6, 1, self.p_2, 
+                p_5_by_neg6), RationalFn(1, 1, self.p_2, p_5_by_neg6)))
+        self.assertEqual(self.rf_1152.common_denominator(RationalFn(1, 1,
+                p_5_by_neg6, self.p_2)), (RationalFn(-6, 1, p_5_by_neg6, 
+                self.p_2), RationalFn(1, 1, p_5_by_neg6, self.p_2)))
+        self.assertEqual(self.rf_6625.common_denominator(self.rf_6635), 
+                (self.rf_6625, RationalFn(-self.pp_66, self.pp_25)))
+        self.assertEqual(self.rf_6652.common_denominator(self.rf_6653), 
+                (self.rf_6652, RationalFn(-self.pp_66, self.pp_52)))
+        self.assertEqual(self.rf_6625.common_denominator(RationalFn(self.pp_66,
+                self.p_2, p_5_by_neg6)), (RationalFn(-6*self.pp_66, self.p_2, 
+                p_5_by_neg6), RationalFn(self.pp_66, self.p_2, p_5_by_neg6)))
+        self.assertEqual(self.rf_6652.common_denominator(RationalFn(self.pp_66,
+                p_5_by_neg6, self.p_2)), (RationalFn(-6*self.pp_66, 
+                p_5_by_neg6, self.p_2), RationalFn(self.pp_66, p_5_by_neg6, 
+                self.p_2)))
+        # F: Both factors are proportional.
+        self.assertEqual(self.rf_1125.common_denominator(RationalFn(1, 1,
+                self.p_3, p_5_by_neg6)), (RationalFn(-6, 1, self.p_2, 
+                p_5_by_neg6), RationalFn(-1, 1, self.p_2, p_5_by_neg6)))
+        self.assertEqual(self.rf_1152.common_denominator(RationalFn(1, 1,
+                p_5_by_neg6, self.p_3)), (RationalFn(-6, 1, p_5_by_neg6, 
+                self.p_2), RationalFn(-1, 1, p_5_by_neg6, self.p_2)))
+        self.assertEqual(self.rf_6625.common_denominator(RationalFn(self.pp_66,
+                self.p_3, p_5_by_neg6)), (RationalFn(-6*self.pp_66, self.p_2, 
+                p_5_by_neg6), RationalFn(-self.pp_66, self.p_2, p_5_by_neg6)))
+        self.assertEqual(self.rf_6652.common_denominator(RationalFn(self.pp_66,
+                p_5_by_neg6, self.p_3)), (RationalFn(-6*self.pp_66, 
+                p_5_by_neg6, self.p_2), RationalFn(-self.pp_66, p_5_by_neg6, 
+                self.p_2)))
