@@ -62,6 +62,81 @@ class RationalFn:
             msg = "PolyPair in the denominator == 0."
             raise ZeroDivisionError(msg)
 
+    @property
+    def a(self):
+        return self._a
+    
+    @property
+    def b(self):
+        return self._b
+
+    @property
+    def c(self):
+        return self._c
+
+    @property
+    def d(self):
+        return self._d
+
+    @property
+    def ab(self):
+        return self._ab
+
+    @property
+    def cd(self):
+        return self._cd
+
+    @a.setter
+    def a(self, new_a):
+        new_a = self.validate_polynomial(new_a)
+        self._a = new_a
+
+    @b.setter
+    def b(self, new_b):
+        new_b = self.validate_polynomial(new_b)
+        self._b = new_b
+
+    @c.setter
+    def c(self, new_c):
+        new_c = self.validate_polynomial(new_c)
+        self._c = new_c
+
+    @d.setter
+    def d(self, new_d):
+        new_d = self.validate_polynomial(new_d)
+        self._d = new_d
+
+    @ab.setter
+    def ab(self, new_ab):
+        new_ab = self.validate_polypair(new_ab)
+        self._ab = new_ab
+
+    @cd.setter
+    def cd(self, new_cd):
+        new_cd = self.validate_polypair(new_cd)
+        self._cd = new_cd
+
+    def validate_polynomial(self, p: Polynomial | int) -> Polynomial:
+        """Make sure that a and b attributes are Polynomials."""
+        if isinstance(p, int):
+            p = Polynomial(p)
+        elif not isinstance(p, Polynomial):
+            msg = "self.a, b, c, d in RationalFn must be either int "
+            msg += f"or Polynomial.  Found {p}, {type(p)} instead."
+            raise ValueError(msg)
+        return p
+
+
+    def validate_polypair(self, p: Polynomial | int) -> Polynomial:
+        """Make sure that a and b attributes are Polynomials."""
+        if isinstance(p, int) or isinstance(p, Polynomial):
+            p = PolyPair(p)
+        elif not isinstance(p, PolyPair):
+            msg = "self.ab, self.cd in RationalFn must be int, Polynomial "
+            msg += f"or PolyPair.  Found {p}, {type(p)} instead."
+            raise ValueError(msg)
+        return p
+
     def __str__(self) -> str:
         b = str(self.b).replace("x", "L")
         d = str(self.d).replace("x", "L")
