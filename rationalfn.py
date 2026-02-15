@@ -11,6 +11,7 @@ polynomial__mul__old = Polynomial.__mul__
 def polynomial__eq__new(self, other: "RationalFn | PolyPair | Polynomial | int"
         ) -> bool:
     if isinstance(other, RationalFn):
+        # delegate to RationalFn.__eq__()
         return other == self
     return polynomial__eq__old(self, other)
 
@@ -40,6 +41,46 @@ Polynomial.__eq__ = polynomial__eq__new
 Polynomial.__add__ = polynomial__add__new
 Polynomial.__sub__ = polynomial__sub__new
 Polynomial.__mul__ = polynomial__mul__new
+
+polypair__eq__old = PolyPair.__eq__
+polypair__add__old = PolyPair.__add__
+polypair__sub__old = PolyPair.__sub__
+polypair__mul__old = PolyPair.__mul__
+
+def polypair__eq__new(self, other: "RationalFn | PolyPair | Polynomial | int"
+        ) -> bool:
+    if isinstance(other, RationalFn):
+        # delegate to RationalFn.__eq__()
+        return other == self
+    return polypair__eq__old(self, other)
+
+def polypair__add__new(self, other: "RationalFn | PolyPair | Polynomial | int"
+        ) -> "RationalFn | PolyPair | Polynomial":
+    if isinstance(other, RationalFn):
+        # delegate to RationalFn.__add__()
+        return other + self
+    return polypair__add__old(self, other)
+
+def polypair__sub__new(self, other: "RationalFn | PolyPair | Polynomial | int"
+        ) -> "RationalFn | PolyPair | Polynomial":
+    if isinstance(other, RationalFn):
+        # delegate to PolyPair.__add__()
+        return (-1*other) + self
+    return polypair__sub__old(self, other)
+
+def polypair__mul__new(self, 
+        other: "RationalFn | PolyPair | Polynomial | int | Fraction"
+        ) -> "RationalFn | PolyPair | Polynomial":
+    if isinstance(other, RationalFn):
+        # delegate to PolyPair.__mul__()
+        return other * self
+    return polypair__mul__old(self, other)
+
+PolyPair.__eq__ = polypair__eq__new
+PolyPair.__add__ = polypair__add__new
+PolyPair.__sub__ = polypair__sub__new
+PolyPair.__mul__ = polypair__mul__new
+
 
 class RationalFn:
     def __init__(self, *args):
