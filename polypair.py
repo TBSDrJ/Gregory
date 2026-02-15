@@ -9,7 +9,7 @@ polynomial__add__old = Polynomial.__add__
 polynomial__sub__old = Polynomial.__sub__
 polynomial__mul__old = Polynomial.__mul__
 
-def polynomial__eq__new(self, other: "Polynomial | PolyPair") -> bool:
+def polynomial__eq__new(self, other: "PolyPair | Polynomial | int") -> bool:
     if isinstance(other, PolyPair):
         if (
             (isinstance(other.b, Polynomial) and other.b.deg == 0) or 

@@ -25,7 +25,7 @@ class Polynomial:
     def __repr__(self) -> str:
         return f"Polynomial({self.coeffs})"
 
-    def __eq__(self, other: "Polynomial") -> bool:
+    def __eq__(self, other: "Polynomial | int") -> bool:
         if isinstance(other, int):
             other = Polynomial(other)
         elif not isinstance(other, Polynomial):
