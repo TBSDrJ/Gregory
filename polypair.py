@@ -20,20 +20,23 @@ def polynomial__eq__new(self, other: "Polynomial | PolyPair") -> bool:
             return False
     return polynomial__eq__old(self, other)
 
-def polynomial__add__new(self, other: "PolyPair | Polynomial | int") -> "Polynomial":
+def polynomial__add__new(self, other: "PolyPair | Polynomial | int"
+        ) -> "Polynomial | PolyPair":
     if isinstance(other, PolyPair):
         # delegate to PolyPair.__add__()
         return other + self
     return polynomial__add__old(self, other)
 
-def polynomial__sub__new(self, other: "PolyPair | Polynomial | int") -> "Polynomial":
+def polynomial__sub__new(self, other: "PolyPair | Polynomial | int"
+        ) -> "Polynomial | PolyPair":
     if isinstance(other, PolyPair):
         # delegate to PolyPair.__add__()
         return (-1*other) + self
     return polynomial__sub__old(self, other)
 
-def polynomial__mul__new(self, other: "PolyPair | Polynomial | int | Fraction"
-        ) -> "Polynomial":
+def polynomial__mul__new(self, 
+        other: "PolyPair | Polynomial | int | Fraction"
+        ) -> "Polynomial | PolyPair":
     if isinstance(other, PolyPair):
         # delegate to PolyPair.__mul__()
         return other * self
