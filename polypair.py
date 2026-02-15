@@ -4,80 +4,45 @@ from fractions import Fraction
 
 from polynomial import Polynomial
 
-def poly__eq__(self, other: "Polynomial | PolyPair") -> bool:
-    if isinstance(other, int):
-        other = Polynomial(other)
-    elif isinstance(other, PolyPair):
+polynomial__eq__old = Polynomial.__eq__
+polynomial__add__old = Polynomial.__add__
+polynomial__sub__old = Polynomial.__sub__
+polynomial__mul__old = Polynomial.__mul__
+
+def polynomial__eq__new(self, other: "Polynomial | PolyPair") -> bool:
+    if isinstance(other, PolyPair):
         if (
-            isinstance(other.b, int) or 
-            (isinstance(other.b, Polynomial) and other.b.deg == 0)
+            (isinstance(other.b, Polynomial) and other.b.deg == 0) or 
+            isinstance(other.b, int)
         ):
             other = other.a * other.b
         else:
             return False
-    elif not isinstance(other, Polynomial):
-        return False
-    self.eliminate_zeros()
-    other.eliminate_zeros()
-    return self.coeffs == other.coeffs
+    return polynomial__eq__old(self, other)
 
-def poly__add__(self, other: "PolyPair | Polynomial | int") -> "Polynomial":
-    if isinstance(other, int):
-        other = Polynomial(other)
-    if isinstance(other, Polynomial):
-        return self._add_sub(int.__add__, other)
-    elif isinstance(other, PolyPair):
+def polynomial__add__new(self, other: "PolyPair | Polynomial | int") -> "Polynomial":
+    if isinstance(other, PolyPair):
         # delegate to PolyPair.__add__()
         return other + self
-    else:
-        msg = "+ with Polynomial only defined for int, Polynomial, "
-        msg += "and PolyPair."
-        raise ValueError(msg)
+    return polynomial__add__old(self, other)
 
-def poly__sub__(self, other: "PolyPair | Polynomial | int") -> "Polynomial":
-    if isinstance(other, Polynomial):
-        return self._add_sub(int.__sub__, other)
-    elif isinstance(other, int):
-        return self._add_sub(int.__sub__, Polynomial(other))
-    elif isinstance(other, PolyPair):
+def polynomial__sub__new(self, other: "PolyPair | Polynomial | int") -> "Polynomial":
+    if isinstance(other, PolyPair):
         # delegate to PolyPair.__add__()
-        other.b *= -1
-        return other + self
-    else:
-        msg = "- with Polynomial only defined for int, Polynomial, "
-        msg += "and PolyPair."
-        raise ValueError(msg)
+        return (-1*other) + self
+    return polynomial__sub__old(self, other)
 
-def poly__mul__(self, other: "PolyPair | Polynomial | int | Fraction"
+def polynomial__mul__new(self, other: "PolyPair | Polynomial | int | Fraction"
         ) -> "Polynomial":
-    result = Polynomial()
-    if isinstance(other, int) or isinstance(other, Fraction):
-        result.coeffs = []
-        for i in range(len(self.coeffs)):
-            prod = self.coeffs[i] * other
-            if int(prod) != prod:
-                msg = "Can only multiply a Polynomial by a Fraction when "
-                msg += "when the product in each coefficient is an int."
-                raise ValueError(msg)
-            result.coeffs.append(int(prod))
-        return result
-    elif isinstance(other, PolyPair):
+    if isinstance(other, PolyPair):
         # delegate to PolyPair.__mul__()
         return other * self
-    elif not isinstance(other, Polynomial):
-        msg = "* with Polynomial only defined for int, Polynomial, "
-        msg += "and PolyPair."
-        raise ValueError(msg)
-    result.coeffs = [0] * (len(self.coeffs) + len(other.coeffs) - 1)
-    for i in range(len(self.coeffs)):
-        for j in range(len(other.coeffs)):
-            result.coeffs[i+j] += self.coeffs[i] * other.coeffs[j]
-    return result
+    return polynomial__mul__old(self, other)
 
-Polynomial.__eq__ = poly__eq__
-Polynomial.__add__ = poly__add__
-Polynomial.__sub__ = poly__sub__
-Polynomial.__mul__ = poly__mul__
+Polynomial.__eq__ = polynomial__eq__new
+Polynomial.__add__ = polynomial__add__new
+Polynomial.__sub__ = polynomial__sub__new
+Polynomial.__mul__ = polynomial__mul__new
 
 class PolyPair:
     """Represents a pair a(x)b(L), where L = ln(1+x)
@@ -196,44 +161,44 @@ class PolyPair:
     def _add_sub(self, operation: Callable, other: "PolyPair | Polynomial | int"
             ) -> "PolyPair":
         """Combine work from __add__, __sub__ to avoid repitition."""
-        if operation not in [PolyPair.__add__, PolyPair.__sub__]:
+        if operation not in [int.__add__, int.__sub__]:
             msg = "Method PolyPair._add_sub expected either "
-            msg += "PolyPair.__add__ or PolyPair.__sub__."
+            msg += "int.__add__ or int.__sub__."
             raise ValueError(msg)
         result = None
         if isinstance(other, int) or isinstance(other, Polynomial):
             other = PolyPair(other)
         if isinstance(other, PolyPair):
             if self.a == 0 or self.b == 0:
-                if operation == Polynomial.__add__:
+                if operation == int.__add__: 
                     result = other
                 else:
                     result = (-1)*other
             elif other.a == 0 or other.b == 0:
                 result = self
             elif self.a == other.a:
-                result = PolyPair(self.a, operation(self.b, other.b))
+                result = PolyPair(self.a, self.b._add_sub(operation, other.b))
             elif self.b == other.b:
-                result = PolyPair(operation(self.a, other.a), self.b)
+                result = PolyPair(self.a._add_sub(operation, other.a), self.b)
             elif (factor := self.a.proportional(other.a)):
                 # We know that factor.denominator divides all coeffs of self.a
                 result = PolyPair(Fraction(1, factor.denominator)*self.a, 
-                        operation(factor.denominator*self.b, 
+                        (factor.denominator*self.b)._add_sub(operation, 
                         factor.numerator*other.b))
             elif (factor := self.b.proportional(other.b)):
                 # We know that factor.denominator divides all coeffs of self.a
                 result = PolyPair(Fraction(1, factor.denominator)*self.b, 
-                        operation(factor.denominator*self.a, 
+                        factor.denominator*self.a._add_sub(operation, 
                         factor.numerator*other.a))
             if result is not None:
                 if result.a == 0 or result.b == 0:
                     result.a = Polynomial()
                     result.b = Polynomial()
             if result is None:
-                if operation == Polynomial.__add__:
+                if operation == int.__add__:
                     return [self, other]           
                 else:
-                    return [self, (-1)*other] 
+                    return [self, (-1)*other]
             return result
         else:
             msg = "Addition/Subtraction for PolyPair only defined for "
@@ -248,7 +213,7 @@ class PolyPair:
         Returns a PolyPair otherwise."""
         if isinstance(other, Polynomial) or isinstance(other, int):
             other = PolyPair(other)
-        return self._add_sub(PolyPair.__add__, other)
+        return self._add_sub(int.__add__, other)
 
     def __radd__(self, other: "PolyPair | Polynomial | int"
             ) -> "PolyPair | list[PolyPair]":
@@ -262,7 +227,7 @@ class PolyPair:
         Returns a PolyPair otherwise."""
         if isinstance(other, Polynomial) or isinstance(other, int):
             other = PolyPair(other)
-        return self._add_sub(PolyPair.__sub__, other)
+        return self._add_sub(int.__sub__, other)
 
     def __rsub__(self, other: "PolyPair | Polynomial | int"
             ) -> "PolyPair | list[PolyPair]":
