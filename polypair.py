@@ -11,13 +11,7 @@ polynomial__mul__old = Polynomial.__mul__
 
 def polynomial__eq__new(self, other: "PolyPair | Polynomial | int") -> bool:
     if isinstance(other, PolyPair):
-        if (
-            (isinstance(other.b, Polynomial) and other.b.deg == 0) or 
-            isinstance(other.b, int)
-        ):
-            other = other.a * other.b
-        else:
-            return False
+        return other == self
     return polynomial__eq__old(self, other)
 
 def polynomial__add__new(self, other: "PolyPair | Polynomial | int"

@@ -11,33 +11,7 @@ polynomial__mul__old = Polynomial.__mul__
 def polynomial__eq__new(self, other: "RationalFn | PolyPair | Polynomial | int"
         ) -> bool:
     if isinstance(other, RationalFn):
-        if (
-            (isinstance(other.b, Polynomial) and other.b.deg == 0) or 
-            isinstance(other.b, int)
-        ):
-            other_b = other.b.coeffs[0]
-        else:
-            return False
-        if (
-            (isinstance(other.c, Polynomial) and other.c.deg == 0) or 
-            isinstance(other.c, int)
-        ):
-            other_bc = Fraction(other_b, other.c.coeffs[0])
-        else:
-            return False
-        if (
-            (isinstance(other.d, Polynomial) and other.d.deg == 0) or 
-            isinstance(other.d, int)
-        ):
-            other_bcd = other_bc / other.d.coeffs[0]
-            try:
-                other = other.a * other_bcd
-            # In Polynomial * Fraction, if any coeff is not an int after 
-            #   multiplying, a ValueError is thrown.
-            except ValueError:
-                return False
-        else:
-            return False
+        return other == self
     return polynomial__eq__old(self, other)
 
 def polynomial__add__new(self, other: "RationalFn | PolyPair | Polynomial | int"
