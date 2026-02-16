@@ -231,14 +231,19 @@ class PolyPair:
         return (-1)*self + other
 
     def __mul__(self, other:  "PolyPair | Polynomial | int | Fraction"
-            ) -> "PolyPair":
+            ) -> "PolyPair | None":
         if isinstance(other, int) or isinstance(other, Fraction):
             factor_a = math.gcd(*self.a.coeffs)
             factor_b = math.gcd(*self.b.coeffs)
             if factor_a * factor_b % other.denominator == 0:
                 gcd_a = math.gcd(factor_a, other.denominator)
-            result_a = Fraction(other.numerator, gcd_a) * self.a
-            result_b = Fraction(1, other.denominator // gcd_a) * self.b
+                result_a = Fraction(other.numerator, gcd_a) * self.a
+                result_b = Fraction(1, other.denominator // gcd_a) * self.b
+            else:
+                msg = "Multiplication of a PolyPair by a Fraction requires "
+                msg += "that the result has only integer coefficients.\n"
+                msg += f"PolyPair: {str(self)}, Fraction: {other}"
+                raise ValueError(msg)
             return PolyPair(result_a, result_b)
         if isinstance(other, Polynomial):
             return PolyPair(self.a * other, self.b)

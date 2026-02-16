@@ -351,6 +351,9 @@ class TestPolyPair(unittest.TestCase):
                 PolyPair(self.p_3 * self.p_3, self.p_5))
         self.assertEqual(self.p_3 * self.pp_35, 
                 PolyPair(self.p_3 * self.p_3, self.p_5))
+        # Multiplying by a Fraction that doesn't result in integers
+        with self.assertRaises(ValueError): Fraction(1, 2) * self.pp_24
+        # Data type error checking
         with self.assertRaises(ValueError): self.pp_25 * 1.0
         with self.assertRaises(ValueError): 1.0 * self.pp_25
         with self.assertRaises(ValueError): self.pp_25 * "x"
