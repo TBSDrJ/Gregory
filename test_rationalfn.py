@@ -224,37 +224,42 @@ class TestRationalFn(unittest.TestCase):
 
     def test_dunder_add(self):
         # Start with cases with RationalFn + RationalFn.
-        # a, c, d match
+        # A: a, c, d match
         self.assertEqual(self.rf_2445 + self.rf_2245, RationalFn(
                 self.p_2, self.p_2 + self.p_4, self.pp_45))
-        # b, c, d match
+        # B: b, c, d match
         self.assertEqual(self.rf_2245 + self.rf_4245, RationalFn(
                 self.p_2 + self.p_4, self.p_2, self.pp_45))
-        # All 4 match
+        # C: All 4 match
         self.assertEqual(self.rf_2345 + self.rf_2345, RationalFn(
                 self.p_2, 2*self.p_3, self.pp_45))
         self.assertEqual(self.rf_2345 + self.rf_2345, RationalFn(
                 2*self.p_2, self.p_3, self.pp_45))
         self.assertEqual(self.rf_2345 + self.rf_2345, RationalFn(
                 2*self.pp_23, self.pp_45))
+        # D: One summand is zero
+        self.assertEqual(self.rf_3345 + self.rf_0011, self.rf_3345)
+        self.assertEqual(self.rf_4523 + self.rf_1011, self.rf_4532)
+        # E: Denominators the same, Numerators proportional
         # Recall that self.p_2 = -self.p_3, the next batch uses that.
         self.assertEqual(self.rf_2345 + self.rf_3345, 0)
         self.assertEqual(self.rf_3345 + self.rf_2345, 0)
         self.assertEqual(self.rf_3245 + self.rf_3345, 0)
         self.assertEqual(self.rf_3345 + self.rf_3245, 0)
-        # One summand is zero
-        self.assertEqual(self.rf_3345 + self.rf_0011, self.rf_3345)
-        self.assertEqual(self.rf_4523 + self.rf_1011, self.rf_4532)
-        # RationalFn + PolyPair
-        # print()
-        # print(self.rf_3541 + PolyPair(Polynomial([2, 1]), self.p_5))
-        # print()
-        # print(RationalFn(Polynomial([-1, -4, 1, -2, -6, -7, -6]), self.p_5, 
-        #         self.pp_41))
-        # print()
-        # self.assertEqual(self.rf_3541 + PolyPair(Polynomial([2, 1]), self.p_5),
-        #         RationalFn(Polynomial([-1, -4, 1, -2, -6, -7, -6]), self.p_5, 
-        #         self.pp_41))
+        # Numerators with different proportions
+        self.assertEqual(RationalFn(self.p_6, 3*self.p_2, self.pp_45) + 
+                RationalFn(5*self.p_6, self.p_2, self.pp_45), RationalFn(
+                self.p_6, 8*self.p_2, self.pp_45))
+        self.assertEqual(RationalFn(7*self.p_6, 3*self.p_2, self.pp_45) + 
+                RationalFn(5*self.p_6, 2*self.p_2, self.pp_45), RationalFn(
+                self.p_6, 31*self.p_2, self.pp_45))
+        # F: Denominators the same, only one numerator pair proportional
+        self.assertEqual(self.rf_6245 + RationalFn(self.p_5, 5*self.p_2, 
+                self.pp_45), RationalFn(Polynomial([2, 1, 0, 0, 0, 5]), 
+                self.p_2, self.pp_45))
+        self.assertEqual(self.rf_2645 + RationalFn(5*self.p_2, self.p_5, 
+                self.pp_45), RationalFn(self.p_2, Polynomial([2, 1, 0, 0, 0, 
+                5]), self.pp_45))
     
     def test_common_denominator(self):
         p_5_by_neg6 = Polynomial([0, 0, 0, 0, 0, -6])
@@ -326,3 +331,9 @@ class TestRationalFn(unittest.TestCase):
                 p_5_by_neg6, self.p_3)), (RationalFn(-6*self.pp_66, 
                 p_5_by_neg6, self.p_2), RationalFn(-self.pp_66, p_5_by_neg6, 
                 self.p_2)))
+        # G: Both factors in one denominator are 1.
+        self.assertEqual(self.rf_6115.common_denominator(self.rf_6111), 
+                (self.rf_6115, self.rf_6515))
+        self.assertEqual(self.rf_6111.common_denominator(self.rf_6115), 
+                (self.rf_6515, self.rf_6115))
+        

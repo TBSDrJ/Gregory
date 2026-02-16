@@ -292,7 +292,8 @@ class RationalFn:
             elif self.c == other.c and self.d == other.d and factor_b:
                 result = RationalFn(self.ab + other.ab, self.cd)
                 result_found = True
-        
+        # if not result_found:
+
         if result.a == Polynomial() or result.b == Polynomial():
             result.a = Polynomial()
             result.b = Polynomial()
