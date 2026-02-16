@@ -242,13 +242,15 @@ class TestPolyPair(unittest.TestCase):
         self.assertEqual(self.pp_32 - self.pp_31, PolyPair(
                 self.p_3, Polynomial([0, 1])))
         self.assertEqual(self.pp_13 - self.pp_00, self.pp_13)
-        # B: PolyPair + Polynomial and reverse
+        self.assertEqual(self.pp_00 - self.pp_13, -self.pp_13)
+        # B: PolyPair - Polynomial and reverse
         self.assertEqual(self.pp_23 - self.p_2, PolyPair(
                 self.p_2, self.p_3 - 1))
         self.assertEqual(self.p_4 - self.pp_43, PolyPair(
                 self.p_4, 1 - self.p_3))
         # C: Check subtraction of pairs with no common factor.
         self.assertEqual(self.pp_23 - self.pp_45, [self.pp_23, -self.pp_45])
+        self.assertEqual(self.pp_45 - self.pp_23, [self.pp_45, -self.pp_23])
         # D: PolyPair - int and reverse
         self.assertEqual(self.pp_15 - 1, PolyPair(1, self.p_5 - 1))
         self.assertEqual(2 - self.pp_31, PolyPair(2 - self.p_3, 1))
@@ -265,6 +267,14 @@ class TestPolyPair(unittest.TestCase):
                 self.p_4 + self.p_5))
         self.assertEqual(self.pp_34 - self.pp_25, PolyPair(self.p_2,
                 -self.p_4 - self.p_5))
+        self.assertEqual(self.pp_52 - PolyPair(self.p_4, 5*self.p_2), 
+                PolyPair(self.p_5 - 5*self.p_4, self.p_2))
+        self.assertEqual(PolyPair(self.p_4, 5*self.p_2) - self.pp_52, 
+                PolyPair(-self.p_5 + 5*self.p_4, self.p_2))
+        self.assertEqual(self.pp_43 - self.pp_53, PolyPair(self.p_4 - self.p_5,
+                self.p_3))
+        self.assertEqual(self.pp_43 - self.pp_52, PolyPair(-self.p_4 - self.p_5,
+                self.p_2))
         self.assertEqual(self.pp_23 - self.pp_32, 0)
         # PolyPair - Polynomial
         self.assertEqual(self.pp_25 - Polynomial([-3, -3]), PolyPair(
@@ -273,17 +283,25 @@ class TestPolyPair(unittest.TestCase):
                 self.p_2, -self.p_5 - 3))
         self.assertEqual(self.pp_25 - self.p_2, PolyPair(self.p_2, 
                 -1 + self.p_5))
+        self.assertEqual(self.p_2 - self.pp_25, PolyPair(self.p_2, 
+                1 - self.p_5))
         # And PolyPair - int
         self.assertEqual(self.pp_15 - 2, PolyPair(1, self.p_5 - 2))
         self.assertEqual(2 - self.pp_15, PolyPair(1, -self.p_5 + 2))
         # F: Has zero terms and one is proportional
         self.assertEqual(self.pp_54 - PolyPair(-3*self.p_5, self.p_3), 
                 PolyPair(self.p_5, Polynomial([-2, -5, 3, -4, 5, -6])))
+        self.assertEqual(self.pp_45 - PolyPair(self.p_3, -3*self.p_5), 
+                PolyPair(Polynomial([-2, -5, 3, -4, 5, -6]), self.p_5))
         # G: Has a zero factor and other is proportional
         self.assertEqual(PolyPair(self.p_0, 2*self.p_3) - PolyPair(self.p_0, 
                 -5*self.p_3), self.pp_00)
         self.assertEqual(PolyPair(self.p_3, self.p_0) - PolyPair(self.p_3, 
                 self.p_0), self.pp_00)
+        self.assertEqual(PolyPair(2*self.p_3, self.p_0) - PolyPair(-5*self.p_3, 
+                self.p_0), self.pp_00)
+        self.assertEqual(PolyPair(self.p_0, self.p_3) - PolyPair(self.p_0, 
+                self.p_3), self.pp_00)
         # H: Has a zero factor and not proportional
         self.assertEqual(PolyPair(self.p_0, self.p_4) - PolyPair(self.p_0, 
                 self.p_5), self.pp_00)
