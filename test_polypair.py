@@ -39,10 +39,10 @@ class TestPolyPair(unittest.TestCase):
         self.assertIsInstance(PolyPair(self.p_5, 37), PolyPair)
         self.assertIsInstance(PolyPair(1), PolyPair)
         self.assertIsInstance(PolyPair(self.p_2), PolyPair)
-        self.assertRaises(ValueError, PolyPair, 1.1, 1)
-        self.assertRaises(ValueError, PolyPair, 1, 1.1)
-        self.assertRaises(ValueError, PolyPair, "x", Polynomial())
-        self.assertRaises(ValueError, PolyPair, Polynomial(), "x")
+        self.assertRaises(TypeError, PolyPair, 1.1, 1)
+        self.assertRaises(TypeError, PolyPair, 1, 1.1)
+        self.assertRaises(TypeError, PolyPair, "x", Polynomial())
+        self.assertRaises(TypeError, PolyPair, Polynomial(), "x")
 
     def test_dunder_str(self):
         for pp in self.pp_exs:
@@ -218,10 +218,10 @@ class TestPolyPair(unittest.TestCase):
         self.assertEqual(PolyPair(self.p_4, self.p_0) + PolyPair(self.p_5, 
                 self.p_0), self.pp_00)
         # I: Check data type errors
-        with self.assertRaises(ValueError): self.pp_25 + 1.0
-        with self.assertRaises(ValueError): 1.0 + self.pp_25
-        with self.assertRaises(ValueError): self.pp_25 + "x"
-        with self.assertRaises(ValueError): "x" + self.pp_25
+        with self.assertRaises(TypeError): self.pp_25 + 1.0
+        with self.assertRaises(TypeError): 1.0 + self.pp_25
+        with self.assertRaises(TypeError): self.pp_25 + "x"
+        with self.assertRaises(TypeError): "x" + self.pp_25
         # Check to make sure none of the examples were modified
         self.assertEqual(self.p_0, Polynomial())
         self.assertEqual(self.p_1, Polynomial(1))
@@ -312,10 +312,10 @@ class TestPolyPair(unittest.TestCase):
         self.assertEqual(PolyPair(self.p_4, self.p_0) - PolyPair(self.p_5, 
                 self.p_0), self.pp_00)
         # I: Check data type errors
-        with self.assertRaises(ValueError): self.pp_25 - 1.0
-        with self.assertRaises(ValueError): 1.0 - self.pp_25
-        with self.assertRaises(ValueError): self.pp_25 - "x"
-        with self.assertRaises(ValueError): "x" - self.pp_25
+        with self.assertRaises(TypeError): self.pp_25 - 1.0
+        with self.assertRaises(TypeError): 1.0 - self.pp_25
+        with self.assertRaises(TypeError): self.pp_25 - "x"
+        with self.assertRaises(TypeError): "x" - self.pp_25
         # Check to make sure none of the examples were modified
         self.assertEqual(self.p_0, Polynomial())
         self.assertEqual(self.p_1, Polynomial(1))
@@ -372,11 +372,11 @@ class TestPolyPair(unittest.TestCase):
         # Multiplying by a Fraction that doesn't result in integers
         with self.assertRaises(ValueError): Fraction(1, 2) * self.pp_24
         # Data type error checking
-        with self.assertRaises(ValueError): self.pp_25 * 1.0
-        with self.assertRaises(ValueError): 1.0 * self.pp_25
-        with self.assertRaises(ValueError): self.pp_25 * "x"
-        with self.assertRaises(ValueError): "x" * self.pp_25
-        with self.assertRaises(ValueError): Fraction(2, 3) * PolyPair(
+        with self.assertRaises(TypeError): self.pp_25 * 1.0
+        with self.assertRaises(TypeError): 1.0 * self.pp_25
+        with self.assertRaises(TypeError): self.pp_25 * "x"
+        with self.assertRaises(TypeError): "x" * self.pp_25
+        with self.assertRaises(TypeError): Fraction(2, 3) * PolyPair(
                 Polynomial([8, 6, 4, 2]), PolyPair([2, 4, 6, 8]))
         # Check to make sure none of the examples were modified
         self.assertEqual(self.p_0, Polynomial())

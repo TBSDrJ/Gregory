@@ -116,7 +116,7 @@ class Polynomial:
             return NotImplemented
 
     def __rsub__(self, other: Polynomial | int) -> Polynomial:
-        return (-1)*(self - other)
+        return (-1)*self + other
 
     def __mul__(self, other: Polynomial | int | Fraction) -> Polynomial:
         result = Polynomial()
