@@ -259,3 +259,14 @@ class PolyPair:
         
     def __neg__(self) -> PolyPair:
         return (-1)*self
+
+    def __call__(self, value: int) -> int | None:
+        """Substitute value into both halves of the PolyPair.
+        
+        If value != 0, we don't evaluate because self.b is in the variable
+        L(x) = ln(x+1).  We don't have an easy way to express ln(n) for
+        integer values of n, and we don't need this, so just return None."""
+        if value == 0:
+            return self.a(value) * self.b(value)
+        else:
+            return None

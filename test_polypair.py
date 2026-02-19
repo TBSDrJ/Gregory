@@ -389,3 +389,12 @@ class TestPolyPair(unittest.TestCase):
             for j in range(len(self.p_exs) - 1):
                 self.assertEqual(PolyPair(self.p_exs[i+1], self.p_exs[j+1]), 
                         self.pp_exs[2 + i*(len(self.p_exs)-1) + j])
+
+        def test_dunder_call(self):
+            self.assertEqual(self.pp_00(0), 0)
+            self.assertEqual(self.pp_11(0), 1)
+            self.assertEqual(self.pp_22(0), 1)
+            self.assertEqual(self.pp_23(0), -1)
+            self.assertEqual(self.pp_24(0), 1)
+            self.assertEqual(self.pp_25(0), 0)
+            self.assertIsNone(self.pp_22(1))
