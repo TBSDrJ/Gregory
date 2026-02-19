@@ -269,33 +269,15 @@ class RationalFn:
             return self
         result = RationalFn()
         result_found = False
-        # First, all the easy cases where there are exact common factors
-        if self.a == other.a and self.c == other.c and self.d == other.d:
-            result.a = self.a
-            result.b = self.b + other.b
-            result.c = self.c
-            result.d = self.d
-            result.b.eliminate_zeros()
-            result_found = True
-        elif self.b == other.b and self.c == other.c and self.d == other.d:
-            result.a = self.a + other.a
-            result.b = self.b
-            result.c = self.c
-            result.d = self.d
-            result.a.eliminate_zeros()
-            result_found = True
-        # Separate later cases to avoid the calculation of factors 
-        #   if not needed.
-        if not result_found:
-            factor_a = self.a.proportional(other.a)
-            factor_b = self.b.proportional(other.b)
-            if self.c == other.c and self.d == other.d and factor_a:
-                result = RationalFn(self.ab + other.ab, self.cd)
-                result_found = True
-            elif self.c == other.c and self.d == other.d and factor_b:
-                result = RationalFn(self.ab + other.ab, self.cd)
+        # First, all the easy cases handled by PolyPair addition
+        if self.c == other.c and self.d == other.d:
+            res_ab = self.ab + other.ab
+            if res_ab is not None:
+                result.ab = res_ab
+                result.cd = self.cd                
                 result_found = True
         # if not result_found:
+
 
         if result.a == Polynomial() or result.b == Polynomial():
             result.a = Polynomial()
