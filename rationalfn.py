@@ -1,3 +1,4 @@
+from __future__ import annotations
 from fractions import Fraction
 
 from polynomial import Polynomial
@@ -8,30 +9,30 @@ polynomial__add__old = Polynomial.__add__
 polynomial__sub__old = Polynomial.__sub__
 polynomial__mul__old = Polynomial.__mul__
 
-def polynomial__eq__new(self, other: "RationalFn | PolyPair | Polynomial | int"
+def polynomial__eq__new(self, other: RationalFn | PolyPair | Polynomial | int
         ) -> bool:
     if isinstance(other, RationalFn):
         # delegate to RationalFn.__eq__()
         return other == self
     return polynomial__eq__old(self, other)
 
-def polynomial__add__new(self, other: "RationalFn | PolyPair | Polynomial | int"
-        ) -> "RationalFn | PolyPair | Polynomial":
+def polynomial__add__new(self, other: RationalFn | PolyPair | Polynomial | int
+        ) -> RationalFn | PolyPair | Polynomial:
     if isinstance(other, RationalFn):
         # delegate to RationalFn.__add__()
         return other + self
     return polynomial__add__old(self, other)
 
-def polynomial__sub__new(self, other: "RationalFn | PolyPair | Polynomial | int"
-        ) -> "RationalFn | PolyPair | Polynomial":
+def polynomial__sub__new(self, other: RationalFn | PolyPair | Polynomial | int
+        ) -> RationalFn | PolyPair | Polynomial:
     if isinstance(other, RationalFn):
         # delegate to PolyPair.__add__()
         return (-1*other) + self
     return polynomial__sub__old(self, other)
 
 def polynomial__mul__new(self, 
-        other: "RationalFn | PolyPair | Polynomial | int | Fraction"
-        ) -> "RationalFn | PolyPair | Polynomial":
+        other: RationalFn | PolyPair | Polynomial | int | Fraction
+        ) -> RationalFn | PolyPair | Polynomial:
     if isinstance(other, RationalFn):
         # delegate to PolyPair.__mul__()
         return other * self
@@ -47,30 +48,30 @@ polypair__add__old = PolyPair.__add__
 polypair__sub__old = PolyPair.__sub__
 polypair__mul__old = PolyPair.__mul__
 
-def polypair__eq__new(self, other: "RationalFn | PolyPair | Polynomial | int"
+def polypair__eq__new(self, other: RationalFn | PolyPair | Polynomial | int
         ) -> bool:
     if isinstance(other, RationalFn):
         # delegate to RationalFn.__eq__()
         return other == self
     return polypair__eq__old(self, other)
 
-def polypair__add__new(self, other: "RationalFn | PolyPair | Polynomial | int"
-        ) -> "RationalFn | PolyPair | Polynomial":
+def polypair__add__new(self, other: RationalFn | PolyPair | Polynomial | int
+        ) -> RationalFn | PolyPair | Polynomial:
     if isinstance(other, RationalFn):
         # delegate to RationalFn.__add__()
         return other + self
     return polypair__add__old(self, other)
 
-def polypair__sub__new(self, other: "RationalFn | PolyPair | Polynomial | int"
-        ) -> "RationalFn | PolyPair | Polynomial":
+def polypair__sub__new(self, other: RationalFn | PolyPair | Polynomial | int
+        ) -> RationalFn | PolyPair | Polynomial:
     if isinstance(other, RationalFn):
         # delegate to PolyPair.__add__()
         return (-1*other) + self
     return polypair__sub__old(self, other)
 
 def polypair__mul__new(self, 
-        other: "RationalFn | PolyPair | Polynomial | int | Fraction"
-        ) -> "RationalFn | PolyPair | Polynomial":
+        other: RationalFn | PolyPair | Polynomial | int | Fraction
+        ) -> RationalFn | PolyPair | Polynomial:
     if isinstance(other, RationalFn):
         # delegate to PolyPair.__mul__()
         return other * self
@@ -101,10 +102,11 @@ class RationalFn:
                         polynomials.append(arg.b)
                 else:
                     msg_1 = f"Received argument {arg} of type {type(arg)}.\n"
-                    raise ValueError(msg_0 + msg_1)
+                    print(msg_0 + msg_1)
+                    return NotImplemented
             else:
                 msg_2 = f"Received too many arguments: {args}\n"
-                raise ValueError(msg_0 + msg_2)
+                raise TypeError(msg_0 + msg_2)
         while len(polynomials) < 4:
             if len(polynomials) == 0:
                 polynomials.append(Polynomial(0))
@@ -172,27 +174,27 @@ class RationalFn:
         raise ValueError(msg)
 
     @a.setter
-    def a(self, new_a):
+    def a(self, new_a: Polynomial | int):
         new_a = self.validate_polynomial(new_a)
         self._a = new_a
 
     @b.setter
-    def b(self, new_b):
+    def b(self, new_b: Polynomial | int):
         new_b = self.validate_polynomial(new_b)
         self._b = new_b
 
     @c.setter
-    def c(self, new_c):
+    def c(self, new_c: Polynomial | int):
         new_c = self.validate_polynomial(new_c)
         self._c = new_c
 
     @d.setter
-    def d(self, new_d):
+    def d(self, new_d: Polynomial | int):
         new_d = self.validate_polynomial(new_d)
         self._d = new_d
 
     @ab.setter
-    def ab(self, new_ab):
+    def ab(self, new_ab: PolyPair | Polynomial | int):
         # Let PolyPair constructor do error handling
         if not isinstance(new_ab, PolyPair):
             new_ab = PolyPair(new_ab)
@@ -200,7 +202,7 @@ class RationalFn:
         self._b = new_ab.b
     
     @cd.setter
-    def cd(self, new_cd):
+    def cd(self, new_cd: PolyPair | Polynomial | int):
         # Let PolyPair constructor do error handling
         if not isinstance(new_cd, PolyPair):
             new_cd = PolyPair(new_cd)
@@ -214,7 +216,8 @@ class RationalFn:
         elif not isinstance(p, Polynomial):
             msg = "self.a, b, c, d in RationalFn must be either int "
             msg += f"or Polynomial.  Found {p}, {type(p)} instead."
-            raise ValueError(msg)
+            raise TypeError(msg)
+        p.eliminate_zeros()
         return p
 
     def validate_polypair(self, p: Polynomial | int) -> Polynomial:
@@ -224,7 +227,7 @@ class RationalFn:
         elif not isinstance(p, PolyPair):
             msg = "self.ab, self.cd in RationalFn must be int, Polynomial "
             msg += f"or PolyPair.  Found {p}, {type(p)} instead."
-            raise ValueError(msg)
+            raise TypeError(msg)
         return p
 
     def __str__(self) -> str:
@@ -256,8 +259,8 @@ class RationalFn:
                 return True 
         return False
 
-    def __add__(self, other: "RationalFn | int | Polynomial | PolyPair"
-            ) -> "RationalFn | list[RationalFn]":
+    def __add__(self, other: RationalFn | int | Polynomial | PolyPair
+            ) -> RationalFn | None:
         if (isinstance(other, int) or isinstance(other, Polynomial) or 
                 isinstance(other, PolyPair)):
             other = RationalFn(other)
@@ -282,7 +285,8 @@ class RationalFn:
             result.d = self.d
             result.a.eliminate_zeros()
             result_found = True
-        # Separate later cases to avoid the calculation if not needed.
+        # Separate later cases to avoid the calculation of factors 
+        #   if not needed.
         if not result_found:
             factor_a = self.a.proportional(other.a)
             factor_b = self.b.proportional(other.b)
@@ -299,10 +303,12 @@ class RationalFn:
             result.b = Polynomial()
             result.c = Polynomial(1)
             result.d = Polynomial(1)
+        if not result_found:
+            return None
         return result
 
-    def common_denominator(self, other: "RationalFn"
-            ) -> "(RationalFn, RationalFn)":
+    def common_denominator(self, other: RationalFn
+            ) -> (RationalFn, RationalFn):
         """If a common denominator can be found, return both with it.
         
         A common denominator will be found if, for each of c & d, one of the

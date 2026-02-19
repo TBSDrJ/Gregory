@@ -68,7 +68,7 @@ class PolyPair:
             self.a = Polynomial()
             self.b = Polynomial()
 
-    def validate_input(self, p: Polynomial | int) -> Polynomial:
+    def validate_polynomial(self, p: Polynomial | int) -> Polynomial:
         """Make sure that a and b attributes are Polynomials."""
         if isinstance(p, int):
             p = Polynomial(p)
@@ -89,12 +89,12 @@ class PolyPair:
 
     @a.setter
     def a(self, new_a):
-        new_a = self.validate_input(new_a)
+        new_a = self.validate_polynomial(new_a)
         self._a = new_a
 
     @b.setter
     def b(self, new_b):
-        new_b = self.validate_input(new_b)
+        new_b = self.validate_polynomial(new_b)
         self._b = new_b
 
     def __str__(self) -> str:
