@@ -153,7 +153,7 @@ class PolyPair:
         else:
             return True
 
-    def _add_sub(self, operation: Callable, other: PolyPair) -> PolyPair:
+    def _add_sub(self, operation: Callable, other: PolyPair) -> PolyPair | None:
         """Combine work from __add__, __sub__ to avoid repitition.
         
         Check type of other in __add__ and __sub__ so PolyPair is certain."""
@@ -187,15 +187,10 @@ class PolyPair:
             if result.a == 0 or result.b == 0:
                 result.a = Polynomial()
                 result.b = Polynomial()
-        if result is None:
-            if operation == int.__add__:
-                return [self, other]           
-            else:
-                return [self, (-1)*other]
         return result
 
     def __add__(self, other: PolyPair | Polynomial | int
-            ) -> PolyPair | list[PolyPair]:
+            ) -> PolyPair | None:
         """Add if a's or b's are proportional by a constant, else return list.
         
         Returns [self, other] if neither a nor b is a common factor.
@@ -208,11 +203,11 @@ class PolyPair:
             return NotImplemented
 
     def __radd__(self, other: PolyPair | Polynomial | int
-            ) -> PolyPair | list[PolyPair]:
+            ) -> PolyPair | None:
         return self + other
 
     def __sub__(self, other: PolyPair | Polynomial | int
-            ) -> PolyPair | list[PolyPair]:
+            ) -> PolyPair | None:
         """Add if a's and b's are proportional by a constant, else return list.
         
         Returns [self, other] if neither a nor b is a common factor.
@@ -225,7 +220,7 @@ class PolyPair:
             return NotImplemented
 
     def __rsub__(self, other: PolyPair | Polynomial | int
-            ) -> PolyPair | list[PolyPair]:
+            ) -> PolyPair | None:
         return (-1)*self + other
 
     def __mul__(self, other:  PolyPair | Polynomial | int | Fraction
@@ -251,7 +246,7 @@ class PolyPair:
             return NotImplemented
 
     def __rmul__(self, other: PolyPair | Polynomial | int | Fraction
-            ) -> PolyPair:
+            ) -> PolyPair | None:
         return self * other
     
     def __pos__(self) -> PolyPair:

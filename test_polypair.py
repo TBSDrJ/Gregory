@@ -159,7 +159,7 @@ class TestPolyPair(unittest.TestCase):
         self.assertEqual(self.p_4 + self.pp_43, PolyPair(
                 self.p_4, self.p_3 + 1))
         # C: Check addition of pairs with no common factor.
-        self.assertEqual(self.pp_23 + self.pp_45, [self.pp_23, self.pp_45])
+        self.assertIsNone(self.pp_23 + self.pp_45)
         # D: PolyPair + int and reverse
         # Notice that PolyPair(2) = (2)(1), so self.pp_15 + 2 does not share
         #       a common factor (see below for handling of that)
@@ -249,8 +249,8 @@ class TestPolyPair(unittest.TestCase):
         self.assertEqual(self.p_4 - self.pp_43, PolyPair(
                 self.p_4, 1 - self.p_3))
         # C: Check subtraction of pairs with no common factor.
-        self.assertEqual(self.pp_23 - self.pp_45, [self.pp_23, -self.pp_45])
-        self.assertEqual(self.pp_45 - self.pp_23, [self.pp_45, -self.pp_23])
+        self.assertIsNone(self.pp_23 - self.pp_45)
+        self.assertIsNone(self.pp_45 - self.pp_23)
         # D: PolyPair - int and reverse
         self.assertEqual(self.pp_15 - 1, PolyPair(1, self.p_5 - 1))
         self.assertEqual(2 - self.pp_31, PolyPair(2 - self.p_3, 1))
