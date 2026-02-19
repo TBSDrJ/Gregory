@@ -260,6 +260,14 @@ class TestRationalFn(unittest.TestCase):
         self.assertEqual(self.rf_2645 + RationalFn(5*self.p_2, self.p_5, 
                 self.pp_45), RationalFn(self.p_2, Polynomial([2, 1, 0, 0, 0, 
                 5]), self.pp_45))
+        # H: Denominators need common denominator, result can be added
+        self.assertEqual(self.rf_6245 + self.rf_1315, RationalFn(Polynomial(
+                [1, 3, -3, 4, -5, 6]), self.p_2, self.pp_45))
+        self.assertEqual(self.rf_2654 + self.rf_3151, RationalFn(Polynomial(
+                self.p_2, [1, 3, -3, 4, -5, 6]), self.pp_54))
+        # I: Denominators need common denominator, result cannot be added
+        self.assertIsNone(self.rf_6245 + self.rf_5641)
+        
     
     def test_common_denominator(self):
         p_5_by_neg6 = Polynomial([0, 0, 0, 0, 0, -6])
