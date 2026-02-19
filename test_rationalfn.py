@@ -102,18 +102,18 @@ class TestRationalFn(unittest.TestCase):
                 RationalFn)
         self.assertIsInstance(RationalFn(self.pp_23, self.pp_45), RationalFn)
         # One argument of the wrong data type
-        self.assertRaises(ValueError, RationalFn, "x")
-        self.assertRaises(ValueError, RationalFn, 1, "x")
-        self.assertRaises(ValueError, RationalFn, 1, 1, "x")
-        self.assertRaises(ValueError, RationalFn, 1, 1, 1, "x")
-        self.assertRaises(ValueError, RationalFn, 1.0)
-        self.assertRaises(ValueError, RationalFn, 1, 1.0)
-        self.assertRaises(ValueError, RationalFn, 1, 1, 1.0)
-        self.assertRaises(ValueError, RationalFn, 1, 1, 1, 1.0)
+        self.assertRaises(TypeError, RationalFn, "x")
+        self.assertRaises(TypeError, RationalFn, 1, "x")
+        self.assertRaises(TypeError, RationalFn, 1, 1, "x")
+        self.assertRaises(TypeError, RationalFn, 1, 1, 1, "x")
+        self.assertRaises(TypeError, RationalFn, 1.0)
+        self.assertRaises(TypeError, RationalFn, 1, 1.0)
+        self.assertRaises(TypeError, RationalFn, 1, 1, 1.0)
+        self.assertRaises(TypeError, RationalFn, 1, 1, 1, 1.0)
         # Too many args
-        self.assertRaises(ValueError, RationalFn, 1, 1, 1, 1, 1)
-        self.assertRaises(ValueError, RationalFn, 1, self.pp_23, self.p_4)
-        self.assertRaises(ValueError, RationalFn, self.p_1, self.p_2, self.p_3, 
+        self.assertRaises(TypeError, RationalFn, 1, 1, 1, 1, 1)
+        self.assertRaises(TypeError, RationalFn, 1, self.pp_23, self.p_4)
+        self.assertRaises(TypeError, RationalFn, self.p_1, self.p_2, self.p_3, 
                 self.p_4, self.p_5)
         # 0 in the denominator
         self.assertRaises(ZeroDivisionError, RationalFn, 1, 1, 0)
