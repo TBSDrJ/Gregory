@@ -102,8 +102,7 @@ class RationalFn:
                         polynomials.append(arg.b)
                 else:
                     msg_1 = f"Received argument {arg} of type {type(arg)}.\n"
-                    print(msg_0 + msg_1)
-                    return NotImplemented
+                    return TypeError(msg_0 + msg_1)
             else:
                 msg_2 = f"Received too many arguments: {args}\n"
                 raise TypeError(msg_0 + msg_2)
