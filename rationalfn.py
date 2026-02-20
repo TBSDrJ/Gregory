@@ -276,9 +276,14 @@ class RationalFn:
                 result.ab = res_ab
                 result.cd = self.cd                
                 result_found = True
-        # if not result_found:
-
-
+        if not result_found:
+            new_self, new_other = self.common_denominator(other)
+            res_ab = new_self.ab + new_other.ab if new_self is not None else (
+                None)
+            if res_ab is not None:
+                result.ab = res_ab
+                result.cd = new_self.cd
+                result_found = True
         if result.a == Polynomial() or result.b == Polynomial():
             result.a = Polynomial()
             result.b = Polynomial()
@@ -289,7 +294,7 @@ class RationalFn:
         return result
 
     def common_denominator(self, other: RationalFn
-            ) -> (RationalFn, RationalFn):
+            ) -> (RationalFn, RationalFn) | (None, None):
         """If a common denominator can be found, return both with it.
         
         A common denominator will be found if, for each of c & d, one of the
@@ -304,7 +309,7 @@ class RationalFn:
             if self.d == other.d:
                 new_self = RationalFn(other.c * self.a, self.b, 
                         self.c * other.c, self.d)
-                new_other = RationalFn(self.c * other.a, self.b, 
+                new_other = RationalFn(self.c * other.a, other.b, 
                         self.c * other.c, other.d)
                 return new_self, new_other
         if self.d.deg == 0 or other.d.deg == 0:
@@ -325,4 +330,4 @@ class RationalFn:
                         factor_c.denominator*other.c, 
                         factor_d.denominator*other.d)
                 return new_self, new_other
-        return None
+        return None, None

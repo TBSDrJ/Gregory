@@ -241,12 +241,12 @@ class TestRationalFn(unittest.TestCase):
         self.assertEqual(self.rf_3345 + self.rf_0011, self.rf_3345)
         self.assertEqual(self.rf_4523 + self.rf_1011, self.rf_4532)
         # E: Denominators the same, Numerators proportional
-        # Recall that self.p_2 = -self.p_3, the next batch uses that.
+        #   Recall that self.p_2 = -self.p_3, the next batch uses that.
         self.assertEqual(self.rf_2345 + self.rf_3345, 0)
         self.assertEqual(self.rf_3345 + self.rf_2345, 0)
         self.assertEqual(self.rf_3245 + self.rf_3345, 0)
         self.assertEqual(self.rf_3345 + self.rf_3245, 0)
-        # Numerators with different proportions
+        #   Numerators with different proportions
         self.assertEqual(RationalFn(self.p_6, 3*self.p_2, self.pp_45) + 
                 RationalFn(5*self.p_6, self.p_2, self.pp_45), RationalFn(
                 self.p_6, 8*self.p_2, self.pp_45))
@@ -260,20 +260,41 @@ class TestRationalFn(unittest.TestCase):
         self.assertEqual(self.rf_2645 + RationalFn(5*self.p_2, self.p_5, 
                 self.pp_45), RationalFn(self.p_2, Polynomial([2, 1, 0, 0, 0, 
                 5]), self.pp_45))
+        # G: Denominators are proportional not equal
+        #   Proportional in c or d, Numerators equal
+        self.assertEqual(self.rf_6256 + RationalFn(self.pp_62, 3*self.p_5, 
+                self.p_6), RationalFn(4*self.pp_62, 3*self.pp_56))
+        self.assertEqual(self.rf_2665 + RationalFn(self.pp_26, self.p_6, 
+                3*self.p_5), RationalFn(4*self.pp_26, 3*self.pp_65))
+        #   Proportional in c and d, Numerators equal
+        self.assertEqual(self.rf_6256 + RationalFn(self.pp_62, 3*self.p_5,
+                5*self.p_6), RationalFn(16*self.pp_62, 15*self.pp_56))
+        self.assertEqual(RationalFn(self.pp_62, 3*self.p_5, 5*self.p_6) + 
+                self.rf_6256, RationalFn(16*self.pp_62, 15*self.pp_56))
+        self.assertEqual(RationalFn(self.pp_62, 3*self.p_5, self.p_6) + 
+                RationalFn(self.pp_62, self.p_5, 5*self.p_6), RationalFn(
+                self.p_6, 8*self.p_2, 15*self.pp_56))
         # H: Denominators need common denominator, result can be added
         self.assertEqual(self.rf_6245 + self.rf_1315, RationalFn(Polynomial(
                 [1, 3, -3, 4, -5, 6]), self.p_2, self.pp_45))
-        self.assertEqual(self.rf_2654 + self.rf_3151, RationalFn(Polynomial(
-                self.p_2, [1, 3, -3, 4, -5, 6]), self.pp_54))
-        # I: Denominators need common denominator, result cannot be added
+        self.assertEqual(self.rf_2654 + self.rf_3151, RationalFn(self.p_2, 
+                Polynomial([1, 3, -3, 4, -5, 6]), self.pp_54))
+        # I: Result cannot be added
+        #   Denominators ok, Numerator is not
+        self.assertIsNone(self.rf_3545 + self.rf_6445)
+        #   Need common denominator, but then Numerators can't be added
         self.assertIsNone(self.rf_6245 + self.rf_5641)
+        #   No common denominator
+        self.assertIsNone(self.rf_1145 + self.rf_1154)
         
     
     def test_common_denominator(self):
         p_5_by_neg6 = Polynomial([0, 0, 0, 0, 0, -6])
-        # A: Can't be found
-        self.assertIsNone(self.rf_1145.common_denominator(self.rf_1154))
-        self.assertIsNone(self.rf_1124.common_denominator(self.rf_1165))
+        # A: Can't be found within constraints of function
+        self.assertEqual(self.rf_1145.common_denominator(self.rf_1154), 
+                (None, None))
+        self.assertEqual(self.rf_1124.common_denominator(self.rf_1165),
+                (None, None))
         # B: Exact same denominator.
         self.assertEqual(self.rf_1125.common_denominator(self.rf_1125), 
                 (self.rf_1125, self.rf_1125))
