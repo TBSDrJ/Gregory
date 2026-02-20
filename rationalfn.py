@@ -1,5 +1,6 @@
 from __future__ import annotations
 from fractions import Fraction
+from typing import Callable
 
 from polynomial import Polynomial
 from polypair import PolyPair
@@ -258,11 +259,8 @@ class RationalFn:
                 return True 
         return False
 
-    def __add__(self, other: RationalFn | int | Polynomial | PolyPair
+    def _add_sub(self, operation: Callable, other: RationalFn
             ) -> RationalFn | None:
-        if (isinstance(other, int) or isinstance(other, Polynomial) or 
-                isinstance(other, PolyPair)):
-            other = RationalFn(other)
         if self == 0:
             return other
         if other == 0:
@@ -271,15 +269,15 @@ class RationalFn:
         result_found = False
         # First, all the easy cases handled by PolyPair addition
         if self.c == other.c and self.d == other.d:
-            res_ab = self.ab + other.ab
+            res_ab = self.ab._add_sub(operation, other.ab)
             if res_ab is not None:
                 result.ab = res_ab
                 result.cd = self.cd                
                 result_found = True
         if not result_found:
             new_self, new_other = self.common_denominator(other)
-            res_ab = new_self.ab + new_other.ab if new_self is not None else (
-                None)
+            res_ab = new_self.ab._add_sub(operation, new_other.ab) if (
+                new_self is not None) else None
             if res_ab is not None:
                 result.ab = res_ab
                 result.cd = new_self.cd
@@ -331,3 +329,13 @@ class RationalFn:
                         factor_d.denominator*other.d)
                 return new_self, new_other
         return None, None
+
+    def __add__(self, other: RationalFn | PolyPair | Polynomial | int
+            ) -> RationalFn | None:
+        if (isinstance(other, PolyPair) or isinstance(other, Polynomial) or
+                isinstance(other, int)):
+            other = RationalFn(other)
+        if isinstance(other, RationalFn):
+            return self._add_sub(int.__add__, other)
+        else:
+            return NotImplemented
