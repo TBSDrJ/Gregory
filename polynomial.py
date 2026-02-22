@@ -34,7 +34,7 @@ class Polynomial:
         if isinstance(other, int):
             other = Polynomial(other)
         elif not isinstance(other, Polynomial):
-            return False
+            return NotImplemented
         return self.coeffs == other.coeffs
 
     def __bool__(self) -> bool:

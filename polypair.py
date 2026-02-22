@@ -5,43 +5,6 @@ from fractions import Fraction
 
 from polynomial import Polynomial
 
-polynomial__eq__old = Polynomial.__eq__
-polynomial__add__old = Polynomial.__add__
-polynomial__sub__old = Polynomial.__sub__
-polynomial__mul__old = Polynomial.__mul__
-
-def polynomial__eq__new(self, other: PolyPair | Polynomial | int) -> bool:
-    if isinstance(other, PolyPair):
-        return other == self
-    return polynomial__eq__old(self, other)
-
-def polynomial__add__new(self, other: PolyPair | Polynomial | int
-        ) -> Polynomial | PolyPair:
-    if isinstance(other, PolyPair):
-        # delegate to PolyPair.__add__()
-        return other + self
-    return polynomial__add__old(self, other)
-
-def polynomial__sub__new(self, other: PolyPair | Polynomial | int
-        ) -> Polynomial | PolyPair:
-    if isinstance(other, PolyPair):
-        # delegate to PolyPair.__add__()
-        return (-1*other) + self
-    return polynomial__sub__old(self, other)
-
-def polynomial__mul__new(self, 
-        other: PolyPair | Polynomial | int | Fraction
-        ) -> Polynomial | PolyPair:
-    if isinstance(other, PolyPair):
-        # delegate to PolyPair.__mul__()
-        return other * self
-    return polynomial__mul__old(self, other)
-
-Polynomial.__eq__ = polynomial__eq__new
-Polynomial.__add__ = polynomial__add__new
-Polynomial.__sub__ = polynomial__sub__new
-Polynomial.__mul__ = polynomial__mul__new
-
 class PolyPair:
     """Represents a pair a(x)b(L), where L = ln(1+x)
     
@@ -117,7 +80,7 @@ class PolyPair:
                 return False
             return True if self.a * self.b == other else False
         elif not isinstance(other, PolyPair):
-            return False
+            return NotImplemented
         if self.a == other.a and self.b == other.b:
             return True
         # If either factor of a pair is zero, make both zero.
