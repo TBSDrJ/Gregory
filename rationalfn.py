@@ -262,7 +262,12 @@ class RationalFn:
     def _add_sub(self, operation: Callable, other: RationalFn
             ) -> RationalFn | None:
         if self == 0:
-            return other
+            if operation == int.__add__:
+                return other
+            elif operation == int.__sub__:
+                return RationalFn(-other.ab, other.cd)
+            else:
+                return NotImplemented
         if other == 0:
             return self
         result = RationalFn()
@@ -305,10 +310,16 @@ class RationalFn:
             return self, other
         if self.c.deg == 0 or other.c.deg == 0:
             if self.d == other.d:
-                new_self = RationalFn(other.c * self.a, self.b, 
+                new_self = RationalFn(self.a * other.c, self.b, 
                         self.c * other.c, self.d)
                 new_other = RationalFn(self.c * other.a, other.b, 
                         self.c * other.c, other.d)
+                return new_self, new_other
+            elif self.d.deg == 0 or other.d.deg == 0:
+                new_self = RationalFn(self.a * other.c, self.b * other.d,
+                        self.c * other.c, self.d * other.d)
+                new_other = RationalFn(self.c * other.a, self.d * other.b,
+                        self.c * other.c, self.d * other.d)
                 return new_self, new_other
         if self.d.deg == 0 or other.d.deg == 0:
             if self.c == other.c:
@@ -339,3 +350,21 @@ class RationalFn:
             return self._add_sub(int.__add__, other)
         else:
             return NotImplemented
+
+    def __radd__(self, other: RationalFn | PolyPair | Polynomial | int
+            ) -> RationalFn | None:
+        return self + other
+
+    def __sub__(self, other: RationalFn | PolyPair | Polynomial | int
+            ) -> RationalFn | None:
+        if (isinstance(other, PolyPair) or isinstance(other, Polynomial) or
+                isinstance(other, int)):
+            other = RationalFn(other)
+        if isinstance(other, RationalFn):
+            return self._add_sub(int.__sub__, other)
+        else:
+            return NotImplemented
+    
+    def __rsub__(self, other: RationalFn | PolyPair | Polynomial | int
+            ) -> RationalFn | None:
+        return self - other
