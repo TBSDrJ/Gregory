@@ -292,8 +292,12 @@ class RationalFn:
 
     def __mul__(self, other: RationalFn | PolyPair | Polynomial | int
             ) -> RationalFn | None:
-        if isinstance(other, int):
-            return RationalFn(other*self.a, self.b, self.cd)
+        if isinstance(other, int) or isinstance(other, Polynomial):
+            return RationalFn(self.a * other, self.b, self.cd)
+        if isinstance(other, PolyPair):
+            return RationalFn(self.ab * other, self.cd)
+        if isinstance(other, RationalFn):
+            return RationalFn(self.ab * other.ab, self.cd * other.cd)
 
     def __rmul__(self, other: RationalFn | PolyPair | Polynomial | int
             ) -> RationalFn | None:

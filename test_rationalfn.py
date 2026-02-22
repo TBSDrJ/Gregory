@@ -465,3 +465,23 @@ class TestRationalFn(unittest.TestCase):
         self.assertEqual(self.rf_6111.common_denominator(self.rf_6115), 
                 (self.rf_6515, self.rf_6115))
         
+    def test_dunder_mul(self):
+        self.assertEqual(self.rf_0011 * self.rf_3645, 0)
+        self.assertEqual(self.rf_1111 * self.rf_3645, self.rf_3645)
+        self.assertEqual(self.rf_3161 * self.rf_1514, self.rf_3564)
+        self.assertEqual(self.rf_3652 * self.rf_6556, RationalFn(Polynomial(
+                [-2, -3, -1]), Polynomial([0, 0, 0, 0, 0, 2, 1]), 
+                Polynomial([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]), Polynomial(
+                [2, 3, 1])))
+        self.assertEqual(self.pp_62 * self.rf_3645, RationalFn(Polynomial(
+                [-2, -3, -1]), Polynomial([2, 3, 1]), self.pp_45))
+        self.assertEqual(self.rf_3645 * self.pp_62, RationalFn(Polynomial(
+                [-2, -3, -1]), Polynomial([2, 3, 1]), self.pp_45))
+        self.assertEqual(self.p_5 * self.rf_3645, RationalFn(Polynomial(
+                [0, 0, 0, 0, 0, -1, -1]), self.p_6, self.pp_45))
+        self.assertEqual(self.rf_3645 * self.p_5, RationalFn(Polynomial(
+                [0, 0, 0, 0, 0, -1, -1]), self.p_6, self.pp_45))
+        self.assertEqual(-3 * self.rf_3645, RationalFn(-3*self.pp_36, 
+                self.pp_45))
+        self.assertEqual(self.rf_3645 * (-3), RationalFn(-3*self.pp_36, 
+                self.pp_45))
