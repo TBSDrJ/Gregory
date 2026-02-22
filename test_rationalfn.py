@@ -378,7 +378,7 @@ class TestRationalFn(unittest.TestCase):
                 self.p_1, self.pp_26), RationalFn(Polynomial(
                 [2, 3, 1]), Polynomial([1, 3, 1]), self.pp_26))
         self.assertEqual(RationalFn(Polynomial([2, 3, 1]), self.p_1,
-                self.pp_26) + self.p_6, RationalFn(Polynomial(
+                self.pp_26) - self.p_6, RationalFn(Polynomial(
                 [2, 3, 1]), Polynomial([-1, -1]), self.pp_26))
         self.assertEqual(self.p_5 - self.rf_1121, RationalFn(Polynomial(
                 [-1, 0, 0, 0, 0, 1, 1]), 1, self.p_2))

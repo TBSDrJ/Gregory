@@ -288,4 +288,13 @@ class RationalFn:
     
     def __rsub__(self, other: RationalFn | PolyPair | Polynomial | int
             ) -> RationalFn | None:
-        return self - other
+        return (-1)*self + other
+
+    def __mul__(self, other: RationalFn | PolyPair | Polynomial | int
+            ) -> RationalFn | None:
+        if isinstance(other, int):
+            return RationalFn(other*self.a, self.b, self.cd)
+
+    def __rmul__(self, other: RationalFn | PolyPair | Polynomial | int
+            ) -> RationalFn | None:
+        return self * other
