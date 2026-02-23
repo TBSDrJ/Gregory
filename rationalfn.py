@@ -208,6 +208,8 @@ class RationalFn:
                 result.ab = res_ab
                 result.cd = new_self.cd
                 result_found = True
+        if result_found:
+            result.eliminate_zeros()
         if result.a == Polynomial() or result.b == Polynomial():
             result.a = Polynomial()
             result.b = Polynomial()
@@ -293,12 +295,57 @@ class RationalFn:
     def __mul__(self, other: RationalFn | PolyPair | Polynomial | int
             ) -> RationalFn | None:
         if isinstance(other, int) or isinstance(other, Polynomial):
-            return RationalFn(self.a * other, self.b, self.cd)
+            return RationalFn(self.a * other, self.b, self.cd
+                ).eliminate_zeros()
         if isinstance(other, PolyPair):
-            return RationalFn(self.ab * other, self.cd)
+            return RationalFn(self.ab * other, self.cd).eliminate_zeros()
         if isinstance(other, RationalFn):
-            return RationalFn(self.ab * other.ab, self.cd * other.cd)
+            return RationalFn(self.ab * other.ab, self.cd * other.cd
+                ).eliminate_zeros()
 
     def __rmul__(self, other: RationalFn | PolyPair | Polynomial | int
             ) -> RationalFn | None:
         return self * other
+
+    def __neg__(self) -> RationalFn:
+        return (-1)*self
+
+    def __pos__(self) -> RationalFn:
+        return self
+
+    def der(self) -> (RationalFn, RationalFn):
+        d_dx = (
+            RationalFn(
+                self.a, 
+                self.b.der()*self.d - self.b*self.d.der(),
+                Polynomial([1, 1])*self.c,
+                self.d*self.d
+            ),
+            RationalFn(
+                self.a.der()*self.c - self.a*self.c.der(),
+                self.b,
+                self.c * self.c,
+                self.d
+            )
+        )
+        d_dx[0].eliminate_zeros()
+        d_dx[1].eliminate_zeros()
+        return d_dx
+
+    def eliminate_zeros(self) -> None:
+        """Mutate self to eliminate zeros at both ends.
+        
+        User Polynomial.eliminate_zeros() to clean off zero terms above the
+        term of highest degree.
+        Also eliminate factors of x or L that occur in both the numerator and
+        the denominator."""
+        self.a.eliminate_zeros()
+        self.b.eliminate_zeros()
+        self.c.eliminate_zeros()
+        self.d.eliminate_zeros()
+        while (self.a.coeffs[0] == 0 and self.c.coeffs[0] == 0):
+            self.a.coeffs.pop(0)
+            self.c.coeffs.pop(0)
+        while (self.b.coeffs[0] == 0 and self.d.coeffs[0] == 0):
+            self.b.coeffs.pop(0)
+            self.d.coeffs.pop(0)

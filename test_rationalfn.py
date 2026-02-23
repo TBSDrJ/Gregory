@@ -485,3 +485,64 @@ class TestRationalFn(unittest.TestCase):
                 self.pp_45))
         self.assertEqual(self.rf_3645 * (-3), RationalFn(-3*self.pp_36, 
                 self.pp_45))
+
+    def test_der(self):
+        """The or in the tests is to check the pair in both orderings."""
+        # d/dx(x/L) = 1/L - x/((x+1)L^2)
+        self.assertTrue(
+                RationalFn(Polynomial([0, 1]), 1, 1, Polynomial([0, 1])
+                ).der() == 
+                (RationalFn(1, 1, 1, Polynomial([0, 1])), 
+                -RationalFn(Polynomial([0, 1]), 1, Polynomial([1, 1]), 
+                Polynomial([0, 0, 1])))
+            or
+                RationalFn(Polynomial([0, 1]), 1, 1, Polynomial([0, 1])
+                ).der() == 
+                (-RationalFn(Polynomial([0, 1]), 1, Polynomial([1, 1]), 
+                Polynomial([0, 0, 1])),
+                RationalFn(1, 1, 1, Polynomial([0, 1])))
+        )
+        # d/dx(x^2/L^2) = 2x/L^2 - (2x^2)/((x+1)L^3)
+        self.assertTrue(
+                RationalFn(Polynomial([0, 0, 1]), 1, 1, Polynomial(
+                [0, 0, 1])).der() ==
+                (RationalFn(Polynomial([0, 2]), 1, 1, Polynomial(
+                [0, 0, 1])), 
+                -RationalFn(Polynomial([0, 0, 1]), Polynomial([2]),
+                Polynomial([1, 1]), Polynomial([0, 0, 0, 1]))) 
+            or
+                RationalFn(Polynomial([0, 0, 1]), 1, 1, Polynomial(
+                [0, 0, 1])).der() ==
+                (-RationalFn(Polynomial([0, 0, 1]), Polynomial([2]),
+                Polynomial([1, 1]), Polynomial([0, 0, 0, 1])), 
+                RationalFn(Polynomial([0, 2]), 1, 1, Polynomial(
+                [0, 0, 1]))), 
+        )
+        # d/dx(1/L) = -1/((x+1)L^2)
+        self.assertTrue(
+                RationalFn(1, 1, 1, Polynomial([0, 1])).der() == 
+                (0, 
+                RationalFn(-1, 1, Polynomial([1, 1]), Polynomial(
+                [0, 0, 1])))
+            or
+                RationalFn(1, 1, 1, Polynomial([0, 1])).der() == 
+                ( RationalFn(-1, 1, Polynomial([1, 1]), Polynomial(
+                [0, 0, 1])),
+                0)
+        )
+        # d/dx(-x/((x+1)L^2)) = -1/((x+1)^2L^2) + 2x/((x+1)^2L^3)
+        self.assertTrue(
+                RationalFn(Polynomial([0, -1]), 1, Polynomial([1, 1]), 
+                Polynomial([0, 0, 1])).der() == 
+                (RationalFn(-1, 1, Polynomial([1, 2, 1]), Polynomial([
+                0, 0, 1])), 
+                RationalFn(Polynomial([0, 2]), Polynomial([1]), 
+                Polynomial([1, 2, 1]), Polynomial([0, 0, 0, 1])))
+            or
+                RationalFn(Polynomial([0, -1]), 1, Polynomial([1, 1]), 
+                Polynomial([0, 0, 1])).der() == 
+                (RationalFn(Polynomial([0, 2]), Polynomial([1]), 
+                Polynomial([1, 2, 1]), Polynomial([0, 0, 0, 1])),
+                RationalFn(-1, 1, Polynomial([1, 2, 1]), Polynomial([
+                0, 0, 1])))
+        )
