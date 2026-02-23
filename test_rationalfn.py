@@ -306,8 +306,10 @@ class TestRationalFn(unittest.TestCase):
     def test_dunder_sub(self):
         # Start with cases with RationalFn + RationalFn.
         # A: a, c, d match
+        # Cancel factor of L from top/bottom.
         self.assertEqual(self.rf_2445 - self.rf_2245, RationalFn(
-                self.p_2, self.p_4 - self.p_2, self.pp_45))
+                self.p_2, Polynomial([-3, 3, -4, 5, -6]), self.p_4, 
+                Polynomial([0, 0, 0, 0, 1])))
         # B: b, c, d match
         self.assertEqual(self.rf_2245 - self.rf_4245, RationalFn(
                 self.p_2 - self.p_4, self.p_2, self.pp_45))

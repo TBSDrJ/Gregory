@@ -295,13 +295,17 @@ class RationalFn:
     def __mul__(self, other: RationalFn | PolyPair | Polynomial | int
             ) -> RationalFn | None:
         if isinstance(other, int) or isinstance(other, Polynomial):
-            return RationalFn(self.a * other, self.b, self.cd
-                ).eliminate_zeros()
+            result = RationalFn(self.a * other, self.b, self.cd)
+            result.eliminate_zeros()
+            return result
         if isinstance(other, PolyPair):
-            return RationalFn(self.ab * other, self.cd).eliminate_zeros()
+            result = RationalFn(self.ab * other, self.cd)
+            result.eliminate_zeros()
+            return result
         if isinstance(other, RationalFn):
-            return RationalFn(self.ab * other.ab, self.cd * other.cd
-                ).eliminate_zeros()
+            result = RationalFn(self.ab * other.ab, self.cd * other.cd)
+            result.eliminate_zeros()
+            return result
 
     def __rmul__(self, other: RationalFn | PolyPair | Polynomial | int
             ) -> RationalFn | None:
@@ -338,14 +342,25 @@ class RationalFn:
         User Polynomial.eliminate_zeros() to clean off zero terms above the
         term of highest degree.
         Also eliminate factors of x or L that occur in both the numerator and
-        the denominator."""
+        the denominator.
+        TODO: Eliminate factors of (x+1) that occur in both num/den."""
         self.a.eliminate_zeros()
         self.b.eliminate_zeros()
         self.c.eliminate_zeros()
         self.d.eliminate_zeros()
-        while (self.a.coeffs[0] == 0 and self.c.coeffs[0] == 0):
-            self.a.coeffs.pop(0)
-            self.c.coeffs.pop(0)
-        while (self.b.coeffs[0] == 0 and self.d.coeffs[0] == 0):
-            self.b.coeffs.pop(0)
-            self.d.coeffs.pop(0)
+        # Need to create new Polynomials here to avoid mutating originals
+        while (self.a.coeffs[0] == 0 and self.c.coeffs[0] == 0 and 
+                len(self.a.coeffs) > 1 and len(self.c.coeffs) > 1):
+            self.a = Polynomial(self.a.coeffs[1:])
+            self.c = Polynomial(self.c.coeffs[1:])
+        while (self.b.coeffs[0] == 0 and self.d.coeffs[0] == 0 and
+                len(self.b.coeffs) > 1 and len(self.d.coeffs) > 1):
+            self.b = Polynomial(self.b.coeffs[1:])
+            self.d = Polynomial(self.d.coeffs[1:])
+
+    # def lhôpitals_0_over_0(self) -> Fraction | None:
+    #     """Take limit as x -> 0, initial evaluation is 0/0, find limit."""
+    #     if self.ab(0) != 0 or self.cd(0) != 0:
+    #         msg = "RationalFn.lhôpitals_0_over_0 assumes that ab(0) = 0 and"
+    #         msg += f"cd(0) = 0.  Got {self.ab(0)=} and {self.cd(0)=}"
+    #         raise ValueError(msg)
