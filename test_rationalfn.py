@@ -548,3 +548,25 @@ class TestRationalFn(unittest.TestCase):
                 RationalFn(-1, 1, Polynomial([1, 2, 1]), Polynomial([
                 0, 0, 1])))
         )
+
+    def test_lhôpitals_0_over_0(self):
+        with self.assertRaises(ValueError): RationalFn(Polynomial([1, 1]),
+                1, 1, Polynomial([0, 1])).lhôpitals_0_over_0()
+        with self.assertRaises(ValueError): RationalFn(Polynomial([0, 1]),
+                1, 1, Polynomial([1, 1])).lhôpitals_0_over_0()
+        self.assertEqual(RationalFn(Polynomial([0, 1]), 1, 1, 
+                Polynomial([0, 1])).lhôpitals_0_over_0(), 1)
+        self.assertEqual(RationalFn(1, Polynomial([0, 1]), Polynomial([0, 1]),
+                1).lhôpitals_0_over_0(), 1)
+        self.assertEqual(RationalFn(Polynomial([0, 0, 1]), 1, 1,
+                Polynomial([0, 0, 1])).lhôpitals_0_over_0(), 1)
+        self.assertEqual(RationalFn(1, Polynomial([0, 0, 1]),
+                Polynomial([0, 0, 1]), 1).lhôpitals_0_over_0(), 1)
+        self.assertEqual(RationalFn(Polynomial([0, 0, 0, 1]), 1, 1, 
+                Polynomial([0, 0, 0, 1])).lhôpitals_0_over_0(), 1)
+        self.assertEqual(RationalFn(1, Polynomial([0, 0, 0, 1]), 
+                Polynomial([0, 0, 0, 1]), 1).lhôpitals_0_over_0(), 1)
+        self.assertEqual(RationalFn(Polynomial([0, 0, 0, 0, 1]), 1, 1, 
+                Polynomial([0, 0, 0, 0, 1])).lhôpitals_0_over_0(), 1)
+        self.assertEqual(RationalFn(1, Polynomial([0, 0, 0, 0, 1]), 
+                Polynomial([0, 0, 0, 0, 1]), 1).lhôpitals_0_over_0(), 1)

@@ -350,17 +350,34 @@ class RationalFn:
         self.d.eliminate_zeros()
         # Need to create new Polynomials here to avoid mutating originals
         while (self.a.coeffs[0] == 0 and self.c.coeffs[0] == 0 and 
-                len(self.a.coeffs) > 1 and len(self.c.coeffs) > 1):
+                self.a.deg > 0 and self.c.deg > 0):
             self.a = Polynomial(self.a.coeffs[1:])
             self.c = Polynomial(self.c.coeffs[1:])
         while (self.b.coeffs[0] == 0 and self.d.coeffs[0] == 0 and
-                len(self.b.coeffs) > 1 and len(self.d.coeffs) > 1):
+                self.b.deg > 0 and self.d.deg > 1):
             self.b = Polynomial(self.b.coeffs[1:])
             self.d = Polynomial(self.d.coeffs[1:])
 
-    # def lhôpitals_0_over_0(self) -> Fraction | None:
-    #     """Take limit as x -> 0, initial evaluation is 0/0, find limit."""
-    #     if self.ab(0) != 0 or self.cd(0) != 0:
-    #         msg = "RationalFn.lhôpitals_0_over_0 assumes that ab(0) = 0 and"
-    #         msg += f"cd(0) = 0.  Got {self.ab(0)=} and {self.cd(0)=}"
-    #         raise ValueError(msg)
+    def lhôpitals_0_over_0(self) -> Fraction | None:
+        """Take limit as x -> 0, initial evaluation is 0/0, find limit."""
+        if self.ab(0) != 0 or self.cd(0) != 0:
+            msg = "RationalFn.lhôpitals_0_over_0 assumes that ab(0) = 0 and"
+            msg += f"cd(0) = 0.  Got {self.ab(0)=} and {self.cd(0)=}"
+            raise ValueError(msg)
+        prev = self
+        result = RationalFn()
+        while prev:
+            if prev.a.deg == 0:
+                result.ab = prev.a * prev.b.der()
+            elif prev.b.deg == 0:
+                result.ab = prev.b * prev.a.der()
+            if prev.c.deg == 0:
+                if prev.d.deg > 0:
+                    prev.a *= Polynomial([1, 1])
+                result.cd = prev.c * prev.d.der()
+            elif prev.d.deg == 0:
+                result.cd = prev.d * prev.c.der()
+            if result.ab(0) == 0 and result.cd(0) == 0:
+                prev = result
+            else:
+                return result
