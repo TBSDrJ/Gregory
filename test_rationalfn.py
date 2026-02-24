@@ -287,15 +287,16 @@ class TestRationalFn(unittest.TestCase):
         #   No common denominator
         self.assertIsNone(self.rf_1145 + self.rf_1154)
         # J: Check with other data types
+        # The next 3 tests originally had a factor of (x+1) that now cancels
         self.assertEqual(RationalFn(Polynomial([2, 3, 1]), self.p_1, 
-                self.pp_26) + self.pp_62, RationalFn(Polynomial(
-                [2, 3, 1]), Polynomial([3, 3, 1]), self.pp_26))
+                self.pp_26) + self.pp_62, RationalFn(self.p_6,
+                Polynomial([3, 3, 1]), self.pp_16))
         self.assertEqual(self.pp_62 + RationalFn(Polynomial([2, 3, 1]), 
-                self.p_1, self.pp_26), RationalFn(Polynomial(
-                [2, 3, 1]), Polynomial([3, 3, 1]), self.pp_26))
+                self.p_1, self.pp_26), RationalFn(self.p_6,
+                Polynomial([3, 3, 1]), self.pp_16))
         self.assertEqual(RationalFn(Polynomial([2, 3, 1]), self.p_1,
-                self.pp_26) + self.p_6, RationalFn(Polynomial(
-                [2, 3, 1]), Polynomial([3, 1]), self.pp_26))
+                self.pp_26) + self.p_6, RationalFn(self.p_6, 
+                Polynomial([3, 1]), self.pp_16))
         self.assertEqual(self.p_5 + self.rf_1121, RationalFn(Polynomial(
                 [1, 0, 0, 0, 0, 1, 1]), 1, self.p_2))
         self.assertEqual(self.rf_1116 + 3, RationalFn(1, Polynomial([7, 3]), 
@@ -373,15 +374,16 @@ class TestRationalFn(unittest.TestCase):
         #   No common denominator
         self.assertIsNone(self.rf_1145 - self.rf_1154)
         # J: Other data types
+        # The next 3 tests originally had a factor of (x+1) that now cancels
         self.assertEqual(RationalFn(Polynomial([2, 3, 1]), self.p_1, 
-                self.pp_26) - self.pp_62, RationalFn(Polynomial(
-                [2, 3, 1]), Polynomial([-1, -3, -1]), self.pp_26))
+                self.pp_26) - self.pp_62, RationalFn(self.p_6,
+                Polynomial([-1, -3, -1]), self.pp_16))
         self.assertEqual(self.pp_62 - RationalFn(Polynomial([2, 3, 1]), 
-                self.p_1, self.pp_26), RationalFn(Polynomial(
-                [2, 3, 1]), Polynomial([1, 3, 1]), self.pp_26))
+                self.p_1, self.pp_26), RationalFn(self.p_6,
+                Polynomial([1, 3, 1]), self.pp_16))
         self.assertEqual(RationalFn(Polynomial([2, 3, 1]), self.p_1,
-                self.pp_26) - self.p_6, RationalFn(Polynomial(
-                [2, 3, 1]), Polynomial([-1, -1]), self.pp_26))
+                self.pp_26) - self.p_6, RationalFn(self.p_6,
+                Polynomial([-1, -1]), self.pp_16))
         self.assertEqual(self.p_5 - self.rf_1121, RationalFn(Polynomial(
                 [-1, 0, 0, 0, 0, 1, 1]), 1, self.p_2))
         self.assertEqual(self.rf_1116 - 3, RationalFn(1, Polynomial(
@@ -538,15 +540,46 @@ class TestRationalFn(unittest.TestCase):
                 Polynomial([0, 0, 1])).der() == 
                 (RationalFn(-1, 1, Polynomial([1, 2, 1]), Polynomial([
                 0, 0, 1])), 
-                RationalFn(Polynomial([0, 2]), Polynomial([1]), 
+                RationalFn(Polynomial([0, 2]), 1, 
                 Polynomial([1, 2, 1]), Polynomial([0, 0, 0, 1])))
             or
                 RationalFn(Polynomial([0, -1]), 1, Polynomial([1, 1]), 
                 Polynomial([0, 0, 1])).der() == 
-                (RationalFn(Polynomial([0, 2]), Polynomial([1]), 
+                (RationalFn(Polynomial([0, 2]), 1, 
                 Polynomial([1, 2, 1]), Polynomial([0, 0, 0, 1])),
                 RationalFn(-1, 1, Polynomial([1, 2, 1]), Polynomial([
                 0, 0, 1])))
+        )
+        # d/dx(L/x) = 1/(x^2 + x) + -L/x^2
+        # Just checking one that has the L & x reversed
+        self.assertTrue(
+                RationalFn(1, Polynomial([0, 1]), Polynomial([0, 1]), 1
+                ).der() == 
+                (RationalFn(1, 1, Polynomial([0, 1, 1]), 1), 
+                RationalFn(-1, Polynomial([0, 1]), Polynomial([0, 0, 1]), 1))
+            or
+                RationalFn(1, Polynomial([0, 1]), Polynomial([0, 1]), 1
+                ).der() == 
+                (RationalFn(-1, Polynomial([0, 1]), Polynomial([0, 0, 1]), 1), 
+                RationalFn(1, 1, Polynomial([0, 1, 1]), 1))
+        )
+        # d/dx(((x+1)L^2)/(x^2(L+1))) = ((-x-2)L^2)/(x^3(L+1)) + 
+        #   (L^2+2L)/(x^2(L+1)^2)
+        # This requires cancellation of a factor of (x+1) to recognize
+        self.assertTrue(
+                RationalFn(self.p_2, Polynomial([0, 0, 1]), 
+                Polynomial([0, 0, 1]), self.p_2).der() ==
+                (RationalFn(Polynomial([-2, -1]), Polynomial([0, 0, 1]), 
+                Polynomial([0, 0, 0, 1]), self.p_2),
+                RationalFn(1, Polynomial([0, 2, 1]), Polynomial([0, 0, 1]),
+                Polynomial([1, 2, 1])))
+            or
+                RationalFn(self.p_2, Polynomial([0, 0, 1]), 
+                Polynomial([0, 0, 1]), self.p_2).der() ==
+                (RationalFn(1, Polynomial([0, 2, 1]), Polynomial([0, 0, 1]),
+                Polynomial([1, 2, 1])),
+                RationalFn(Polynomial([-2, -1]), Polynomial([0, 0, 1]), 
+                Polynomial([0, 0, 0, 1]), self.p_2))
         )
 
     def test_lhôpitals_0_over_0(self):

@@ -339,15 +339,20 @@ class RationalFn:
     def eliminate_zeros(self) -> None:
         """Mutate self to eliminate zeros at both ends.
         
-        User Polynomial.eliminate_zeros() to clean off zero terms above the
+        1. Use Polynomial.eliminate_zeros() to clean off zero terms above the
         term of highest degree.
-        Also eliminate factors of x or L that occur in both the numerator and
+        2. Eliminate factors of x or L that occur in both the numerator and
         the denominator.
-        TODO: Eliminate factors of (x+1) that occur in both num/den."""
+        3. Eliminate factors of (x+1) that occur in both the numerator and
+        denominator.  We only do this linear factor because it is produced 
+        in L', so it much more likely to come up.
+        """
+        # First, eliminate extra 0 terms in each polynomial above its degree
         self.a.eliminate_zeros()
         self.b.eliminate_zeros()
         self.c.eliminate_zeros()
         self.d.eliminate_zeros()
+        # Then, eliminate factors of x or L in both num/den
         # Need to create new Polynomials here to avoid mutating originals
         while (self.a.coeffs[0] == 0 and self.c.coeffs[0] == 0 and 
                 self.a.deg > 0 and self.c.deg > 0):
@@ -357,6 +362,30 @@ class RationalFn:
                 self.b.deg > 0 and self.d.deg > 1):
             self.b = Polynomial(self.b.coeffs[1:])
             self.d = Polynomial(self.d.coeffs[1:])
+        # Cancel factors of (x+1) in a and c.
+        while (self.a(-1) == 0 and self.c(-1) == 0 and self.a.deg > 0 and 
+                self.c.deg > 0):
+            # Notice that we drop a degree
+            coeffs = [0] * self.a.deg
+            for i in range(self.a.deg):
+                for j in range(i+1):
+                    if j % 2 == 0:
+                        coeffs[-i-1] += self.a.coeffs[-j-1]
+                    else:
+                        coeffs[-i-1] -= self.a.coeffs[-j-1]
+                if i % 2 == 1:
+                    coeffs[-i-1] *= -1
+            self.a = Polynomial(coeffs)
+            coeffs = [0] * self.c.deg
+            for i in range(self.c.deg):
+                for j in range(i+1):
+                    if j % 2 == 0:
+                        coeffs[-i-1] += self.c.coeffs[-j-1]
+                    else:
+                        coeffs[-i-1] -= self.c.coeffs[-j-1]
+                if i % 2 == 1:
+                    coeffs[-i-1] *= -1
+            self.c = Polynomial(coeffs)
 
     def lhôpitals_0_over_0(self) -> Fraction | None:
         """Take limit as x -> 0, initial evaluation is 0/0, find limit."""
