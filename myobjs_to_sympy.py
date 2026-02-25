@@ -2,6 +2,7 @@ import pickle
 import re
 import pathlib
 import time
+import argparse
 
 import sympy
 import polynomial
@@ -59,6 +60,9 @@ def find_one_limit(N: int, n: int) -> None:
         print(f"{n} {l}", file=f)
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-N", default=0, type=int, help="Exponent")
+    user_N = ap.parse_args().N
     base_path = pathlib.Path("saves")
     polynomial_cases = []
     for path in base_path.iterdir():
@@ -80,10 +84,13 @@ def main():
                         n = int(line.split()[0])
                         polynomial_cases.remove((N, n))
     for N, n in polynomial_cases:
-        if N == 8:
-            find_one_limit(N, n)
-
-    
+        # If given an N from the user, only do those.
+        if user_N > 0: 
+            if N == user_N:
+                find_one_limit(N, n)
+        # otherwise, do any that are found.
+        else:
+            find_one_limit(N, n)    
 
 if __name__ == "__main__":
     main()
