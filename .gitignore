@@ -1,9 +1,11 @@
 **/.DS_Store
 sympy/**
 saves/**
+tmp/**
 **/*.out
 **/*.dylib
 **/*.o
 **/*.so
 tmp.*
 **/*.pyc
+*.zip
