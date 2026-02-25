@@ -1,4 +1,5 @@
 **/.DS_Store
+sympy/**
 saves/**
 **/*.out
 **/*.dylib
