@@ -394,8 +394,8 @@ class RationalFn:
             msg += f"cd(0) = 0.  Got {self.ab(0)=} and {self.cd(0)=}"
             raise ValueError(msg)
         prev = self
-        result = RationalFn()
         while prev:
+            result = RationalFn()
             if prev.a.deg == 0:
                 result.ab = prev.a * prev.b.der()
             elif prev.b.deg == 0:
@@ -406,6 +406,9 @@ class RationalFn:
                 result.cd = prev.c * prev.d.der()
             elif prev.d.deg == 0:
                 result.cd = prev.d * prev.c.der()
+            # If the situation is more complicated, bail out.
+            if result == RationalFn():
+                return None
             if result.ab(0) == 0 and result.cd(0) == 0:
                 prev = result
             else:
