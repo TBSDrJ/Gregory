@@ -18,13 +18,18 @@ class Polynomial:
         ret_str = ""
         len_self_coeffs = len(self.coeffs)
         for n in range(1, len_self_coeffs-1):
-            ret_str += f"{self.coeffs[-n]}x^{len_self_coeffs - n} + "
+            if self.coeffs[-n] != 0:
+                ret_str += f"{self.coeffs[-n]}x^{len_self_coeffs - n} + "
         if len_self_coeffs > 1:
-            ret_str += f"{self.coeffs[1]}x + "
+            if self.coeffs[1] != 0:
+                ret_str += f"{self.coeffs[1]}x + "
         if len_self_coeffs > 0:
-            ret_str += f"{self.coeffs[0]}"
-        else:
-            ret_str += "0"
+            if self.coeffs[0] != 0:
+                ret_str += f"{self.coeffs[0]}"      
+        if len(ret_str) > 2 and ret_str[-2] == "+":
+            ret_str = ret_str[:-3]
+        if len(ret_str) == 0:
+            ret_str = "0"
         return ret_str
         
     def __repr__(self) -> str:
