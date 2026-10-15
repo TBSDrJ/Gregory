@@ -14,6 +14,7 @@ class Polynomial {
     friend std::ostream& operator<< (std::ostream& os, const Polynomial& p);
     friend Polynomial& operator+ (const Polynomial& p, const Polynomial& q);
     friend Polynomial& operator- (const Polynomial& p, const Polynomial& q);
+    friend Polynomial& operator* (const Polynomial& p, const Polynomial& q);
 };
 
 

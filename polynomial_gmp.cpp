@@ -80,6 +80,21 @@ Polynomial& operator- (const Polynomial& p, const Polynomial& q) {
     return *r;
 }
 
+Polynomial& operator* (const Polynomial& p, const Polynomial& q) {
+    int p_deg = p.deg(), q_deg = q.deg(), r_deg = p_deg + q_deg;
+    vector<mpz_class> r_coeffs(r_deg + 1);
+    Polynomial * r = new Polynomial(r_coeffs);
+    for (int i=0; i<r_deg + 1; i++) {
+        r -> coeffs[i] == 0;
+    }
+    for (int i=0; i<p_deg + 1; i++) {
+        for (int j=0; j<q_deg + 1; j++) {
+            r -> coeffs[i+j] += p.coeffs[i] * q.coeffs[j];
+        }
+    }
+    return *r;
+}
+
 int main() {
     cout << "Testing constructor and << overload" << endl;
     Polynomial p;
@@ -117,4 +132,15 @@ int main() {
     cout << "r-p = " << r-p << endl;
     cout << "r-q = " << r-q << endl;
     cout << "r-r = " << r-r << endl;
+
+    cout << endl << "Testing *" << endl;
+    cout << "p*p = " << p*p << endl;
+    cout << "p*q = " << p*q << endl;
+    cout << "p*r = " << p*r << endl;
+    cout << "q*p = " << q*p << endl;
+    cout << "q*q = " << q*q << endl;
+    cout << "q*r = " << q*r << endl;
+    cout << "r*p = " << r*p << endl;
+    cout << "r*q = " << r*q << endl;
+    cout << "r*r = " << r*r << endl;
 }
