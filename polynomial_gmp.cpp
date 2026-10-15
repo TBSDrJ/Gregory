@@ -42,6 +42,19 @@ mpz_class Polynomial::eval(mpz_class x) {
     return y;
 }
 
+Polynomial& Polynomial::der() {
+    int deg = this -> deg();
+    vector<mpz_class> q_coeffs(deg > 0 ? deg : 1);
+    for (int i=0; i<deg; i++) {
+        q_coeffs[i] = this -> coeffs[i+1] * (i+1);
+    }
+    if (not deg) {
+        q_coeffs[0] = 0;
+    }
+    Polynomial * q = new Polynomial(q_coeffs);
+    return *q;
+}
+
 ostream& operator<< (ostream& os, const Polynomial& p) {
     bool first = true;
     for (int i=p.deg(); i>=0; i--) {
@@ -189,4 +202,14 @@ int main() {
     cout << "r(0) = " << r.eval(0) << endl; // 1
     cout << "r(1) = " << r.eval(1) << endl; // 2
     cout << "r(-1) = " << r.eval(-1) << endl; // 2
+
+    cout << endl << "Testing .der()" << endl;
+    cout << "p'(x) = " << p.der() << endl; // 0
+    cout << "q'(x) = " << q.der() << endl; // 4x^3 + 6x^2 + 6x + 4
+    cout << "r'(x) = " << r.der() << endl; // 2x
+    cout << "(q*q)'(x) = " << (q*q).der() << endl; 
+        // 8x^7 + 28x^6 + 60x^5 + 100x^4 + 140x^3 + 132x^2 + 92x + 40
+    cout << "(r*r)'(x) = " << (r*r).der() << endl; // 4x^3 + 4x
+    cout << "(q*r)'(x) = " << (q*r).der() << endl; 
+        // 6x^5 + 10x^4 + 16x^3 + 18x^2 + 16x + 4 
 }
