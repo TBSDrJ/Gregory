@@ -22,6 +22,18 @@ int Polynomial::deg() const {
     return deg;
 }
 
+void Polynomial::eliminate_zeros() {
+    int sz = this -> coeffs.size();
+    while (sz > 1) {
+        if (this -> coeffs[sz-1] == 0) {
+            this -> coeffs.pop_back();
+            sz--;
+        } else {
+            break;
+        }
+    }
+}
+
 ostream& operator<< (ostream& os, const Polynomial& p) {
     bool first = true;
     for (int i=p.deg(); i>=0; i--) {
@@ -61,6 +73,7 @@ Polynomial& operator+ (const Polynomial& p, const Polynomial& q) {
             r -> coeffs[i] = p.coeffs[i] + q.coeffs[i];
         }
     }
+    r -> eliminate_zeros();
     return *r;
 }
 
@@ -77,6 +90,7 @@ Polynomial& operator- (const Polynomial& p, const Polynomial& q) {
             r -> coeffs[i] = p.coeffs[i] - q.coeffs[i];
         }
     }
+    r -> eliminate_zeros();
     return *r;
 }
 
@@ -92,6 +106,7 @@ Polynomial& operator* (const Polynomial& p, const Polynomial& q) {
             r -> coeffs[i+j] += p.coeffs[i] * q.coeffs[j];
         }
     }
+    r -> eliminate_zeros();
     return *r;
 }
 
@@ -143,4 +158,16 @@ int main() {
     cout << "r*p = " << r*p << endl;
     cout << "r*q = " << r*q << endl;
     cout << "r*r = " << r*r << endl;
+
+    cout << endl << "Testing eliminate_zeros" << endl;
+    Polynomial s = q-q;
+    cout << "(q-q).coeffs.size() before: " << s.coeffs.size() << endl;
+    s.eliminate_zeros();
+    cout << "(q-q).coeffs.size() after: " << s.coeffs.size() << endl;
+    s = r-r;
+    cout << "(r-r).coeffs.size() before: " << s.coeffs.size() << endl;
+    s.eliminate_zeros();
+    cout << "(r-r).coeffs.size() after: " << s.coeffs.size() << endl;
+    cout << "Now that eliminate_zeros is built into - operation, this does "
+        << "not show anything." << endl;
 }
