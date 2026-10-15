@@ -14,7 +14,7 @@ Polynomial::Polynomial(vector<mpz_class> new_coeffs) {
     this -> coeffs = new_coeffs;
 }
 
-int Polynomial::deg() {
+int Polynomial::deg() const {
     int deg = this -> coeffs.size() - 1;
     while (deg > 0 and this -> coeffs[deg] == 0) {
         deg--;
@@ -24,7 +24,7 @@ int Polynomial::deg() {
 
 ostream& operator<< (ostream& os, const Polynomial& p) {
     bool first = true;
-    for (int i=p.coeffs.size()-1; i>=0; i--) {
+    for (int i=p.deg(); i>=0; i--) {
         if (p.coeffs[i] != 0) {
             if (not first) {
                 os << " + ";
@@ -42,13 +42,13 @@ ostream& operator<< (ostream& os, const Polynomial& p) {
             }
         }
     }
-    if (p.coeffs.size() == 1 and p.coeffs[0] == 0) {
+    if (p.deg() == 0 and p.coeffs[0] == 0) {
         os << "0";
     }
     return os;
 }
 
-Polynomial& operator+ (Polynomial& p, Polynomial& q) {
+Polynomial& operator+ (const Polynomial& p, const Polynomial& q) {
     int p_deg = p.deg(), q_deg = q.deg(), r_deg = p_deg > q_deg ? p_deg : q_deg;
     vector<mpz_class> r_coeffs(r_deg + 1);
     Polynomial * r = new Polynomial(r_coeffs);
@@ -59,6 +59,22 @@ Polynomial& operator+ (Polynomial& p, Polynomial& q) {
             r -> coeffs[i] = p.coeffs[i];
         } else {
             r -> coeffs[i] = p.coeffs[i] + q.coeffs[i];
+        }
+    }
+    return *r;
+}
+
+Polynomial& operator- (const Polynomial& p, const Polynomial& q) {
+    int p_deg = p.deg(), q_deg = q.deg(), r_deg = p_deg > q_deg ? p_deg : q_deg;
+    vector<mpz_class> r_coeffs(r_deg + 1);
+    Polynomial * r = new Polynomial(r_coeffs);
+    for (int i=0; i<r_deg + 1; i++) {
+        if (i > p_deg) {
+            r -> coeffs[i] = -q.coeffs[i];
+        } else if (i > q_deg) {
+            r -> coeffs[i] = p.coeffs[i];
+        } else {
+            r -> coeffs[i] = p.coeffs[i] - q.coeffs[i];
         }
     }
     return *r;
@@ -90,4 +106,15 @@ int main() {
     cout << "r+p = " << r+p << endl;
     cout << "r+q = " << r+q << endl;
     cout << "r+r = " << r+r << endl;
+
+    cout << endl << "Testing -" << endl;
+    cout << "p-p = " << p-p << endl;
+    cout << "p-q = " << p-q << endl;
+    cout << "p-r = " << p-r << endl;
+    cout << "q-p = " << q-p << endl;
+    cout << "q-q = " << q-q << endl;
+    cout << "q-r = " << q-r << endl;
+    cout << "r-p = " << r-p << endl;
+    cout << "r-q = " << r-q << endl;
+    cout << "r-r = " << r-r << endl;
 }
