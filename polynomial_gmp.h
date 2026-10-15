@@ -12,6 +12,7 @@ class Polynomial {
         Polynomial(std::vector<mpz_class> new_coeffs);
         int deg() const;
         void eliminate_zeros();
+        mpz_class eval(mpz_class x);
     friend std::ostream& operator<< (std::ostream& os, const Polynomial& p);
     friend Polynomial& operator+ (const Polynomial& p, const Polynomial& q);
     friend Polynomial& operator- (const Polynomial& p, const Polynomial& q);

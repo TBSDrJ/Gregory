@@ -34,6 +34,14 @@ void Polynomial::eliminate_zeros() {
     }
 }
 
+mpz_class Polynomial::eval(mpz_class x) {
+    mpz_class y(0);
+    for (int i=this -> deg(); i>=0; i--) {
+        y = y*x + this -> coeffs[i];
+    }
+    return y;
+}
+
 ostream& operator<< (ostream& os, const Polynomial& p) {
     bool first = true;
     for (int i=p.deg(); i>=0; i--) {
@@ -159,7 +167,7 @@ int main() {
     cout << "r*q = " << r*q << endl;
     cout << "r*r = " << r*r << endl;
 
-    cout << endl << "Testing eliminate_zeros" << endl;
+    cout << endl << "Testing .eliminate_zeros()" << endl;
     Polynomial s = q-q;
     cout << "(q-q).coeffs.size() before: " << s.coeffs.size() << endl;
     s.eliminate_zeros();
@@ -170,4 +178,15 @@ int main() {
     cout << "(r-r).coeffs.size() after: " << s.coeffs.size() << endl;
     cout << "Now that eliminate_zeros is built into - operation, this does "
         << "not show anything." << endl;
+
+    cout << endl << "Testing .eval()" << endl;
+    cout << "p(0) = " << p.eval(0) << endl; // 0
+    cout << "p(1) = " << p.eval(1) << endl; // 0
+    cout << "p(-1) = " << p.eval(-1) << endl; // 0
+    cout << "q(0) = " << q.eval(0) << endl; // 5
+    cout << "q(1) = " << q.eval(1) << endl; // 15
+    cout << "q(-1) = " << q.eval(-1) << endl; // 3
+    cout << "r(0) = " << r.eval(0) << endl; // 1
+    cout << "r(1) = " << r.eval(1) << endl; // 2
+    cout << "r(-1) = " << r.eval(-1) << endl; // 2
 }
