@@ -48,6 +48,22 @@ ostream& operator<< (ostream& os, const Polynomial& p) {
     return os;
 }
 
+Polynomial& operator+ (Polynomial& p, Polynomial& q) {
+    int p_deg = p.deg(), q_deg = q.deg(), r_deg = p_deg > q_deg ? p_deg : q_deg;
+    vector<mpz_class> r_coeffs(r_deg + 1);
+    Polynomial * r = new Polynomial(r_coeffs);
+    for (int i=0; i<r_deg + 1; i++) {
+        if (i > p_deg) {
+            r -> coeffs[i] = q.coeffs[i];
+        } else if (i > q_deg) {
+            r -> coeffs[i] = p.coeffs[i];
+        } else {
+            r -> coeffs[i] = p.coeffs[i] + q.coeffs[i];
+        }
+    }
+    return *r;
+}
+
 int main() {
     cout << "Testing constructor and << overload" << endl;
     Polynomial p;
@@ -63,4 +79,15 @@ int main() {
     cout << "p.deg()= " << p.deg() << endl;
     cout << "q.deg()= " << q.deg() << endl;
     cout << "r.deg()= " << r.deg() << endl;
+
+    cout << endl << "Testing +" << endl;
+    cout << "p+p = " << p+p << endl;
+    cout << "p+q = " << p+q << endl;
+    cout << "p+r = " << p+r << endl;
+    cout << "q+p = " << q+p << endl;
+    cout << "q+q = " << q+q << endl;
+    cout << "q+r = " << q+r << endl;
+    cout << "r+p = " << r+p << endl;
+    cout << "r+q = " << r+q << endl;
+    cout << "r+r = " << r+r << endl;
 }

@@ -12,6 +12,7 @@ class Polynomial {
         Polynomial(std::vector<mpz_class> new_coeffs);
         int deg();
     friend std::ostream& operator<< (std::ostream& os, const Polynomial& p);
+    friend Polynomial& operator+ (const Polynomial& p, const Polynomial& q);
 };
 
 
