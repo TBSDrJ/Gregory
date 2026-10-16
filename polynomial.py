@@ -205,6 +205,7 @@ class Polynomial:
         factor_other = math.gcd(*other.coeffs) if other.coeffs else 0
         if factor_self == 0 or factor_other == 0:
             return None
+        # TODO: Since both are same degree, use topmost term
         # Need to check if they are different by a negative factor.
         # So find lowest degree where they are both nonzero, and compare.
         # If they are proportional, it doesn't matter which degree you
