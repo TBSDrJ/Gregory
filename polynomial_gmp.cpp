@@ -55,6 +55,44 @@ Polynomial& Polynomial::der() {
     return *q;
 }
 
+mpq_class& Polynomial::proportional(const Polynomial& q) {
+    mpq_class* prop = new mpq_class(0);
+    mpz_class m,n; // = gcd of the collection of coeffs of this, q resp.
+    int p_deg = this -> deg(), q_deg = q.deg();
+    if (p_deg != q_deg) {
+        return *prop;
+    }
+    mpz_class rolling_gcd = this -> coeffs[p_deg];
+    p_deg--;
+    while (p_deg > 0) {
+        mpz_gcd(m.get_mpz_t(), this -> coeffs[p_deg].get_mpz_t(), 
+            rolling_gcd.get_mpz_t());
+        p_deg--;
+    }
+    rolling_gcd = q.coeffs[q_deg];
+    q_deg--;
+    while (q_deg >= 0) {
+        mpz_gcd(n.get_mpz_t(), q.coeffs[q_deg].get_mpz_t(), 
+            rolling_gcd.get_mpz_t());
+        q_deg--;
+    }
+    if (m == 0 or n == 0) {
+        return *prop; // Still = 0 from initialization
+    }
+    if ((this -> coeffs[this -> deg()] < 0 and q.coeffs[q.deg()] > 0) or 
+            (this -> coeffs[this -> deg()] > 0 and q.coeffs[q.deg()] < 0)) {
+        n *= -1;
+    }
+    cout << endl << m << " " << n << endl;
+    for (int i=0; i<this -> deg(); i++) {
+        if ((this -> coeffs[i] / m) != (q.coeffs[i] / n)) {
+            return *prop;
+        }
+    }
+    *prop = mpq_class(n, m);
+    return *prop;
+}
+
 ostream& operator<< (ostream& os, const Polynomial& p) {
     bool first = true;
     for (int i=p.deg(); i>=0; i--) {
@@ -181,14 +219,13 @@ int main() {
     cout << "r*r = " << r*r << endl;
 
     cout << endl << "Testing .eliminate_zeros()" << endl;
-    Polynomial s = q-q;
+    Polynomial s = q-q, t = r-r;
     cout << "(q-q).coeffs.size() before: " << s.coeffs.size() << endl;
     s.eliminate_zeros();
     cout << "(q-q).coeffs.size() after: " << s.coeffs.size() << endl;
-    s = r-r;
-    cout << "(r-r).coeffs.size() before: " << s.coeffs.size() << endl;
-    s.eliminate_zeros();
-    cout << "(r-r).coeffs.size() after: " << s.coeffs.size() << endl;
+    cout << "(r-r).coeffs.size() before: " << t.coeffs.size() << endl;
+    t.eliminate_zeros();
+    cout << "(r-r).coeffs.size() after: " << t.coeffs.size() << endl;
     cout << "Now that eliminate_zeros is built into - operation, this does "
         << "not show anything." << endl;
 
@@ -211,5 +248,15 @@ int main() {
         // 8x^7 + 28x^6 + 60x^5 + 100x^4 + 140x^3 + 132x^2 + 92x + 40
     cout << "(r*r)'(x) = " << (r*r).der() << endl; // 4x^3 + 4x
     cout << "(q*r)'(x) = " << (q*r).der() << endl; 
-        // 6x^5 + 10x^4 + 16x^3 + 18x^2 + 16x + 4 
+        // 6x^5 + 10x^4 + 16x^3 + 18x^2 + 16x + 4
+
+    cout << "Testing .proportional()" << endl;
+    cout << "p.proportional(q) = " << p.proportional(q) << endl;
+    vector<mpz_class> s_coeffs(1), t_coeffs(1);
+    s_coeffs[0] = -3;
+    t_coeffs[0] = 5;
+    s.coeffs = s_coeffs;
+    t.coeffs = t_coeffs;
+    cout << "(3q).proportional(5q) = " << (s*r).proportional(t*r) << endl;
+    cout << s*r << endl << t*r << endl;
 }
