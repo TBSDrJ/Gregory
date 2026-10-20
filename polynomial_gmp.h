@@ -17,6 +17,7 @@ class Polynomial {
         Polynomial& der();
         mpq_class& proportional(const Polynomial& q);
     friend std::ostream& operator<< (std::ostream& os, const Polynomial& p);
+    friend bool operator== (const Polynomial& p, const Polynomial& q);
     friend Polynomial& operator+ (const Polynomial& p, const Polynomial& q);
     friend Polynomial& operator- (const Polynomial& p, const Polynomial& q);
     friend Polynomial& operator* (const Polynomial& p, const Polynomial& q);

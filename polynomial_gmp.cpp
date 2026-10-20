@@ -122,6 +122,10 @@ ostream& operator<< (ostream& os, const Polynomial& p) {
     return os;
 }
 
+bool operator== (const Polynomial& p, const Polynomial& q) {
+    return p.coeffs == q.coeffs;
+}
+
 Polynomial& operator+ (const Polynomial& p, const Polynomial& q) {
     int p_deg = p.deg(), q_deg = q.deg(), r_deg = p_deg > q_deg ? p_deg : q_deg;
     vector<mpz_class> r_coeffs(r_deg + 1);
@@ -253,7 +257,7 @@ int main() {
     cout << "(q*r)'(x) = " << (q*r).der() << endl; 
         // 6x^5 + 10x^4 + 16x^3 + 18x^2 + 16x + 4
 
-    cout << "Testing .proportional()" << endl;
+    cout << endl << "Testing .proportional()" << endl;
     cout << "p.proportional(q) = " << p.proportional(q) << endl;
     vector<mpz_class> s_coeffs(1), t_coeffs(1);
     s_coeffs[0] = -3;
@@ -262,4 +266,10 @@ int main() {
     t.coeffs = t_coeffs;
     cout << "(3q).proportional(5q) = " << (s*r).proportional(t*r) << endl;
     cout << s*r << endl << t*r << endl;
+
+    cout << endl << "Testing ==" << endl;
+    cout << "p == p: " << (p == p) << endl;
+    cout << "p == q: " << (p == q) << endl;
+    cout << "q == q: " << (q == q) << endl;
+    cout << "p == Polynomial(): " << (p == Polynomial()) << endl;
 }
