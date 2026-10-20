@@ -103,9 +103,11 @@ ostream& operator<< (ostream& os, const Polynomial& p) {
             } else {
                 first = false;
             }
-            if (p.coeffs[i] != 1 or i == 0) {
+            if (p.coeffs[i] == -1 and i > 0) {
+                os << "-";
+            } else if (p.coeffs[i] != 1 or i == 0) {
                 os << p.coeffs[i];
-            }
+            }  
             if (i > 0) {
                 os << "x";
                 if (i > 1) {
