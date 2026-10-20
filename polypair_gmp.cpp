@@ -25,7 +25,7 @@ PolyPair::PolyPair(Polynomial& new_a, Polynomial& new_b) {
     }
 }
 
-ostream& operator<< (ostream& os, PolyPair& ab) {
+ostream& operator<< (ostream& os, const PolyPair& ab) {
     string s;
     stringstream t;
     t << ab.b;
