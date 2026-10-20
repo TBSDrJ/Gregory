@@ -13,7 +13,7 @@ class PolyPair {
     public:
         Polynomial a, b;
         PolyPair();
-        PolyPair(Polynomial& a, Polynomial& b);
+        PolyPair(Polynomial& new_a, Polynomial& new_b);
     friend std::ostream& operator<< (std::ostream& os, PolyPair& ab);
 
 };
