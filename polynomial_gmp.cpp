@@ -122,6 +122,17 @@ ostream& operator<< (ostream& os, const Polynomial& p) {
     return os;
 }
 
+bool operator== (const Polynomial& p, const mpz_class& n) {
+    if ((p.deg() == 0) and p.coeffs[0] == n) {
+        return true;
+    }
+    return false;
+}
+
+bool operator== (const mpz_class& n, const Polynomial& p) {
+    return p == n;
+}
+
 bool operator== (const Polynomial& p, const Polynomial& q) {
     return p.coeffs == q.coeffs;
 }
@@ -272,4 +283,7 @@ int main() {
     cout << "p == q: " << (p == q) << endl;
     cout << "q == q: " << (q == q) << endl;
     cout << "p == Polynomial(): " << (p == Polynomial()) << endl;
+    mpz_class n = mpz_class(5);
+    cout << "t == 5: " << (t == n) << endl;
+    cout << "5 == t: " << (n == t) << endl;
 }
