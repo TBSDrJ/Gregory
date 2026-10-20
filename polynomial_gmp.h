@@ -3,6 +3,7 @@
 
 #include<iostream>
 #include<vector>
+#include<gmp.h>
 #include<gmpxx.h>
 
 class Polynomial {

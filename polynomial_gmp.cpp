@@ -1,5 +1,6 @@
 #include<iostream>
 #include<vector>
+#include<gmp.h>
 #include<gmpxx.h>
 #include"polynomial_gmp.h"
 
