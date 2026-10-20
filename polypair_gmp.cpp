@@ -17,6 +17,12 @@ PolyPair::PolyPair() {
 PolyPair::PolyPair(Polynomial& new_a, Polynomial& new_b) {
     this -> a = new_a;
     this -> b = new_b;
+    Polynomial zero = Polynomial();
+    if (this -> a == zero) {
+        this -> b = *(new Polynomial());
+    } else if (this -> b == zero) {
+        this -> a = *(new Polynomial());
+    }
 }
 
 ostream& operator<< (ostream& os, PolyPair& ab) {
@@ -44,6 +50,10 @@ int main() {
 
     PolyPair pp_00 = PolyPair();
     cout << "pp_00 = " << pp_00 << endl;
+    PolyPair pp_04 = PolyPair(p_0, p_4);
+    cout << "pp_04 = " << pp_04 << endl;
+    PolyPair pp_40 = PolyPair(p_4, p_0);
+    cout << "pp_40 = " << pp_40 << endl;
     PolyPair pp_12 = PolyPair(p_1, p_2);
     cout << "pp_12 = " << pp_12 << endl;
     PolyPair pp_21 = PolyPair(p_2, p_1);
