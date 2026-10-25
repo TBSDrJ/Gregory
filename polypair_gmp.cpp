@@ -22,6 +22,9 @@ PolyPair::PolyPair(Polynomial& new_a, Polynomial& new_b) {
         this -> b = *(new Polynomial());
     } else if (this -> b == zero) {
         this -> a = *(new Polynomial());
+    } else {
+        this -> a.eliminate_zeros();
+        this -> b.eliminate_zeros();
     }
 }
 
