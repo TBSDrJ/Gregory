@@ -138,6 +138,20 @@ bool operator== (const Polynomial& p, const Polynomial& q) {
     return p.coeffs == q.coeffs;
 }
 
+bool operator!= (const Polynomial& p, const mpz_class& n) {
+    return not(p == n);
+}
+
+
+bool operator!= (const mpz_class& n, const Polynomial& p) {
+    return not(p == n);
+}
+
+
+bool operator!= (const Polynomial& p, const Polynomial& q) {
+    return not(p == q);
+}
+
 Polynomial& operator+ (const Polynomial& p, const mpz_class& n) {
     vector<mpz_class> r_coeffs(p.deg() + 1);
     Polynomial * r = new Polynomial(r_coeffs);
@@ -331,6 +345,13 @@ int main() {
     cout << "t == 5: " << (t == 5) << endl;
     cout << "5 == t: " << (5 == t) << endl;
     // Yes it does.  Sweet, less boilerplate.
+
+    cout << endl << "Testing !=" << endl;
+    cout << "p != p: " << (p != p) << endl;
+    cout << "p != q: " << (p != q) << endl;
+    cout << "q != p: " << (q != p) << endl;
+    cout << "p != 0: " << (p != 0) << endl;
+    cout << "q != 0: " << (q != 0) << endl;   
 
     s.coeffs[0] = 1;
     s.coeffs.push_back(1);

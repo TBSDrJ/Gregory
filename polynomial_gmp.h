@@ -22,6 +22,9 @@ class Polynomial {
     friend bool operator== (const Polynomial& p, const mpz_class& n);
     friend bool operator== (const mpz_class& n, const Polynomial& p);
     friend bool operator== (const Polynomial& p, const Polynomial& q);
+    friend bool operator!= (const Polynomial& p, const mpz_class& n);
+    friend bool operator!= (const mpz_class& n, const Polynomial& p);
+    friend bool operator!= (const Polynomial& p, const Polynomial& q);
     friend Polynomial& operator+ (const Polynomial& p, const mpz_class& n);
     friend Polynomial& operator+ (const mpz_class& n, const Polynomial& p);
     friend Polynomial& operator+ (const Polynomial& p, const Polynomial& q);
