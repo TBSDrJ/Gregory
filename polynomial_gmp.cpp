@@ -1,5 +1,6 @@
 #include<iostream>
 #include<vector>
+#include<stdexcept>
 #include<gmp.h>
 #include<gmpxx.h>
 #include"polynomial_gmp.h"
@@ -137,6 +138,20 @@ bool operator== (const Polynomial& p, const Polynomial& q) {
     return p.coeffs == q.coeffs;
 }
 
+Polynomial& operator+ (const Polynomial& p, const mpz_class& n) {
+    vector<mpz_class> r_coeffs(p.deg() + 1);
+    Polynomial * r = new Polynomial(r_coeffs);
+    for (int i=1; i<p.deg() + 1; i++) {
+        r -> coeffs[i] = p.coeffs[i];
+    }
+    r -> coeffs[0] = p.coeffs[0] + n;
+    return *r;
+}
+
+Polynomial& operator+ (const mpz_class& n, const Polynomial& p) {
+    return p + n;
+}
+
 Polynomial& operator+ (const Polynomial& p, const Polynomial& q) {
     int p_deg = p.deg(), q_deg = q.deg(), r_deg = p_deg > q_deg ? p_deg : q_deg;
     vector<mpz_class> r_coeffs(r_deg + 1);
@@ -154,6 +169,14 @@ Polynomial& operator+ (const Polynomial& p, const Polynomial& q) {
     return *r;
 }
 
+Polynomial& operator- (const Polynomial& p, const mpz_class& n) {
+    return p + (-n);
+}
+
+Polynomial& operator- (const mpz_class& n, const Polynomial& p) {
+    return p + (-n);
+}
+
 Polynomial& operator- (const Polynomial& p, const Polynomial& q) {
     int p_deg = p.deg(), q_deg = q.deg(), r_deg = p_deg > q_deg ? p_deg : q_deg;
     vector<mpz_class> r_coeffs(r_deg + 1);
@@ -168,6 +191,24 @@ Polynomial& operator- (const Polynomial& p, const Polynomial& q) {
         }
     }
     r -> eliminate_zeros();
+    return *r;
+}
+
+Polynomial& operator* (const Polynomial& p, const mpq_class& f) {
+    vector<mpq_class> rq_coeffs(p.deg() + 1);
+    vector<mpz_class> r_coeffs(p.deg() + 1);
+    Polynomial * r = new Polynomial(r_coeffs);
+    for (int i=0; i<p.deg() + 1; i++) {
+        rq_coeffs[i] = f * p.coeffs[i];
+        // Coerce fraction to integer which truncates if denominator != 0
+        r -> coeffs[i] = rq_coeffs[i];
+        if (r -> coeffs[i] != rq_coeffs[i]) {
+            string msg;
+            msg += "Can only mutiply a Polynomial by a fraction if the ";
+            msg += "product is\nan integer in all places.\n";
+            throw runtime_error(msg);
+        }
+    }
     return *r;
 }
 
@@ -284,6 +325,47 @@ int main() {
     cout << "q == q: " << (q == q) << endl;
     cout << "p == Polynomial(): " << (p == Polynomial()) << endl;
     mpz_class n = mpz_class(5);
-    cout << "t == 5: " << (t == n) << endl;
-    cout << "5 == t: " << (n == t) << endl;
+    cout << "t == mpz_class(5): " << (t == n) << endl;
+    cout << "mpz_class(5) == t: " << (n == t) << endl;
+    // Checking if bare integer gets automatically promoted to mpz_class
+    cout << "t == 5: " << (t == 5) << endl;
+    cout << "5 == t: " << (5 == t) << endl;
+    // Yes it does.  Sweet, less boilerplate.
+
+    s.coeffs[0] = 1;
+    s.coeffs.push_back(1);
+    t.coeffs[0] = -1;
+    t.coeffs.push_back(-1);
+    cout << endl << "Testing + with mpz_class" << endl;
+    cout << "p: " << p << " p+5: " << p+5 << endl;
+    cout << "q: " << q << " q+5: " << q+5 << endl;
+    cout << "r: " << r << " r+5: " << r+5 << endl;
+    cout << "s: " << s << " s+5: " << s+5 << endl;
+    cout << "t: " << t << " t+5: " << t+5 << endl;
+
+    cout << endl << "Testing - with mpz_class" << endl;
+    cout << "p: " << p << " p-5: " << p-5 << endl;
+    cout << "q: " << q << " q-5: " << q-5 << endl;
+    cout << "r: " << r << " r-5: " << r-5 << endl;
+    cout << "s: " << s << " s-5: " << s-5 << endl;
+    cout << "t: " << t << " t-5: " << t-5 << endl;
+
+
+    cout << endl << "Testing * with integers" << endl;
+    cout << "p: " << p << " p*5: " << p*5 << endl;
+    cout << "q: " << q << " q*5: " << q*5 << endl;
+    cout << "r: " << r << " r*5: " << r*5 << endl;
+    cout << "s: " << s << " s*5: " << s*5 << endl;
+    cout << "t: " << t << " t*5: " << t*5 << endl;
+
+    cout << endl << "Testing * with mpq_class" << endl;
+    mpq_class f(1,2);
+    cout << "p: " << p << " p*4*½: " << p*4*f << endl;
+    cout << "q: " << q << " q*4*½: " << q*4*f << endl;
+    cout << "r: " << r << " r*4*½: " << r*4*f << endl;
+    cout << "s: " << s << " s*4*½: " << s*4*f << endl;
+    cout << "t: " << t << " t*4*½: " << t*4*f << endl;
+    cout << "This one should crash:" << endl;
+    cout << "q: " << q << " q*5*½: " << flush << q*5*f << endl;
+
 }
