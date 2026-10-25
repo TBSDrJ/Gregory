@@ -57,7 +57,7 @@ Polynomial& Polynomial::der() {
     return *q;
 }
 
-mpq_class& Polynomial::proportional(const Polynomial& q) {
+mpq_class& Polynomial::proportional(const Polynomial& q) const {
     mpq_class* prop = new mpq_class(0);
     mpz_class m,n; // = gcd of the collection of coeffs of this, q resp.
     int p_deg = this -> deg(), q_deg = q.deg();
