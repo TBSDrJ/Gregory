@@ -225,6 +225,10 @@ Polynomial& operator* (const Polynomial& p, const mpq_class& f) {
     return *r;
 }
 
+Polynomial& operator* (const mpq_class& f, const Polynomial& p) {
+    return p * f;
+}
+
 Polynomial& operator* (const Polynomial& p, const Polynomial& q) {
     int p_deg = p.deg(), q_deg = q.deg(), r_deg = p_deg + q_deg;
     vector<mpz_class> r_coeffs(r_deg + 1);
