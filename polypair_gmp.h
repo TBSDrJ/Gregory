@@ -14,8 +14,12 @@ class PolyPair {
         Polynomial a, b;
         PolyPair();
         PolyPair(Polynomial& new_a, Polynomial& new_b);
-    friend std::ostream& operator<< (std::ostream& os, const PolyPair& ab);
-
+    friend bool operator== (const PolyPair& pp, const mpz_class& f);
+    friend bool operator== (const mpz_class& f, const PolyPair& pp);
+    friend bool operator== (const PolyPair& pp, const Polynomial& p);
+    friend bool operator== (const Polynomial& p, const PolyPair& pp);
+    friend bool operator== (const PolyPair& pp, const PolyPair& qq);
+    friend std::ostream& operator<< (std::ostream& os, const PolyPair& pp);
 };
 
 #endif
