@@ -39,8 +39,8 @@ class PolyPair {
     friend PolyPair& operator+ (const PolyPair& pp, const PolyPair& qq);
     friend PolyPair& operator- (const PolyPair& pp, const mpz_class& n);
     friend PolyPair& operator- (const mpz_class& n, const PolyPair& pp);
-    friend PolyPair& operator- (const PolyPair& pp, const Polynomial& n);
-    friend PolyPair& operator- (const Polynomial& n, const PolyPair& pp);
+    friend PolyPair& operator- (const PolyPair& pp, const Polynomial& p);
+    friend PolyPair& operator- (const Polynomial& p, const PolyPair& pp);
     friend PolyPair& operator- (const PolyPair& pp, const PolyPair& qq);
     friend std::ostream& operator<< (std::ostream& os, const PolyPair& pp);
 };

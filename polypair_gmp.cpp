@@ -1,6 +1,7 @@
 #include<iostream>
 #include<sstream>
 #include<algorithm>
+#include<stdexcept>
 #include<gmpxx.h>
 #include"polypair_gmp.h"
 #include"polynomial_gmp.h"
@@ -178,6 +179,158 @@ bool operator!= (const PolyPair& pp, const PolyPair& qq) {
     return not(pp == qq);
 }
 
+PolyPair& operator+ (const PolyPair& pp, const mpz_class& n) {
+    if (not (pp.common_factor(n))) {
+        stringstream t;
+        t << "Can't add " << pp << " and " << n << endl;
+        throw runtime_error(t.str());
+    }
+    // So either pp.a.deg() = 0 or pp.b.deg() = 0.
+    PolyPair * qq = new PolyPair();
+    Polynomial one = Polynomial(1);
+    Polynomial zero = Polynomial();
+    if (pp.b.deg() == 0) {
+        qq -> b = one;
+        qq -> a = pp.a * pp.b + n;
+        qq -> a.eliminate_zeros();
+        if (qq -> a == 0) {
+            qq -> b = zero;
+        }
+        return *qq;
+    }
+    qq -> a = one;
+    qq -> b = pp.b * pp.a  + n;
+    qq -> b.eliminate_zeros();
+    if (qq -> b == 0) {
+        qq -> a = zero;
+    }
+    return *qq;
+}
+
+PolyPair& operator+ (const mpz_class& n, const PolyPair& pp) {
+    if (not (pp.common_factor(n))) {
+        stringstream t;
+        t << "Can't add " << pp << " and " << n << endl;
+        throw runtime_error(t.str());
+    }
+    return pp + n;
+}
+
+PolyPair& operator+ (const PolyPair& pp, const Polynomial& p) {
+    if (not (pp.common_factor(p))) {
+        stringstream t;
+        t << "Can't add " << pp << " and " << p << endl;
+        throw runtime_error(t.str());
+    }
+    // So we know pp.b.deg() = 0
+    PolyPair * qq = new PolyPair();
+    vector<mpz_class> coeffs = {1};
+    Polynomial one = Polynomial(coeffs);
+    Polynomial zero = Polynomial();
+    qq -> b = one;
+    qq -> a = pp.a * pp.b + p;
+    qq -> b.eliminate_zeros();
+    if (qq -> a == 0) {
+        qq -> b = zero;
+    }
+    return *qq;
+}
+
+PolyPair& operator+ (const Polynomial& p, const PolyPair& pp) {
+    if (not (pp.common_factor(p))) {
+        stringstream t;
+        t << "Can't add " << pp << " and " << p << endl;
+        throw runtime_error(t.str());
+    }
+    return pp + p;
+}
+
+PolyPair& operator+ (const PolyPair& pp, const PolyPair& qq) {
+    if (not (pp.common_factor(qq))) {
+        stringstream t;
+        t << "Can't add " << pp << " and " << qq << endl;
+        throw runtime_error(t.str());
+    }
+    vector<mpz_class> coeffs = {1};
+    Polynomial one = Polynomial(coeffs);
+    PolyPair * result = new PolyPair();
+    if ((pp.a.deg() == 0) and (qq.a.deg() == 0)) {
+        result -> a = one;
+        result -> b = pp.a * pp.b + qq.a * qq.b;
+    }
+    if ((pp.b.deg() == 0) and (qq.b.deg() == 0)) {
+        result -> b = one;
+        result -> a = pp.a * pp.b + qq.a * qq.b;
+    }
+    mpq_class prop = pp.a.proportional(qq.a);
+    if (prop.get_num()) {
+        // 1/prop.get_den() * pp.a should be same as 1/prop_get_num() * qq.a
+        result -> a = mpq_class(1, prop.get_den())*pp.a;
+        // Need to cast as mpq_class to avoid ambiguous overload
+        result -> b = mpq_class(prop.get_den(),1) * pp.b + 
+                mpq_class(prop.get_num(), 1) * qq.b;
+    } else {
+        prop = pp.b.proportional(qq.b);
+        // 1/prop.get_den() * pp.b should be same as 1/prop_get_num() * qq.b
+        result -> b = mpq_class(1, prop.get_den())*pp.b;
+        // Need to cast as mpq_class to avoid ambiguous overload
+        result -> a = mpq_class(prop.get_den(), 1) * pp.a + 
+                mpq_class(prop.get_num(), 1) * qq.a;
+    }
+    result -> a.eliminate_zeros();
+    result -> b.eliminate_zeros();
+    if (result -> a == 0) {
+        result -> b = *(new Polynomial()); 
+    } else if (result -> b == 0) {
+        result -> a = *(new Polynomial());
+    }
+    return *result;
+}
+
+PolyPair& operator- (const PolyPair& pp, const mpz_class& n) {
+    if (not (pp.common_factor(n))) {
+        stringstream t;
+        t << "Can't add " << pp << " and " << n << endl;
+        throw runtime_error(t.str());
+    }
+    return pp + (-n);
+}
+
+PolyPair& operator- (const mpz_class& n, const PolyPair& pp) {
+    if (not (pp.common_factor(n))) {
+        stringstream t;
+        t << "Can't add " << pp << " and " << n << endl;
+        throw runtime_error(t.str());
+    }
+    // return n + (-1)*pp;
+}
+
+PolyPair& operator- (const PolyPair& pp, const Polynomial& p) {
+    if (not (pp.common_factor(p))) {
+        stringstream t;
+        t << "Can't add " << pp << " and " << p << endl;
+        throw runtime_error(t.str());
+    }
+    return pp + (-1)*p;
+}
+
+PolyPair& operator- (const Polynomial& p, const PolyPair& pp) {
+    if (not (pp.common_factor(p))) {
+        stringstream t;
+        t << "Can't add " << pp << " and " << p << endl;
+        throw runtime_error(t.str());
+    }
+    // return n + (-1)*p;
+}
+
+PolyPair& operator- (const PolyPair& pp, const PolyPair& qq) {
+    if (not (pp.common_factor(qq))) {
+        stringstream t;
+        t << "Can't add " << pp << " and " << qq << endl;
+        throw runtime_error(t.str());
+    }
+    // return pp + (-1)*qq;
+}
 
 ostream& operator<< (ostream& os, const PolyPair& pp) {
     string s;
@@ -192,8 +345,7 @@ ostream& operator<< (ostream& os, const PolyPair& pp) {
 int main() {
     cout << "Testing constructor and << overload" << endl;
     Polynomial p_0 = Polynomial();
-    vector<mpz_class> p_1_coeffs = {1};
-    Polynomial p_1 = Polynomial(p_1_coeffs);
+    Polynomial p_1 = Polynomial(1);
     vector<mpz_class> p_2_coeffs = {1, 1};
     Polynomial p_2 = Polynomial(p_2_coeffs);
     vector<mpz_class> p_3_coeffs = {-1, -1};
@@ -209,9 +361,9 @@ int main() {
     cout << "pp_04 = " << pp_04 << endl;
     PolyPair pp_40 = PolyPair(p_4, p_0);
     cout << "pp_40 = " << pp_40 << endl;
-    PolyPair pp_11 = PolyPair(p_1, p_1);
+    PolyPair pp_11 = PolyPair(1, 1);
     cout << "pp_11 = " << pp_11 << endl;
-    PolyPair pp_12 = PolyPair(p_1, p_2);
+    PolyPair pp_12 = PolyPair(1, p_2);
     cout << "pp_12 = " << pp_12 << endl;
     PolyPair pp_13 = PolyPair(p_1, p_3);
     cout << "pp_13 = " << pp_13 << endl;
@@ -219,7 +371,7 @@ int main() {
     cout << "pp_14 = " << pp_14 << endl;
     PolyPair pp_15 = PolyPair(p_1, p_5);
     cout << "pp_15 = " << pp_15 << endl;
-    PolyPair pp_21 = PolyPair(p_2, p_1);
+    PolyPair pp_21 = PolyPair(p_2, 1);
     cout << "pp_21 = " << pp_21 << endl;
     PolyPair pp_22 = PolyPair(p_2, p_2);
     cout << "pp_22 = " << pp_22 << endl;
@@ -359,4 +511,104 @@ int main() {
             << endl;
     cout << "pp_55.common_factor(pp_44): " << pp_55.common_factor(pp_44)
             << endl;
+
+    cout << endl << "Testing +" << endl;
+    cout << "pp_00 + 5: " << pp_00 + 5 << endl;
+    cout << "pp_21 + 5: " << pp_21 + 5 << endl;
+    cout << "pp_31 + 5: " << pp_31 + 5 << endl;
+    cout << "pp_41 + 5: " << pp_41 + 5 << endl;
+    cout << "pp_51 + 5: " << pp_51 + 5 << endl;
+    cout << "PolyPair(p_2, 5) + 3: " << (PolyPair(p_2, 5) + 3) << endl;
+    cout << "PolyPair(p_3, 5) + 3: " << (PolyPair(p_3, 5) + 3) << endl;
+    cout << "PolyPair(p_4, 5) + 3: " << (PolyPair(p_4, 5) + 3) << endl;
+    cout << "PolyPair(p_5, 5) + 3: " << (PolyPair(p_5, 5) + 3) << endl;
+    cout << "5 + pp_00: " << 5 + pp_00 << endl;
+    cout << "5 + pp_21: " << 5 + pp_21 << endl;
+    cout << "5 + pp_31: " << 5 + pp_31 << endl;
+    cout << "5 + pp_41: " << 5 + pp_41 << endl;
+    cout << "5 + pp_51: " << 5 + pp_51 << endl;
+    cout << "3 + PolyPair(p_2, 5): " << (3 + PolyPair(p_2, 5)) << endl;
+    cout << "3 + PolyPair(p_3, 5): " << (3 + PolyPair(p_3, 5)) << endl;
+    cout << "3 + PolyPair(p_4, 5): " << (3 + PolyPair(p_4, 5)) << endl;
+    cout << "3 + PolyPair(p_5, 5): " << (3 + PolyPair(p_5, 5)) << endl;
+    cout << "pp_00 + p_1: " << pp_00 + p_1 << endl;
+    cout << "pp_00 + p_2: " << pp_00 + p_2 << endl;
+    cout << "pp_00 + p_3: " << pp_00 + p_3 << endl;
+    cout << "pp_00 + p_4: " << pp_00 + p_4 << endl;
+    cout << "pp_00 + p_5: " << pp_00 + p_5 << endl;
+    cout << "pp_21 + p_1: " << pp_21 + p_1 << endl;
+    cout << "pp_21 + p_2: " << pp_21 + p_2 << endl;
+    cout << "pp_21 + p_3: " << pp_21 + p_3 << endl;
+    cout << "pp_21 + p_4: " << pp_21 + p_4 << endl;
+    cout << "pp_21 + p_5: " << pp_21 + p_5 << endl;
+    cout << "PolyPair(p_2, 5) + PolyPair(p_2, 3): " << (PolyPair(p_2, 5) +
+            PolyPair(p_2, 3)) << endl;
+    cout << "PolyPair(p_2, 5) + PolyPair(p_3, 3): " << (PolyPair(p_2, 5) +
+            PolyPair(p_3, 3)) << endl;
+    cout << "PolyPair(p_2, 5) + PolyPair(p_4, 3): " << (PolyPair(p_2, 5) +
+            PolyPair(p_4, 3)) << endl;
+    cout << "PolyPair(p_2, 5) + PolyPair(p_5, 3): " << (PolyPair(p_2, 5) +
+            PolyPair(p_5, 3)) << endl;
+    cout << "PolyPair(5, p_2) + PolyPair(3, p_2): " << (PolyPair(5, p_2) +
+            PolyPair(3, p_2)) << endl;
+    cout << "PolyPair(5, p_2) + PolyPair(3, p_3): " << (PolyPair(5, p_2) +
+            PolyPair(3, p_3)) << endl;
+    cout << "PolyPair(5, p_2) + PolyPair(3, p_4): " << (PolyPair(5, p_2) +
+            PolyPair(3, p_4)) << endl;
+    cout << "PolyPair(5, p_2) + PolyPair(3, p_5): " << (PolyPair(5, p_2) +
+            PolyPair(3, p_5)) << endl;
+    cout << "PolyPair(p_2, 5) + PolyPair(p_3, 5): " << (PolyPair(p_2, 5) + 
+            PolyPair(p_3, 5)) << endl;
+    cout << "PolyPair(5, p_2) + PolyPair(5, p_3): " << (PolyPair(5, p_2) + 
+            PolyPair(5, p_3)) << endl;
+    cout << "PolyPair(5*p_2, p_5) + PolyPair(3*p_3, p_4): " << 
+            PolyPair(5*p_2, p_5) + 
+            PolyPair(3*p_3, p_4) << endl;
+    cout << "PolyPair(p_5, 5*p_2) + PolyPair(p_4, 3*p_3): " << 
+            PolyPair(p_5, 5*p_2) + 
+            PolyPair(p_4, 3*p_3) << endl;
+
+    cout << endl << "Testing -" << endl;
+    cout << "pp_00 - 5: " << pp_00 - 5 << endl;
+    cout << "pp_21 - 5: " << pp_21 - 5 << endl;
+    cout << "pp_31 - 5: " << pp_31 - 5 << endl;
+    cout << "pp_41 - 5: " << pp_41 - 5 << endl;
+    cout << "pp_51 - 5: " << pp_51 - 5 << endl;
+    cout << "PolyPair(p_2, 5) - 3: " << (PolyPair(p_2, 5) - 3) << endl;
+    cout << "PolyPair(p_3, 5) - 3: " << (PolyPair(p_3, 5) - 3) << endl;
+    cout << "PolyPair(p_4, 5) - 3: " << (PolyPair(p_4, 5) - 3) << endl;
+    cout << "PolyPair(p_5, 5) - 3: " << (PolyPair(p_5, 5) - 3) << endl;
+    // cout << "5 - pp_00: " << 5 - pp_00 << endl;
+    // cout << "5 - pp_21: " << 5 - pp_21 << endl;
+    // cout << "5 - pp_31: " << 5 - pp_31 << endl;
+    // cout << "5 - pp_41: " << 5 - pp_41 << endl;
+    // cout << "5 - pp_51: " << 5 - pp_51 << endl;
+    // cout << "3 - PolyPair(p_2, 5): " << (3 - PolyPair(p_2, p)) << endl;
+    // cout << "3 - PolyPair(p_3, 5): " << (3 - PolyPair(p_3, p)) << endl;
+    // cout << "3 - PolyPair(p_4, 5): " << (3 - PolyPair(p_4, p)) << endl;
+    // cout << "3 - PolyPair(p_5, 5): " << (3 - PolyPair(p_5, p)) << endl;
+    cout << "pp_00 - p_1: " << pp_00 - p_1 << endl;
+    cout << "pp_00 - p_2: " << pp_00 - p_2 << endl;
+    cout << "pp_00 - p_3: " << pp_00 - p_3 << endl;
+    cout << "pp_00 - p_4: " << pp_00 - p_4 << endl;
+    cout << "pp_00 - p_5: " << pp_00 - p_5 << endl;
+    cout << "pp_21 - p_1: " << pp_21 - p_1 << endl;
+    cout << "pp_21 - p_2: " << pp_21 - p_2 << endl;
+    cout << "pp_21 - p_3: " << pp_21 - p_3 << endl;
+    cout << "pp_21 - p_4: " << pp_21 - p_4 << endl;
+    cout << "pp_21 - p_5: " << pp_21 - p_5 << endl;
+
+    cout << endl << "Testing to make sure changes don't cross objects" << endl;
+    PolyPair tt = pp_21 + 5;
+    tt = tt + 5;
+    PolyPair uu = pp_31 + 5;
+    uu = uu + 5;
+    PolyPair vv = pp_21 - 5;
+    vv = vv - 5;
+    PolyPair ww = pp_31 - 5;
+    ww = ww - 5;
+    cout << "Should be pp_21 + 10: " << tt << endl;
+    cout << "Should be pp_31 + 10: " << uu << endl;
+    cout << "Should be pp_21 - 10: " << vv << endl;
+    cout << "Should be pp_31 - 10: " << ww << endl;
 }
