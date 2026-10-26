@@ -92,6 +92,21 @@ bool PolyPair::common_factor(const mpz_class& n) const {
     return false;
 }
 
+bool operator== (const PolyPair& pp, const int& n) {
+    return pp == mpz_class(n);
+}
+
+bool operator== (const int& n, const PolyPair& pp) {
+    return pp == mpz_class(n);
+}
+
+bool operator== (const PolyPair& pp, const long& n) {
+    return pp == mpz_class(n);
+}
+
+bool operator== (const long& n, const PolyPair& pp) {
+    return pp == mpz_class(n);
+}
 
 bool operator== (const PolyPair& pp, const mpz_class& n) {
     if (pp.a.deg() > 0 or pp.b.deg() > 0) {
@@ -158,6 +173,21 @@ bool operator== (const PolyPair& pp, const PolyPair& qq) {
     return false;
 }
 
+bool operator!= (const PolyPair& pp, const int& n) {
+    return not(pp == n);
+}
+
+bool operator!= (const int& n, const PolyPair& pp) {
+    return not(pp == n);
+}
+
+bool operator!= (const PolyPair& pp, const long& n) {
+    return not(pp == n);
+}
+
+bool operator!= (const long& n, const PolyPair& pp) {
+    return not(pp == n);
+}
 
 bool operator!= (const PolyPair& pp, const mpz_class& n) {
     return not(pp == n);
@@ -177,6 +207,22 @@ bool operator!= (const Polynomial& p, const PolyPair& pp) {
 
 bool operator!= (const PolyPair& pp, const PolyPair& qq) {
     return not(pp == qq);
+}
+
+PolyPair& operator+ (const PolyPair& pp, const int& n) {
+    return pp + mpz_class(n);
+}
+
+PolyPair& operator+ (const int& n, const PolyPair& pp) {
+    return pp + mpz_class(n);
+}
+
+PolyPair& operator+ (const PolyPair& pp, const long& n) {
+    return pp + mpz_class(n);
+}
+
+PolyPair& operator+ (const long& n, const PolyPair& pp) {
+    return pp + mpz_class(n);
 }
 
 PolyPair& operator+ (const PolyPair& pp, const mpz_class& n) {
@@ -286,6 +332,23 @@ PolyPair& operator+ (const PolyPair& pp, const PolyPair& qq) {
     }
     return *result;
 }
+
+PolyPair& operator- (const PolyPair& pp, const int& n) {
+    return pp + (-1)*n;
+}
+
+PolyPair& operator- (const int& n, const PolyPair& pp) {
+    // return n + (-1)*pp;
+}
+
+PolyPair& operator- (const PolyPair& pp, const long& n) {
+    return pp + (-1)*n;
+}
+
+PolyPair& operator- (const long& n, const PolyPair& pp) {
+    // return n + (-1)*pp;
+}
+
 
 PolyPair& operator- (const PolyPair& pp, const mpz_class& n) {
     if (not (pp.common_factor(n))) {
