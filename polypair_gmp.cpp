@@ -8,10 +8,40 @@
 using namespace std;
 
 PolyPair::PolyPair() {
-    Polynomial a = Polynomial();
-    Polynomial b = Polynomial();
+    Polynomial a = *(new Polynomial());
+    Polynomial b = *(new Polynomial());
     this -> a = a;
     this -> b = b;
+}
+
+PolyPair::PolyPair(mpz_class m, mpz_class n) {
+    if ((m == 0) or (n == 0)) {
+        this -> a = *(new Polynomial());
+        this -> b = *(new Polynomial());
+    } else {
+        this -> a = *(new Polynomial(m));
+        this -> b = *(new Polynomial(n));
+    }
+}
+
+PolyPair::PolyPair(mpz_class n, Polynomial& new_b) {
+    Polynomial * q = new Polynomial(n);
+    this -> a = *q;
+    this -> b = new_b;
+    this -> b.eliminate_zeros();
+    if (this -> b == Polynomial()) {
+        this -> a = *(new Polynomial());
+    }
+}
+
+PolyPair::PolyPair(Polynomial& new_a, mpz_class n) {
+    Polynomial * q = new Polynomial(n);
+    this -> b = *q;
+    this -> a = new_a;
+    this -> a.eliminate_zeros();
+    if (this -> a == Polynomial()) {
+        this -> b = *(new Polynomial());
+    }
 }
 
 PolyPair::PolyPair(Polynomial& new_a, Polynomial& new_b) {
