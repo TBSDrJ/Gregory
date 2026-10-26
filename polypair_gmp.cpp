@@ -15,7 +15,7 @@ PolyPair::PolyPair() {
     this -> b = b;
 }
 
-PolyPair::PolyPair(mpz_class m, mpz_class n) {
+PolyPair::PolyPair(const mpz_class m, const mpz_class n) {
     if ((m == 0) or (n == 0)) {
         this -> a = *(new Polynomial());
         this -> b = *(new Polynomial());
@@ -25,27 +25,35 @@ PolyPair::PolyPair(mpz_class m, mpz_class n) {
     }
 }
 
-PolyPair::PolyPair(mpz_class n, Polynomial& new_b) {
+PolyPair::PolyPair(const mpz_class n, const Polynomial& new_b) {
     Polynomial * q = new Polynomial(n);
     this -> a = *q;
+    if (n != 0) {
     this -> b = new_b;
     this -> b.eliminate_zeros();
     if (this -> b == Polynomial()) {
         this -> a = *(new Polynomial());
     }
+    } else {
+        this -> b = *(new Polynomial());
+    }
 }
 
-PolyPair::PolyPair(Polynomial& new_a, mpz_class n) {
+PolyPair::PolyPair(const Polynomial& new_a, const mpz_class n) {
     Polynomial * q = new Polynomial(n);
     this -> b = *q;
+    if (n != 0) {
     this -> a = new_a;
     this -> a.eliminate_zeros();
     if (this -> a == Polynomial()) {
         this -> b = *(new Polynomial());
     }
+    } else {
+        this -> a = *(new Polynomial());
+    }
 }
 
-PolyPair::PolyPair(Polynomial& new_a, Polynomial& new_b) {
+PolyPair::PolyPair(const Polynomial& new_a, const Polynomial& new_b) {
     this -> a = new_a;
     this -> b = new_b;
     Polynomial zero = Polynomial();

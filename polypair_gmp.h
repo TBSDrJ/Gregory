@@ -13,10 +13,10 @@ class PolyPair {
     public:
         Polynomial a, b;
         PolyPair();
-        PolyPair(mpz_class m, mpz_class n);
-        PolyPair(mpz_class n, Polynomial& new_b);
-        PolyPair(Polynomial& new_a, mpz_class n);
-        PolyPair(Polynomial& new_a, Polynomial& new_b);
+        PolyPair(const mpz_class m, const mpz_class n);
+        PolyPair(const mpz_class n, const Polynomial& new_b);
+        PolyPair(const Polynomial& new_a, const mpz_class n);
+        PolyPair(const Polynomial& new_a, const Polynomial& new_b);
         // This is a test to see if addition/subtracton is possible.
         bool common_factor(const PolyPair& qq) const;
         bool common_factor(const Polynomial& q) const;
