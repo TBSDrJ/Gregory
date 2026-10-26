@@ -58,7 +58,7 @@ PolyPair::PolyPair(Polynomial& new_a, Polynomial& new_b) {
     }
 }
 
-bool PolyPair::common_factor(const PolyPair& qq) {
+bool PolyPair::common_factor(const PolyPair& qq) const {
     if ((this -> a.deg() == 0) and (qq.a.deg() == 0)) {
         return true;
     }
@@ -74,7 +74,7 @@ bool PolyPair::common_factor(const PolyPair& qq) {
     return false;
 }
 
-bool PolyPair::common_factor(const Polynomial& q) {
+bool PolyPair::common_factor(const Polynomial& q) const {
     if (this -> b.deg() == 0) {
         return true;
     }
@@ -84,7 +84,7 @@ bool PolyPair::common_factor(const Polynomial& q) {
     return false;
 }
 
-bool PolyPair::common_factor(const mpz_class& n) {
+bool PolyPair::common_factor(const mpz_class& n) const {
     if ((this -> a.deg() == 0) or (this -> b.deg() == 0)) {
         return true;
     }
