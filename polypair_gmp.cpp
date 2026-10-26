@@ -93,6 +93,28 @@ bool operator== (const PolyPair& pp, const PolyPair& qq) {
     return false;
 }
 
+
+bool operator!= (const PolyPair& pp, const mpz_class& f) {
+    return not(pp == f);
+}
+
+bool operator!= (const mpz_class& f, const PolyPair& pp) {
+    return not(f == pp);
+}
+
+bool operator!= (const PolyPair& pp, const Polynomial& p) {
+    return not(pp == p);
+}
+
+bool operator!= (const Polynomial& p, const PolyPair& pp) {
+    return not(p == pp);
+}
+
+bool operator!= (const PolyPair& pp, const PolyPair& qq) {
+    return not(pp == qq);
+}
+
+
 ostream& operator<< (ostream& os, const PolyPair& pp) {
     string s;
     stringstream t;
@@ -123,6 +145,8 @@ int main() {
     cout << "pp_04 = " << pp_04 << endl;
     PolyPair pp_40 = PolyPair(p_4, p_0);
     cout << "pp_40 = " << pp_40 << endl;
+    PolyPair pp_11 = PolyPair(p_1, p_1);
+    cout << "pp_11 = " << pp_11 << endl;
     PolyPair pp_12 = PolyPair(p_1, p_2);
     cout << "pp_12 = " << pp_12 << endl;
     PolyPair pp_21 = PolyPair(p_2, p_1);
@@ -137,7 +161,9 @@ int main() {
     cout << "pp_24 = " << pp_24 << endl;
     PolyPair pp_42 = PolyPair(p_4, p_2);
     cout << "pp_42 = " << pp_42 << endl;
-    PolyPair pp_25 = PolyPair(p_2, p_5);
+    PolyPair pp_51 = PolyPair(p_5, p_1);
+    cout << "pp_51 = " << pp_51 << endl;
+    PolyPair pp_25 = PolyPair(p_5, p_1);
     cout << "pp_25 = " << pp_25 << endl;
     PolyPair pp_52 = PolyPair(p_5, p_2);
     cout << "pp_52 = " << pp_52 << endl;
@@ -147,6 +173,12 @@ int main() {
     cout << "pp_00 == pp_00: " << (pp_00 == pp_00) << endl;
     cout << "pp_00 == pp_04: " << (pp_00 == pp_04) << endl;
     cout << "pp_40 == pp_00: " << (pp_40 == pp_00) << endl;
+    cout << "pp_11 == p_1: " << (pp_11 == p_1) << endl;
+    cout << "p_1 == pp_11: " << (p_1 == pp_11) << endl;
+    cout << "pp_11 == 1: " << (pp_11 == 1) << endl;
+    cout << "1 == pp_11: " << (1 == pp_11) << endl;
+    cout << "pp_51 == p_5: " << (pp_51 == p_5) << endl;
+    cout << "p_5 == pp_51: " << (p_5 == pp_51) << endl;
     cout << "pp_23 == pp_32: " << (pp_23 == pp_32) << endl;
     cout << "(3p_2)(p_2) == (p_3)(3p_3): " <<
             (PolyPair(3*p_2, p_2) == PolyPair(p_3, 3*p_3)) << endl;
@@ -154,6 +186,36 @@ int main() {
             (PolyPair(-3*p_2, -2*p_5) == PolyPair(6*p_2, p_5)) << endl;
     cout << "Should all be False: " << endl;
     cout << "pp_12 == pp_23: " << (pp_12 == pp_23) << endl;
+    cout << "pp_12 == p_2: " << (pp_12 == p_2) << endl;
+    cout << "p_2 == pp_12: " << (p_2 == pp_12) << endl;
+    cout << "1 == pp_12: " << (1 == pp_12) << endl;
+    cout << "pp_12 == 1: " << (pp_12 == 1) << endl;
     cout << "pp_22 == pp_23: " << (pp_22 == pp_23) << endl;
     cout << "pp_12 == pp_21: " << (pp_12 == pp_21) << endl;
+
+
+    cout << endl << "Testing !=" << endl;
+    cout << "Should all be false: " << endl;
+    cout << "pp_00 != pp_00: " << (pp_00 != pp_00) << endl;
+    cout << "pp_00 != pp_04: " << (pp_00 != pp_04) << endl;
+    cout << "pp_40 != pp_00: " << (pp_40 != pp_00) << endl;
+    cout << "pp_11 != p_1: " << (pp_11 != p_1) << endl;
+    cout << "p_1 != pp_11: " << (p_1 != pp_11) << endl;
+    cout << "pp_11 != 1: " << (pp_11 != 1) << endl;
+    cout << "1 != pp_11: " << (1 != pp_11) << endl;
+    cout << "pp_51 != p_5: " << (pp_51 != p_5) << endl;
+    cout << "p_5 != pp_51: " << (p_5 != pp_51) << endl;
+    cout << "pp_23 != pp_32: " << (pp_23 != pp_32) << endl;
+    cout << "(3p_2)(p_2) != (p_3)(3p_3): " <<
+            (PolyPair(3*p_2, p_2) != PolyPair(p_3, 3*p_3)) << endl;
+    cout << "(-3p_2(x))(-2p_5(L)) != (6p_2(x))(p_5(L)): " << 
+            (PolyPair(-3*p_2, -2*p_5) != PolyPair(6*p_2, p_5)) << endl;
+    cout << "Should all be True: " << endl;
+    cout << "pp_12 != pp_23: " << (pp_12 != pp_23) << endl;
+    cout << "pp_12 != p_2: " << (pp_12 != p_2) << endl;
+    cout << "p_2 != pp_12: " << (p_2 != pp_12) << endl;
+    cout << "1 != pp_12: " << (1 != pp_12) << endl;
+    cout << "pp_12 != 1: " << (pp_12 != 1) << endl;
+    cout << "pp_22 != pp_23: " << (pp_22 != pp_23) << endl;
+    cout << "pp_12 != pp_21: " << (pp_12 != pp_21) << endl;
 }
