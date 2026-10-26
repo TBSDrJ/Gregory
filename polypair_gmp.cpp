@@ -80,6 +80,9 @@ bool operator== (const PolyPair& pp, const PolyPair& qq) {
     }
     // Now we know all four polynomials are nonzero.
     // Gotta check for proportional cases, e.g. (2x)(3L) == (6x)(L)
+    // I'm surprised but, e.g. mpq_class(3,3) == 1 comes up false.
+    // Also (factor_a * factor_b).get_num() fails.  Hence the construction
+    //  of the third condition below.
     mpq_class factor_a = pp.a.proportional(qq.a);
     mpq_class factor_b = pp.b.proportional(qq.b);
     mpq_class prod = factor_a * factor_b;
