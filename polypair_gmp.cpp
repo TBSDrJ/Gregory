@@ -29,11 +29,11 @@ PolyPair::PolyPair(const mpz_class n, const Polynomial& new_b) {
     Polynomial * q = new Polynomial(n);
     this -> a = *q;
     if (n != 0) {
-    this -> b = new_b;
-    this -> b.eliminate_zeros();
-    if (this -> b == Polynomial()) {
-        this -> a = *(new Polynomial());
-    }
+        this -> b = new_b;
+        this -> b.eliminate_zeros();
+        if (this -> b == Polynomial()) {
+            this -> a = *(new Polynomial());
+        }
     } else {
         this -> b = *(new Polynomial());
     }
@@ -43,11 +43,11 @@ PolyPair::PolyPair(const Polynomial& new_a, const mpz_class n) {
     Polynomial * q = new Polynomial(n);
     this -> b = *q;
     if (n != 0) {
-    this -> a = new_a;
-    this -> a.eliminate_zeros();
-    if (this -> a == Polynomial()) {
-        this -> b = *(new Polynomial());
-    }
+        this -> a = new_a;
+        this -> a.eliminate_zeros();
+        if (this -> a == Polynomial()) {
+            this -> b = *(new Polynomial());
+        }
     } else {
         this -> a = *(new Polynomial());
     }
@@ -346,7 +346,7 @@ PolyPair& operator- (const PolyPair& pp, const int& n) {
 }
 
 PolyPair& operator- (const int& n, const PolyPair& pp) {
-    // return n + (-1)*pp;
+    return n + (-1)*pp;
 }
 
 PolyPair& operator- (const PolyPair& pp, const long& n) {
@@ -354,7 +354,7 @@ PolyPair& operator- (const PolyPair& pp, const long& n) {
 }
 
 PolyPair& operator- (const long& n, const PolyPair& pp) {
-    // return n + (-1)*pp;
+    return n + (-1)*pp;
 }
 
 
@@ -373,7 +373,7 @@ PolyPair& operator- (const mpz_class& n, const PolyPair& pp) {
         t << "Can't add " << pp << " and " << n << endl;
         throw runtime_error(t.str());
     }
-    // return n + (-1)*pp;
+    return n + (-1)*pp;
 }
 
 PolyPair& operator- (const PolyPair& pp, const Polynomial& p) {
@@ -391,7 +391,7 @@ PolyPair& operator- (const Polynomial& p, const PolyPair& pp) {
         t << "Can't add " << pp << " and " << p << endl;
         throw runtime_error(t.str());
     }
-    // return n + (-1)*p;
+    return p + (-1)*pp;
 }
 
 PolyPair& operator- (const PolyPair& pp, const PolyPair& qq) {
@@ -400,8 +400,45 @@ PolyPair& operator- (const PolyPair& pp, const PolyPair& qq) {
         t << "Can't add " << pp << " and " << qq << endl;
         throw runtime_error(t.str());
     }
-    // return pp + (-1)*qq;
+    return pp + (-1)*qq;
 }
+
+PolyPair& operator* (const PolyPair& pp, const int& n) {
+    return pp * mpz_class(n);
+}
+
+PolyPair& operator* (const int& n, const PolyPair& pp) {
+    return pp * mpz_class(n);
+}
+
+PolyPair& operator* (const PolyPair& pp, const long& n) {
+    return pp * mpz_class(n);
+}
+
+PolyPair& operator* (const long& n, const PolyPair& pp) {
+    return pp * mpz_class(n);
+}
+
+PolyPair& operator* (const PolyPair& pp, const mpz_class& n) {
+    return *(new PolyPair(pp.a * n, pp.b));
+}
+
+PolyPair& operator* (const mpz_class& n, const PolyPair& pp) {
+    return pp * n;
+}
+
+PolyPair& operator* (const PolyPair& pp, const Polynomial& p) {
+    return *(new PolyPair(pp.a*p, pp.b));
+}
+
+PolyPair& operator* (const Polynomial& p, const PolyPair& pp) {
+    return *(new PolyPair(pp.a*p, pp.b));
+}
+
+PolyPair& operator* (const PolyPair& pp, const PolyPair& qq) {
+    return *(new PolyPair(pp.a*qq.a, pp.b*qq.b));
+}
+
 
 ostream& operator<< (ostream& os, const PolyPair& pp) {
     string s;
@@ -649,15 +686,15 @@ int main() {
     cout << "PolyPair(p_3, 5) - 3: " << (PolyPair(p_3, 5) - 3) << endl;
     cout << "PolyPair(p_4, 5) - 3: " << (PolyPair(p_4, 5) - 3) << endl;
     cout << "PolyPair(p_5, 5) - 3: " << (PolyPair(p_5, 5) - 3) << endl;
-    // cout << "5 - pp_00: " << 5 - pp_00 << endl;
-    // cout << "5 - pp_21: " << 5 - pp_21 << endl;
-    // cout << "5 - pp_31: " << 5 - pp_31 << endl;
-    // cout << "5 - pp_41: " << 5 - pp_41 << endl;
-    // cout << "5 - pp_51: " << 5 - pp_51 << endl;
-    // cout << "3 - PolyPair(p_2, 5): " << (3 - PolyPair(p_2, p)) << endl;
-    // cout << "3 - PolyPair(p_3, 5): " << (3 - PolyPair(p_3, p)) << endl;
-    // cout << "3 - PolyPair(p_4, 5): " << (3 - PolyPair(p_4, p)) << endl;
-    // cout << "3 - PolyPair(p_5, 5): " << (3 - PolyPair(p_5, p)) << endl;
+    cout << "5 - pp_00: " << 5 - pp_00 << endl;
+    cout << "5 - pp_21: " << 5 - pp_21 << endl;
+    cout << "5 - pp_31: " << 5 - pp_31 << endl;
+    cout << "5 - pp_41: " << 5 - pp_41 << endl;
+    cout << "5 - pp_51: " << 5 - pp_51 << endl;
+    cout << "3 - PolyPair(p_2, 5): " << (3 - PolyPair(p_2, 5)) << endl;
+    cout << "3 - PolyPair(p_3, 5): " << (3 - PolyPair(p_3, 5)) << endl;
+    cout << "3 - PolyPair(p_4, 5): " << (3 - PolyPair(p_4, 5)) << endl;
+    cout << "3 - PolyPair(p_5, 5): " << (3 - PolyPair(p_5, 5)) << endl;
     cout << "pp_00 - p_1: " << pp_00 - p_1 << endl;
     cout << "pp_00 - p_2: " << pp_00 - p_2 << endl;
     cout << "pp_00 - p_3: " << pp_00 - p_3 << endl;
@@ -668,6 +705,77 @@ int main() {
     cout << "pp_21 - p_3: " << pp_21 - p_3 << endl;
     cout << "pp_21 - p_4: " << pp_21 - p_4 << endl;
     cout << "pp_21 - p_5: " << pp_21 - p_5 << endl;
+    cout << "p_1 - pp_00: " << p_1 - pp_00 << endl;
+    cout << "p_2 - pp_00: " << p_2 - pp_00 << endl;
+    cout << "p_3 - pp_00: " << p_3 - pp_00 << endl;
+    cout << "p_4 - pp_00: " << p_4 - pp_00 << endl;
+    cout << "p_5 - pp_00: " << p_5 - pp_00 << endl;
+    cout << "p_1 - pp_21: " << p_1 - pp_21 << endl;
+    cout << "p_2 - pp_21: " << p_2 - pp_21 << endl;
+    cout << "p_3 - pp_21: " << p_3 - pp_21 << endl;
+    cout << "p_4 - pp_21: " << p_4 - pp_21 << endl;
+    cout << "p_5 - pp_21: " << p_5 - pp_21 << endl;
+    cout << "PolyPair(p_2, 5) - PolyPair(p_2, 3): " << (PolyPair(p_2, 5) -
+            PolyPair(p_2, 3)) << endl;
+    cout << "PolyPair(p_2, 5) - PolyPair(p_3, 3): " << (PolyPair(p_2, 5) -
+            PolyPair(p_3, 3)) << endl;
+    cout << "PolyPair(p_2, 5) - PolyPair(p_4, 3): " << (PolyPair(p_2, 5) -
+            PolyPair(p_4, 3)) << endl;
+    cout << "PolyPair(p_2, 5) - PolyPair(p_5, 3): " << (PolyPair(p_2, 5) -
+            PolyPair(p_5, 3)) << endl;
+    cout << "PolyPair(5, p_2) - PolyPair(3, p_2): " << (PolyPair(5, p_2) -
+            PolyPair(3, p_2)) << endl;
+    cout << "PolyPair(5, p_2) - PolyPair(3, p_3): " << (PolyPair(5, p_2) -
+            PolyPair(3, p_3)) << endl;
+    cout << "PolyPair(5, p_2) - PolyPair(3, p_4): " << (PolyPair(5, p_2) -
+            PolyPair(3, p_4)) << endl;
+    cout << "PolyPair(5, p_2) - PolyPair(3, p_5): " << (PolyPair(5, p_2) -
+            PolyPair(3, p_5)) << endl;
+    cout << "PolyPair(p_2, 5) - PolyPair(p_3, 5): " << (PolyPair(p_2, 5) - 
+            PolyPair(p_3, 5)) << endl;
+    cout << "PolyPair(5, p_2) - PolyPair(5, p_3): " << (PolyPair(5, p_2) - 
+            PolyPair(5, p_3)) << endl;
+    cout << "PolyPair(5*p_2, p_5) - PolyPair(3*p_3, p_4): " << 
+            PolyPair(5*p_2, p_5) - 
+            PolyPair(3*p_3, p_4) << endl;
+    cout << "PolyPair(p_5, 5*p_2) - PolyPair(p_4, 3*p_3): " << 
+            PolyPair(p_5, 5*p_2) - 
+            PolyPair(p_4, 3*p_3) << endl;
+    cout << "PolyPair(p_2, 3) - PolyPair(p_2, 5): " << (PolyPair(p_2, 3) - 
+            PolyPair(p_2, 5)) << endl;
+    cout << "PolyPair(p_3, 3) - PolyPair(p_2, 5): " << (PolyPair(p_3, 3) - 
+            PolyPair(p_2, 5)) << endl;
+    cout << "PolyPair(p_4, 3) - PolyPair(p_2, 5): " << (PolyPair(p_4, 3) - 
+            PolyPair(p_2, 5)) << endl;
+    cout << "PolyPair(p_5, 3) - PolyPair(p_2, 5): " << (PolyPair(p_5, 3) - 
+            PolyPair(p_2, 5)) << endl;
+    cout << "PolyPair(3, p_2) - PolyPair(5, p_2): " << (PolyPair(3, p_2) - 
+            PolyPair(5, p_2)) << endl;
+    cout << "PolyPair(3, p_3) - PolyPair(5, p_2): " << (PolyPair(3, p_3) - 
+            PolyPair(5, p_2)) << endl;
+    cout << "PolyPair(3, p_4) - PolyPair(5, p_2): " << (PolyPair(3, p_4) - 
+            PolyPair(5, p_2)) << endl;
+    cout << "PolyPair(3, p_5) - PolyPair(5, p_2): " << (PolyPair(3, p_5) - 
+            PolyPair(5, p_2)) << endl;
+    cout << "PolyPair(p_3, 5) - PolyPair(p_2, 5): " << (PolyPair(p_3, 5) - 
+            PolyPair(p_2, 5)) << endl;
+    cout << "PolyPair(5, p_3) - PolyPair(5, p_2): " << (PolyPair(5, p_3) - 
+            PolyPair(5, p_2)) << endl;
+    cout << "PolyPair(3*p_3, p_4) - PolyPair(5*p_2, p_5): " << 
+            PolyPair(3*p_3, p_4) - PolyPair(5*p_2, p_5) << endl;
+    cout << "PolyPair(p_4, 3*p_3) - PolyPair(p_5, 5*p_2): " << 
+            PolyPair(p_4, 3*p_3) - PolyPair(p_5, 5*p_2) << endl;
+
+    cout << endl << "Testing *" << endl;
+    cout << "5 * pp_24: " << 5 * pp_24 << endl;
+    cout << "pp_24 * 5: " << pp_24 * 5 << endl;
+    cout << "5L * pp_24: " << 5L * pp_24 << endl;
+    cout << "pp_24 * 5L: " << pp_24 * 5L << endl;
+    cout << "mpz_class(5) * pp_24: " << mpz_class(5) * pp_24 << endl;
+    cout << "pp_24 * mpz_class(5): " << pp_24 * mpz_class(5) << endl;
+    cout << "pp_24 * p_5: " << pp_24 * p_5 << endl;
+    cout << "p_5 * pp_24: " << p_5 * pp_24 << endl;
+    cout << "pp_53 * pp_24: " << pp_53 * pp_24 << endl;
 
     cout << endl << "Testing to make sure changes don't cross objects" << endl;
     PolyPair tt = pp_21 + 5;
