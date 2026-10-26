@@ -12,6 +12,11 @@ Polynomial::Polynomial() {
     this -> coeffs = coeffs;
 }
 
+Polynomial::Polynomial(mpz_class n) {
+    vector<mpz_class> * coeffs = new vector<mpz_class>({n});
+    this -> coeffs = *coeffs;
+}
+
 Polynomial::Polynomial(vector<mpz_class> new_coeffs) {
     this -> coeffs = new_coeffs;
 }
@@ -328,11 +333,8 @@ int main() {
 
     cout << endl << "Testing .proportional()" << endl;
     cout << "p.proportional(q) = " << p.proportional(q) << endl;
-    vector<mpz_class> s_coeffs(1), t_coeffs(1);
-    s_coeffs[0] = -3;
-    t_coeffs[0] = 5;
-    s.coeffs = s_coeffs;
-    t.coeffs = t_coeffs;
+    s = Polynomial(3);
+    t = Polynomial(5);
     cout << "(3q).proportional(5q) = " << (s*r).proportional(t*r) << endl;
     cout << s*r << endl << t*r << endl;
     s.coeffs[0] = 1;

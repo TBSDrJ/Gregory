@@ -10,6 +10,7 @@ class Polynomial {
     public:
         std::vector<mpz_class> coeffs;
         Polynomial();
+        Polynomial(mpz_class n);
         Polynomial(std::vector<mpz_class> new_coeffs);
         int deg() const;
         void eliminate_zeros();
