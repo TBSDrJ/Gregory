@@ -66,7 +66,7 @@ mpq_class& Polynomial::proportional(const Polynomial& q) const {
     }
     mpz_class rolling_gcd = this -> coeffs[p_deg];
     p_deg--;
-    while (p_deg > 0) {
+    while (p_deg >= 0) {
         mpz_gcd(m.get_mpz_t(), this -> coeffs[p_deg].get_mpz_t(), 
             rolling_gcd.get_mpz_t());
         p_deg--;
@@ -85,7 +85,6 @@ mpq_class& Polynomial::proportional(const Polynomial& q) const {
             (this -> coeffs[this -> deg()] > 0 and q.coeffs[q.deg()] < 0)) {
         n *= -1;
     }
-    cout << endl << m << " " << n << endl;
     for (int i=0; i<this -> deg(); i++) {
         if ((this -> coeffs[i] / m) != (q.coeffs[i] / n)) {
             return *prop;
@@ -332,7 +331,17 @@ int main() {
     t.coeffs = t_coeffs;
     cout << "(3q).proportional(5q) = " << (s*r).proportional(t*r) << endl;
     cout << s*r << endl << t*r << endl;
+    s.coeffs[0] = 1;
+    s.coeffs.push_back(1);
+    t.coeffs[0] = -1;
+    t.coeffs.push_back(-1);
+    cout << "s: " << s << " t: " << t << " s.proportional(t): " 
+        << s.proportional(t) << endl;
 
+    s.coeffs.pop_back();
+    s.coeffs[0] = -3;
+    t.coeffs.pop_back();
+    t.coeffs[0] = 5;
     cout << endl << "Testing ==" << endl;
     cout << "p == p: " << (p == p) << endl;
     cout << "p == q: " << (p == q) << endl;
