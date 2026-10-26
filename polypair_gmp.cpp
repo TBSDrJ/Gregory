@@ -94,12 +94,12 @@ bool operator== (const PolyPair& pp, const PolyPair& qq) {
 }
 
 
-bool operator!= (const PolyPair& pp, const mpz_class& f) {
-    return not(pp == f);
+bool operator!= (const PolyPair& pp, const mpz_class& n) {
+    return not(pp == n);
 }
 
-bool operator!= (const mpz_class& f, const PolyPair& pp) {
-    return not(f == pp);
+bool operator!= (const mpz_class& n, const PolyPair& pp) {
+    return not(n == pp);
 }
 
 bool operator!= (const PolyPair& pp, const Polynomial& p) {
