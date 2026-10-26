@@ -14,8 +14,12 @@ class PolyPair {
         Polynomial a, b;
         PolyPair();
         PolyPair(Polynomial& new_a, Polynomial& new_b);
-    friend bool operator== (const PolyPair& pp, const mpz_class& f);
-    friend bool operator== (const mpz_class& f, const PolyPair& pp);
+        // This is a test to see if addition/subtracton is possible.
+        bool common_factor(const PolyPair& qq);
+        bool common_factor(const Polynomial& q);
+        bool common_factor(const mpz_class& n);
+    friend bool operator== (const PolyPair& pp, const mpz_class& n);
+    friend bool operator== (const mpz_class& n, const PolyPair& pp);
     friend bool operator== (const PolyPair& pp, const Polynomial& p);
     friend bool operator== (const Polynomial& p, const PolyPair& pp);
     friend bool operator== (const PolyPair& pp, const PolyPair& qq);

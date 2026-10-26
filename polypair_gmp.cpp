@@ -28,6 +28,40 @@ PolyPair::PolyPair(Polynomial& new_a, Polynomial& new_b) {
     }
 }
 
+bool PolyPair::common_factor(const PolyPair& qq) {
+    if ((this -> a.deg() == 0) and (qq.a.deg() == 0)) {
+        return true;
+    }
+    if ((this -> b.deg() == 0) and (qq.b.deg() == 0)) {
+        return true;
+    }
+    if (this -> a.proportional(qq.a)) {
+        return true;
+    }
+    if (this -> b.proportional(qq.b)) {
+        return true;
+    }
+    return false;
+}
+
+bool PolyPair::common_factor(const Polynomial& q) {
+    if (this -> b.deg() == 0) {
+        return true;
+    }
+    if (q.deg() == 0) {
+        return this -> common_factor(q.coeffs[0]);
+    }
+    return false;
+}
+
+bool PolyPair::common_factor(const mpz_class& n) {
+    if ((this -> a.deg() == 0) or (this -> b.deg() == 0)) {
+        return true;
+    }
+    return false;
+}
+
+
 bool operator== (const PolyPair& pp, const mpz_class& n) {
     if (pp.a.deg() > 0 or pp.b.deg() > 0) {
         return false;
@@ -149,24 +183,50 @@ int main() {
     cout << "pp_11 = " << pp_11 << endl;
     PolyPair pp_12 = PolyPair(p_1, p_2);
     cout << "pp_12 = " << pp_12 << endl;
+    PolyPair pp_13 = PolyPair(p_1, p_3);
+    cout << "pp_13 = " << pp_13 << endl;
+    PolyPair pp_14 = PolyPair(p_1, p_4);
+    cout << "pp_14 = " << pp_14 << endl;
+    PolyPair pp_15 = PolyPair(p_1, p_5);
+    cout << "pp_15 = " << pp_15 << endl;
     PolyPair pp_21 = PolyPair(p_2, p_1);
     cout << "pp_21 = " << pp_21 << endl;
     PolyPair pp_22 = PolyPair(p_2, p_2);
     cout << "pp_22 = " << pp_22 << endl;
     PolyPair pp_23 = PolyPair(p_2, p_3);
     cout << "pp_23 = " << pp_23 << endl;
-    PolyPair pp_32 = PolyPair(p_3, p_2);
-    cout << "pp_32 = " << pp_32 << endl;
     PolyPair pp_24 = PolyPair(p_2, p_4);
     cout << "pp_24 = " << pp_24 << endl;
+    PolyPair pp_25 = PolyPair(p_2, p_5);
+    cout << "pp_25 = " << pp_25 << endl;
+    PolyPair pp_31 = PolyPair(p_3, p_1);
+    cout << "pp_31 = " << pp_31 << endl;
+    PolyPair pp_32 = PolyPair(p_3, p_2);
+    cout << "pp_32 = " << pp_32 << endl;
+    PolyPair pp_33 = PolyPair(p_3, p_3);
+    cout << "pp_33 = " << pp_33 << endl;
+    PolyPair pp_35 = PolyPair(p_3, p_5);
+    cout << "pp_35 = " << pp_35 << endl;
+    PolyPair pp_41 = PolyPair(p_4, p_1);
+    cout << "pp_41 = " << pp_41 << endl;
     PolyPair pp_42 = PolyPair(p_4, p_2);
     cout << "pp_42 = " << pp_42 << endl;
+    PolyPair pp_43 = PolyPair(p_4, p_3);
+    cout << "pp_43 = " << pp_43 << endl;
+    PolyPair pp_44 = PolyPair(p_4, p_4);
+    cout << "pp_44 = " << pp_44 << endl;
+    PolyPair pp_45 = PolyPair(p_4, p_5);
+    cout << "pp_45 = " << pp_45 << endl;
     PolyPair pp_51 = PolyPair(p_5, p_1);
     cout << "pp_51 = " << pp_51 << endl;
-    PolyPair pp_25 = PolyPair(p_5, p_1);
-    cout << "pp_25 = " << pp_25 << endl;
     PolyPair pp_52 = PolyPair(p_5, p_2);
     cout << "pp_52 = " << pp_52 << endl;
+    PolyPair pp_53 = PolyPair(p_5, p_3);
+    cout << "pp_53 = " << pp_53 << endl;
+    PolyPair pp_54 = PolyPair(p_5, p_4);
+    cout << "pp_54 = " << pp_54 << endl;
+    PolyPair pp_55 = PolyPair(p_5, p_5);
+    cout << "pp_55 = " << pp_55 << endl;
 
     cout << endl << "Testing ==" << endl;
     cout << "Should all be true: " << endl;
@@ -218,4 +278,55 @@ int main() {
     cout << "pp_12 != 1: " << (pp_12 != 1) << endl;
     cout << "pp_22 != pp_23: " << (pp_22 != pp_23) << endl;
     cout << "pp_12 != pp_21: " << (pp_12 != pp_21) << endl;
+
+    cout << endl << "Testing .common_factor():" << endl;
+    cout << "Should all be true:" << endl;
+    cout << "pp_00.common_factor(pp_00): " << pp_00.common_factor(pp_00) 
+            << endl;
+    cout << "pp_00.common_factor(p_1): " << pp_00.common_factor(p_1) << endl;
+    cout << "pp_00.common_factor(5): " << pp_00.common_factor(5) << endl;
+    cout << "pp_11.common_factor(pp_11): " << pp_11.common_factor(pp_11) 
+            << endl;
+    cout << "pp_11.common_factor(37*p_1): " << pp_11.common_factor(37*p_1) 
+            << endl;
+    cout << "pp_11.common_factor(5): " << pp_11.common_factor(5) << endl;
+    cout << "pp_12.common_factor(pp_13): " << pp_12.common_factor(pp_13) 
+            << endl;
+    cout << "pp_12.common_factor(37*p_1): " << pp_12.common_factor(37*p_1) 
+            << endl;
+    cout << "pp_12.common_factor(5): " << pp_12.common_factor(5) << endl;
+    cout << "pp_21.common_factor(pp_31): " << pp_21.common_factor(pp_31) 
+            << endl;
+    cout << "pp_21.common_factor(37*p_1): " << pp_21.common_factor(37*p_1) 
+            << endl;
+    cout << "pp_21.common_factor(5): " << pp_21.common_factor(5) << endl;
+    cout << "pp_42.common_factor(pp_52): " << pp_42.common_factor(pp_52) 
+            << endl;
+    cout << "pp_42.common_factor(pp_53): " << pp_42.common_factor(pp_53) 
+            << endl;
+    cout << "pp_22.common_factor(pp_22): " << pp_22.common_factor(pp_22) 
+            << endl;
+    cout << "pp_22.common_factor(pp_23): " << pp_22.common_factor(pp_23) 
+            << endl;
+    cout << "pp_22.common_factor(pp_32): " << pp_22.common_factor(pp_33) 
+            << endl;
+    cout << "pp_22.common_factor(pp_33): " << pp_22.common_factor(pp_33) 
+            << endl;
+    cout << "pp_44.common_factor(pp_45): " << pp_44.common_factor(pp_45) 
+            << endl;
+    cout << "pp_55.common_factor(pp_45): " << pp_55.common_factor(pp_45) 
+            << endl;
+    cout << "Should all be false:" << endl;
+    cout << "pp_25.common_factor(pp_53): " << pp_25.common_factor(pp_53)
+            << endl;
+    cout << "pp_24.common_factor(pp_42): " << pp_24.common_factor(pp_42)
+            << endl;
+    cout << "pp_35.common_factor(pp_43): " << pp_35.common_factor(pp_43)
+            << endl;
+    cout << "pp_45.common_factor(pp_54): " << pp_45.common_factor(pp_54)
+            << endl;
+    cout << "pp_54.common_factor(pp_45): " << pp_54.common_factor(pp_45)
+            << endl;
+    cout << "pp_55.common_factor(pp_44): " << pp_55.common_factor(pp_44)
+            << endl;
 }
