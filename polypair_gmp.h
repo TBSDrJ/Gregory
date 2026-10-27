@@ -23,6 +23,8 @@ class PolyPair {
         bool common_factor(const mpz_class& n) const;
         bool common_factor(const Polynomial& q) const;
         bool common_factor(const PolyPair& qq) const;
+        // We only do this for n=0 because ln(n+1) is only an int there.
+        mpz_class eval(mpz_class n);
     friend bool operator== (const PolyPair& pp, const int& n);
     friend bool operator== (const int& n, const PolyPair& pp);
     friend bool operator== (const PolyPair& pp, const long& n);
