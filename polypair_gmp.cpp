@@ -100,6 +100,13 @@ bool PolyPair::common_factor(const mpz_class& n) const {
     return false;
 }
 
+common_factor(const long& n) const {
+    return this -> common_factor(mpz_class(n));
+}
+common_factor(const int& n) const {
+    return this -> common_factor(mpz_class(n));
+}
+
 bool operator== (const PolyPair& pp, const int& n) {
     return pp == mpz_class(n);
 }
