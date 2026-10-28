@@ -15,7 +15,15 @@ PolyPair::PolyPair() {
     this -> b = b;
 }
 
-PolyPair::PolyPair(const mpz_class m, const mpz_class n) {
+// PolyPair::PolyPair(const mpz_class& n) {
+//     if (n == )
+// }
+
+// PolyPair::PolyPair(const Polynomial& new_a) {
+
+// }
+
+PolyPair::PolyPair(const mpz_class& m, const mpz_class& n) {
     if ((m == 0) or (n == 0)) {
         this -> a = *(new Polynomial());
         this -> b = *(new Polynomial());
@@ -25,7 +33,7 @@ PolyPair::PolyPair(const mpz_class m, const mpz_class n) {
     }
 }
 
-PolyPair::PolyPair(const mpz_class n, const Polynomial& new_b) {
+PolyPair::PolyPair(const mpz_class& n, const Polynomial& new_b) {
     Polynomial * q = new Polynomial(n);
     this -> a = *q;
     if (n != 0) {
@@ -39,7 +47,7 @@ PolyPair::PolyPair(const mpz_class n, const Polynomial& new_b) {
     }
 }
 
-PolyPair::PolyPair(const Polynomial& new_a, const mpz_class n) {
+PolyPair::PolyPair(const Polynomial& new_a, const mpz_class& n) {
     Polynomial * q = new Polynomial(n);
     this -> b = *q;
     if (n != 0) {
@@ -483,7 +491,7 @@ int main() {
     cout << "pp_04 = " << pp_04 << endl;
     PolyPair pp_40 = PolyPair(p_4, p_0);
     cout << "pp_40 = " << pp_40 << endl;
-    PolyPair pp_11 = PolyPair(1, 1);
+    PolyPair pp_11 = PolyPair(1);
     cout << "pp_11 = " << pp_11 << endl;
     PolyPair pp_12 = PolyPair(1, p_2);
     cout << "pp_12 = " << pp_12 << endl;
@@ -493,7 +501,7 @@ int main() {
     cout << "pp_14 = " << pp_14 << endl;
     PolyPair pp_15 = PolyPair(p_1, p_5);
     cout << "pp_15 = " << pp_15 << endl;
-    PolyPair pp_21 = PolyPair(p_2, 1);
+    PolyPair pp_21 = PolyPair(p_2);
     cout << "pp_21 = " << pp_21 << endl;
     PolyPair pp_22 = PolyPair(p_2, p_2);
     cout << "pp_22 = " << pp_22 << endl;
