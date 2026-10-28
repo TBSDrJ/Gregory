@@ -550,120 +550,130 @@ int main() {
     cout << "(-3p_2(x))(-2p_5(L)) == (6p_2(x))(p_5(L)): " << 
             (PolyPair(-3*p_2, -2*p_5) == PolyPair(6*p_2, p_5)) << endl;
     cout << "Should all be False: " << endl;
-    cout << "pp_12 == pp_23: " << (pp_12 == pp_23) << endl;
-    cout << "pp_12 == p_2: " << (pp_12 == p_2) << endl;
-    cout << "p_2 == pp_12: " << (p_2 == pp_12) << endl;
-    cout << "1 == pp_12: " << (1 == pp_12) << endl;
-    cout << "pp_12 == 1: " << (pp_12 == 1) << endl;
-    cout << "pp_22 == pp_23: " << (pp_22 == pp_23) << endl;
-    cout << "pp_12 == pp_21: " << (pp_12 == pp_21) << endl;
+    cout << pp_12 << " == " << pp_23 << ": " << (pp_12 == pp_23) << endl;
+    cout << pp_12 << " == " << p_2 << ": " << (pp_12 == p_2) << endl;
+    cout << p_2 << " == " << pp_12 << ": " << (p_2 == pp_12) << endl;
+    cout << 1 << " == " << pp_12 << ": " << (1 == pp_12) << endl;
+    cout << pp_12 << " == " << 1 << ": " << (pp_12 == 1) << endl;
+    cout << pp_22 << " == " << pp_23 << ": " << (pp_22 == pp_23) << endl;
+    cout << pp_12 << " == " << pp_21 << ": " << (pp_12 == pp_21) << endl;
 
 
     cout << endl << "Testing !=" << endl;
     cout << "Should all be false: " << endl;
-    cout << "pp_00 != pp_00: " << (pp_00 != pp_00) << endl;
-    cout << "pp_00 != pp_04: " << (pp_00 != pp_04) << endl;
-    cout << "pp_40 != pp_00: " << (pp_40 != pp_00) << endl;
-    cout << "pp_11 != p_1: " << (pp_11 != p_1) << endl;
-    cout << "p_1 != pp_11: " << (p_1 != pp_11) << endl;
-    cout << "pp_11 != 1: " << (pp_11 != 1) << endl;
-    cout << "1 != pp_11: " << (1 != pp_11) << endl;
-    cout << "pp_51 != p_5: " << (pp_51 != p_5) << endl;
-    cout << "p_5 != pp_51: " << (p_5 != pp_51) << endl;
-    cout << "pp_23 != pp_32: " << (pp_23 != pp_32) << endl;
-    cout << "(3p_2)(p_2) != (p_3)(3p_3): " <<
-            (PolyPair(3*p_2, p_2) != PolyPair(p_3, 3*p_3)) << endl;
+    cout << pp_00 << " != " << pp_00 << ": " << (pp_00 != pp_00) << endl;
+    cout << pp_00 << " != " << pp_04 << ": " << (pp_00 != pp_04) << endl;
+    cout << pp_40 << " != " << pp_00 << ": " << (pp_40 != pp_00) << endl;
+    cout << pp_11 << " != " << p_1 << ": " << (pp_11 != p_1) << endl;
+    cout << p_1 << " != " << pp_11 << ": " << (p_1 != pp_11) << endl;
+    cout << pp_11 << " != " << 1 << ": " << (pp_11 != 1) << endl;
+    cout << "1 != " << pp_11 << ": " << (1 != pp_11) << endl;
+    cout << pp_51 << " != " << p_5 << ": " << (pp_51 != p_5) << endl;
+    cout << p_5 << " != " << pp_51 << ": " << (p_5 != pp_51) << endl;
+    cout << pp_23 << " != " << pp_32 << ": " << (pp_23 != pp_32) << endl;
+    cout << "(" << 3*p_2 << ")(" << p_2 << ") != (" << p_3 << ")(" << 3*p_3 << 
+            "): " << (PolyPair(3*p_2, p_2) != PolyPair(p_3, 3*p_3)) << endl;
     cout << "(-3p_2(x))(-2p_5(L)) != (6p_2(x))(p_5(L)): " << 
             (PolyPair(-3*p_2, -2*p_5) != PolyPair(6*p_2, p_5)) << endl;
     cout << "Should all be True: " << endl;
-    cout << "pp_12 != pp_23: " << (pp_12 != pp_23) << endl;
-    cout << "pp_12 != p_2: " << (pp_12 != p_2) << endl;
-    cout << "p_2 != pp_12: " << (p_2 != pp_12) << endl;
-    cout << "1 != pp_12: " << (1 != pp_12) << endl;
-    cout << "pp_12 != 1: " << (pp_12 != 1) << endl;
-    cout << "pp_22 != pp_23: " << (pp_22 != pp_23) << endl;
-    cout << "pp_12 != pp_21: " << (pp_12 != pp_21) << endl;
+    cout << pp_12 << " != " << pp_23 << ": " << (pp_12 != pp_23) << endl;
+    cout << pp_12 << " != " << p_2 << ": " << (pp_12 != p_2) << endl;
+    cout << p_2 << " != " << pp_12 << ": " << (p_2 != pp_12) << endl;
+    cout << "1 != " << pp_12 << ": " << (1 != pp_12) << endl;
+    cout << pp_12 << " != " << 1 << ": " << (pp_12 != 1) << endl;
+    cout << pp_22 << " != " << pp_23 << ": " << (pp_22 != pp_23) << endl;
+    cout << pp_12 << " != " << pp_21 << ": " << (pp_12 != pp_21) << endl;
 
     cout << endl << "Testing .common_factor():" << endl;
     cout << "Should all be true:" << endl;
-    cout << "pp_00.common_factor(pp_00): " << pp_00.common_factor(pp_00) 
-            << endl;
-    cout << "pp_00.common_factor(p_1): " << pp_00.common_factor(p_1) << endl;
-    cout << "pp_00.common_factor(5): " << pp_00.common_factor(5) << endl;
-    cout << "pp_11.common_factor(pp_11): " << pp_11.common_factor(pp_11) 
-            << endl;
-    cout << "pp_11.common_factor(37*p_1): " << pp_11.common_factor(37*p_1) 
-            << endl;
-    cout << "pp_11.common_factor(5): " << pp_11.common_factor(5) << endl;
-    cout << "pp_12.common_factor(pp_13): " << pp_12.common_factor(pp_13) 
-            << endl;
-    cout << "pp_12.common_factor(37*p_1): " << pp_12.common_factor(37*p_1) 
-            << endl;
-    cout << "pp_12.common_factor(5): " << pp_12.common_factor(5) << endl;
-    cout << "pp_21.common_factor(pp_31): " << pp_21.common_factor(pp_31) 
-            << endl;
-    cout << "pp_21.common_factor(37*p_1): " << pp_21.common_factor(37*p_1) 
-            << endl;
-    cout << "pp_21.common_factor(5): " << pp_21.common_factor(5) << endl;
-    cout << "pp_42.common_factor(pp_52): " << pp_42.common_factor(pp_52) 
-            << endl;
-    cout << "pp_42.common_factor(pp_53): " << pp_42.common_factor(pp_53) 
-            << endl;
-    cout << "pp_22.common_factor(pp_22): " << pp_22.common_factor(pp_22) 
-            << endl;
-    cout << "pp_22.common_factor(pp_23): " << pp_22.common_factor(pp_23) 
-            << endl;
-    cout << "pp_22.common_factor(pp_32): " << pp_22.common_factor(pp_33) 
-            << endl;
-    cout << "pp_22.common_factor(pp_33): " << pp_22.common_factor(pp_33) 
-            << endl;
-    cout << "pp_44.common_factor(pp_45): " << pp_44.common_factor(pp_45) 
-            << endl;
-    cout << "pp_55.common_factor(pp_45): " << pp_55.common_factor(pp_45) 
-            << endl;
+    cout << pp_00 << ".common_factor(" << pp_00 << "): " << 
+            pp_00.common_factor(pp_00) << endl;
+    cout << pp_00 << ".common_factor(" << p_1 << "): " << 
+            pp_00.common_factor(p_1) << endl;
+    cout << pp_00 << ".common_factor(" << 5 << "): " << 
+            pp_00.common_factor(5) << endl;
+    cout << pp_11 << ".common_factor(" << pp_00 << "): " << 
+            pp_11.common_factor(pp_00) << endl;
+    cout << pp_11 << ".common_factor(" << pp_11 << "): " << 
+            pp_11.common_factor(pp_11) << endl;
+    cout << pp_11 << ".common_factor(" << 37*p_1 << "): " << 
+            pp_11.common_factor(37*p_1) << endl;
+    cout << pp_11 << ".common_factor(" << 5 << "): " << 
+            pp_11.common_factor(5) << endl;
+    cout << pp_12 << ".common_factor(" << pp_13 << "): " << 
+            pp_12.common_factor(pp_13) << endl;
+    cout << pp_12 << ".common_factor(" << 37*p_1 << "): " << 
+            pp_12.common_factor(37*p_1) << endl;
+    cout << pp_12 << ".common_factor(" << 5 << "): " << 
+            pp_12.common_factor(5) << endl;
+    cout << pp_21 << ".common_factor(" << pp_31 << "): " << 
+            pp_21.common_factor(pp_31) << endl;
+    cout << pp_21 << ".common_factor(" << 37*p_1 << "): " << 
+            pp_21.common_factor(37*p_1) << endl;
+    cout << pp_21 << ".common_factor(" << 5 << "): " << 
+            pp_21.common_factor(5) << endl;
+    cout << pp_42 << ".common_factor(" << pp_52 << "): " << 
+            pp_42.common_factor(pp_52) << endl;
+    cout << pp_42 << ".common_factor(" << pp_53 << "): " << 
+            pp_42.common_factor(pp_53) << endl;
+    cout << pp_22 << ".common_factor(" << pp_22 << "): " << 
+            pp_22.common_factor(pp_22) << endl;
+    cout << pp_22 << ".common_factor(" << pp_23 << "): " << 
+            pp_22.common_factor(pp_23) << endl;
+    cout << pp_22 << ".common_factor(" << pp_32 << "): " << 
+            pp_22.common_factor(pp_32) << endl;
+    cout << pp_22 << ".common_factor(" << pp_33 << "): " << 
+            pp_22.common_factor(pp_33) << endl;
+    cout << pp_44 << ".common_factor(" << pp_45 << "): " << 
+            pp_44.common_factor(pp_45) << endl;
+    cout << pp_55 << ".common_factor(" << pp_45 << "): " << 
+            pp_55.common_factor(pp_45) << endl;
     cout << "Should all be false:" << endl;
-    cout << "pp_25.common_factor(pp_53): " << pp_25.common_factor(pp_53)
-            << endl;
-    cout << "pp_24.common_factor(pp_42): " << pp_24.common_factor(pp_42)
-            << endl;
-    cout << "pp_35.common_factor(pp_43): " << pp_35.common_factor(pp_43)
-            << endl;
-    cout << "pp_45.common_factor(pp_54): " << pp_45.common_factor(pp_54)
-            << endl;
-    cout << "pp_54.common_factor(pp_45): " << pp_54.common_factor(pp_45)
-            << endl;
-    cout << "pp_55.common_factor(pp_44): " << pp_55.common_factor(pp_44)
-            << endl;
+    cout << pp_25 << ".common_factor(" << pp_53 << "): " << 
+            pp_25.common_factor(pp_53) << endl;
+    cout << pp_24 << ".common_factor(" << pp_42 << "): " << 
+            pp_24.common_factor(pp_42) << endl;
+    cout << pp_35 << ".common_factor(" << pp_53 << "): " << 
+            pp_35.common_factor(pp_53) << endl;
+    cout << pp_45 << ".common_factor(" << pp_54 << "): " << 
+            pp_45.common_factor(pp_54) << endl;
+    cout << pp_54 << ".common_factor(" << pp_35 << "): " << 
+            pp_54.common_factor(pp_35) << endl;
+    cout << pp_55 << ".common_factor(" << pp_43 << "): " << 
+            pp_55.common_factor(pp_43) << endl;
 
     cout << endl << "Testing +" << endl;
-    cout << "pp_00 + 5: " << pp_00 + 5 << endl;
-    cout << "pp_21 + 5: " << pp_21 + 5 << endl;
-    cout << "pp_31 + 5: " << pp_31 + 5 << endl;
-    cout << "pp_41 + 5: " << pp_41 + 5 << endl;
-    cout << "pp_51 + 5: " << pp_51 + 5 << endl;
-    cout << "PolyPair(p_2, 5) + 3: " << (PolyPair(p_2, 5) + 3) << endl;
-    cout << "PolyPair(p_3, 5) + 3: " << (PolyPair(p_3, 5) + 3) << endl;
-    cout << "PolyPair(p_4, 5) + 3: " << (PolyPair(p_4, 5) + 3) << endl;
-    cout << "PolyPair(p_5, 5) + 3: " << (PolyPair(p_5, 5) + 3) << endl;
-    cout << "5 + pp_00: " << 5 + pp_00 << endl;
-    cout << "5 + pp_21: " << 5 + pp_21 << endl;
-    cout << "5 + pp_31: " << 5 + pp_31 << endl;
-    cout << "5 + pp_41: " << 5 + pp_41 << endl;
-    cout << "5 + pp_51: " << 5 + pp_51 << endl;
-    cout << "3 + PolyPair(p_2, 5): " << (3 + PolyPair(p_2, 5)) << endl;
-    cout << "3 + PolyPair(p_3, 5): " << (3 + PolyPair(p_3, 5)) << endl;
-    cout << "3 + PolyPair(p_4, 5): " << (3 + PolyPair(p_4, 5)) << endl;
-    cout << "3 + PolyPair(p_5, 5): " << (3 + PolyPair(p_5, 5)) << endl;
-    cout << "pp_00 + p_1: " << pp_00 + p_1 << endl;
-    cout << "pp_00 + p_2: " << pp_00 + p_2 << endl;
-    cout << "pp_00 + p_3: " << pp_00 + p_3 << endl;
-    cout << "pp_00 + p_4: " << pp_00 + p_4 << endl;
-    cout << "pp_00 + p_5: " << pp_00 + p_5 << endl;
-    cout << "pp_21 + p_1: " << pp_21 + p_1 << endl;
-    cout << "pp_21 + p_2: " << pp_21 + p_2 << endl;
-    cout << "pp_21 + p_3: " << pp_21 + p_3 << endl;
-    cout << "pp_21 + p_4: " << pp_21 + p_4 << endl;
-    cout << "pp_21 + p_5: " << pp_21 + p_5 << endl;
+    cout << pp_00 << " + 5: " << pp_00 + 5 << endl;
+    cout << pp_21 << " + 5: " << pp_21 + 5 << endl;
+    cout << pp_31 << " + 5: " << pp_31 + 5 << endl;
+    cout << pp_41 << " + 5: " << pp_41 + 5 << endl;
+    cout << pp_51 << " + 5: " << pp_51 + 5 << endl;
+    cout << PolyPair(p_2, 5) << " + 3: " << (PolyPair(p_2, 5) + 3) << endl;
+    cout << PolyPair(p_3, 5) << " + 3: " << (PolyPair(p_3, 5) + 3) << endl;
+    cout << PolyPair(p_4, 5) << " + 3: " << (PolyPair(p_4, 5) + 3) << endl;
+    cout << PolyPair(p_5, 5) << " + 3: " << (PolyPair(p_5, 5) + 3) << endl;
+    cout << "5 + " << pp_21 << ": " << 5 + pp_21 << endl;
+    cout << "5 + " << pp_31 << ": " << 5 + pp_31 << endl;
+    cout << "5 + " << pp_41 << ": " << 5 + pp_41 << endl;
+    cout << "5 + " << pp_51 << ": " << 5 + pp_51 << endl;
+    cout << "3 + " << PolyPair(p_2, 5) << ": " << (3 + PolyPair(p_2, 5)) 
+            << endl;
+    cout << "3 + " << PolyPair(p_3, 5) << ": " << (3 + PolyPair(p_3, 5)) 
+            << endl;
+    cout << "3 + " << PolyPair(p_4, 5) << ": " << (3 + PolyPair(p_4, 5)) 
+            << endl;
+    cout << "3 + " << PolyPair(p_5, 5) << ": " << (3 + PolyPair(p_5, 5)) 
+            << endl;
+    cout << pp_00 << " + " << p_1 << ": " << pp_00 + p_1 << endl;
+    cout << pp_00 << " + " << p_2 << ": " << pp_00 + p_2 << endl;
+    cout << pp_00 << " + " << p_3 << ": " << pp_00 + p_3 << endl;
+    cout << pp_00 << " + " << p_4 << ": " << pp_00 + p_4 << endl;
+    cout << pp_00 << " + " << p_5 << ": " << pp_00 + p_5 << endl;
+    cout << pp_21 << " + " << p_1 << ": " << pp_21 + p_1 << endl;
+    cout << pp_21 << " + " << p_2 << ": " << pp_21 + p_2 << endl;
+    cout << pp_21 << " + " << p_3 << ": " << pp_21 + p_3 << endl;
+    cout << pp_21 << " + " << p_4 << ": " << pp_21 + p_4 << endl;
+    cout << pp_21 << " + " << p_5 << ": " << pp_21 + p_5 << endl;
     cout << PolyPair(p_2, 5) << " + " << PolyPair(p_2, 3) << ": " 
             << (PolyPair(p_2, 5) + PolyPair(p_2, 3)) << endl;
     cout << PolyPair(p_2, 5) << " + " << PolyPair(p_3, 3) << ": " << 
@@ -692,105 +702,111 @@ int main() {
             PolyPair(p_4, 3*p_3) << endl;
 
     cout << endl << "Testing -" << endl;
-    cout << "pp_00 - 5: " << pp_00 - 5 << endl;
-    cout << "pp_21 - 5: " << pp_21 - 5 << endl;
-    cout << "pp_31 - 5: " << pp_31 - 5 << endl;
-    cout << "pp_41 - 5: " << pp_41 - 5 << endl;
-    cout << "pp_51 - 5: " << pp_51 - 5 << endl;
-    cout << "PolyPair(p_2, 5) - 3: " << (PolyPair(p_2, 5) - 3) << endl;
-    cout << "PolyPair(p_3, 5) - 3: " << (PolyPair(p_3, 5) - 3) << endl;
-    cout << "PolyPair(p_4, 5) - 3: " << (PolyPair(p_4, 5) - 3) << endl;
-    cout << "PolyPair(p_5, 5) - 3: " << (PolyPair(p_5, 5) - 3) << endl;
-    cout << "5 - pp_00: " << 5 - pp_00 << endl;
-    cout << "5 - pp_21: " << 5 - pp_21 << endl;
-    cout << "5 - pp_31: " << 5 - pp_31 << endl;
-    cout << "5 - pp_41: " << 5 - pp_41 << endl;
-    cout << "5 - pp_51: " << 5 - pp_51 << endl;
-    cout << "3 - PolyPair(p_2, 5): " << (3 - PolyPair(p_2, 5)) << endl;
-    cout << "3 - PolyPair(p_3, 5): " << (3 - PolyPair(p_3, 5)) << endl;
-    cout << "3 - PolyPair(p_4, 5): " << (3 - PolyPair(p_4, 5)) << endl;
-    cout << "3 - PolyPair(p_5, 5): " << (3 - PolyPair(p_5, 5)) << endl;
-    cout << "pp_00 - p_1: " << pp_00 - p_1 << endl;
-    cout << "pp_00 - p_2: " << pp_00 - p_2 << endl;
-    cout << "pp_00 - p_3: " << pp_00 - p_3 << endl;
-    cout << "pp_00 - p_4: " << pp_00 - p_4 << endl;
-    cout << "pp_00 - p_5: " << pp_00 - p_5 << endl;
-    cout << "pp_21 - p_1: " << pp_21 - p_1 << endl;
-    cout << "pp_21 - p_2: " << pp_21 - p_2 << endl;
-    cout << "pp_21 - p_3: " << pp_21 - p_3 << endl;
-    cout << "pp_21 - p_4: " << pp_21 - p_4 << endl;
-    cout << "pp_21 - p_5: " << pp_21 - p_5 << endl;
-    cout << "p_1 - pp_00: " << p_1 - pp_00 << endl;
-    cout << "p_2 - pp_00: " << p_2 - pp_00 << endl;
-    cout << "p_3 - pp_00: " << p_3 - pp_00 << endl;
-    cout << "p_4 - pp_00: " << p_4 - pp_00 << endl;
-    cout << "p_5 - pp_00: " << p_5 - pp_00 << endl;
-    cout << "p_1 - pp_21: " << p_1 - pp_21 << endl;
-    cout << "p_2 - pp_21: " << p_2 - pp_21 << endl;
-    cout << "p_3 - pp_21: " << p_3 - pp_21 << endl;
-    cout << "p_4 - pp_21: " << p_4 - pp_21 << endl;
-    cout << "p_5 - pp_21: " << p_5 - pp_21 << endl;
-    cout << "PolyPair(p_2, 5) - PolyPair(p_2, 3): " << (PolyPair(p_2, 5) -
-            PolyPair(p_2, 3)) << endl;
-    cout << "PolyPair(p_2, 5) - PolyPair(p_3, 3): " << (PolyPair(p_2, 5) -
-            PolyPair(p_3, 3)) << endl;
-    cout << "PolyPair(p_2, 5) - PolyPair(p_4, 3): " << (PolyPair(p_2, 5) -
-            PolyPair(p_4, 3)) << endl;
-    cout << "PolyPair(p_2, 5) - PolyPair(p_5, 3): " << (PolyPair(p_2, 5) -
-            PolyPair(p_5, 3)) << endl;
-    cout << "PolyPair(5, p_2) - PolyPair(3, p_2): " << (PolyPair(5, p_2) -
-            PolyPair(3, p_2)) << endl;
-    cout << "PolyPair(5, p_2) - PolyPair(3, p_3): " << (PolyPair(5, p_2) -
-            PolyPair(3, p_3)) << endl;
-    cout << "PolyPair(5, p_2) - PolyPair(3, p_4): " << (PolyPair(5, p_2) -
-            PolyPair(3, p_4)) << endl;
-    cout << "PolyPair(5, p_2) - PolyPair(3, p_5): " << (PolyPair(5, p_2) -
-            PolyPair(3, p_5)) << endl;
-    cout << "PolyPair(p_2, 5) - PolyPair(p_3, 5): " << (PolyPair(p_2, 5) - 
-            PolyPair(p_3, 5)) << endl;
-    cout << "PolyPair(5, p_2) - PolyPair(5, p_3): " << (PolyPair(5, p_2) - 
-            PolyPair(5, p_3)) << endl;
-    cout << "PolyPair(5*p_2, p_5) - PolyPair(3*p_3, p_4): " << 
-            PolyPair(5*p_2, p_5) - 
-            PolyPair(3*p_3, p_4) << endl;
-    cout << "PolyPair(p_5, 5*p_2) - PolyPair(p_4, 3*p_3): " << 
-            PolyPair(p_5, 5*p_2) - 
-            PolyPair(p_4, 3*p_3) << endl;
-    cout << "PolyPair(p_2, 3) - PolyPair(p_2, 5): " << (PolyPair(p_2, 3) - 
-            PolyPair(p_2, 5)) << endl;
-    cout << "PolyPair(p_3, 3) - PolyPair(p_2, 5): " << (PolyPair(p_3, 3) - 
-            PolyPair(p_2, 5)) << endl;
-    cout << "PolyPair(p_4, 3) - PolyPair(p_2, 5): " << (PolyPair(p_4, 3) - 
-            PolyPair(p_2, 5)) << endl;
-    cout << "PolyPair(p_5, 3) - PolyPair(p_2, 5): " << (PolyPair(p_5, 3) - 
-            PolyPair(p_2, 5)) << endl;
-    cout << "PolyPair(3, p_2) - PolyPair(5, p_2): " << (PolyPair(3, p_2) - 
-            PolyPair(5, p_2)) << endl;
-    cout << "PolyPair(3, p_3) - PolyPair(5, p_2): " << (PolyPair(3, p_3) - 
-            PolyPair(5, p_2)) << endl;
-    cout << "PolyPair(3, p_4) - PolyPair(5, p_2): " << (PolyPair(3, p_4) - 
-            PolyPair(5, p_2)) << endl;
-    cout << "PolyPair(3, p_5) - PolyPair(5, p_2): " << (PolyPair(3, p_5) - 
-            PolyPair(5, p_2)) << endl;
-    cout << "PolyPair(p_3, 5) - PolyPair(p_2, 5): " << (PolyPair(p_3, 5) - 
-            PolyPair(p_2, 5)) << endl;
-    cout << "PolyPair(5, p_3) - PolyPair(5, p_2): " << (PolyPair(5, p_3) - 
-            PolyPair(5, p_2)) << endl;
-    cout << "PolyPair(3*p_3, p_4) - PolyPair(5*p_2, p_5): " << 
+    cout << pp_00 << " - 5: " << pp_00 - 5 << endl;
+    cout << pp_21 << " - 5: " << pp_21 - 5 << endl;
+    cout << pp_31 << " - 5: " << pp_31 - 5 << endl;
+    cout << pp_41 << " - 5: " << pp_41 - 5 << endl;
+    cout << pp_51 << " - 5: " << pp_51 - 5 << endl;
+    cout << PolyPair(p_2, 5) << " - 3: " << (PolyPair(p_2, 5) - 3) << endl;
+    cout << PolyPair(p_3, 5) << " - 3: " << (PolyPair(p_3, 5) - 3) << endl;
+    cout << PolyPair(p_4, 5) << " - 3: " << (PolyPair(p_4, 5) - 3) << endl;
+    cout << PolyPair(p_5, 5) << " - 3: " << (PolyPair(p_5, 5) - 3) << endl;
+    cout << "5 - " << pp_00 << ": " << 5 - pp_00 << endl;
+    cout << "5 - " << pp_21 << ": " << 5 - pp_21 << endl;
+    cout << "5 - " << pp_31 << ": " << 5 - pp_31 << endl;
+    cout << "5 - " << pp_41 << ": " << 5 - pp_41 << endl;
+    cout << "5 - " << pp_51 << ": " << 5 - pp_51 << endl;
+    cout << "3 - " << PolyPair(p_2, 5) << ": " << (3 - PolyPair(p_2, 5)) 
+            << endl;
+    cout << "3 - " << PolyPair(p_3, 5) << ": " << (3 - PolyPair(p_3, 5)) 
+            << endl;
+    cout << "3 - " << PolyPair(p_4, 5) << ": " << (3 - PolyPair(p_4, 5)) 
+            << endl;
+    cout << "3 - " << PolyPair(p_5, 5) << ": " << (3 - PolyPair(p_5, 5)) 
+            << endl;
+    cout << pp_00 << " - " << p_1 << ": " << pp_00 - p_1 << endl;
+    cout << pp_00 << " - (" << p_2 << "): " << pp_00 - p_2 << endl;
+    cout << pp_00 << " - (" << p_3 << "): " << pp_00 - p_3 << endl;
+    cout << pp_00 << " - (" << p_4 << "): " << pp_00 - p_4 << endl;
+    cout << pp_00 << " - " << p_5 << ": " << pp_00 - p_5 << endl;
+    cout << pp_21 << " - " << p_1 << ": " << pp_21 - p_1 << endl;
+    cout << pp_21 << " - (" << p_2 << "): " << pp_21 - p_2 << endl;
+    cout << pp_21 << " - (" << p_3 << "): " << pp_21 - p_3 << endl;
+    cout << pp_21 << " - (" << p_4 << "): " << pp_21 - p_4 << endl;
+    cout << pp_21 << " - " << p_5 << ": " << pp_21 - p_5 << endl;
+    cout << p_1 << " - " << pp_00 << ": " << p_1 - pp_00 << endl;
+    cout << p_2 << " - " << pp_00 << ": " << p_2 - pp_00 << endl;
+    cout << p_3 << " - " << pp_00 << ": " << p_3 - pp_00 << endl;
+    cout << p_4 << " - " << pp_00 << ": " << p_4 - pp_00 << endl;
+    cout << p_5 << " - " << pp_00 << ": " << p_5 - pp_00 << endl;
+    cout << p_1 << " - " << pp_21 << ": " << p_1 - pp_21 << endl;
+    cout << p_2 << " - " << pp_21 << ": " << p_2 - pp_21 << endl;
+    cout << p_3 << " - " << pp_21 << ": " << p_3 - pp_21 << endl;
+    cout << p_4 << " - " << pp_21 << ": " << p_4 - pp_21 << endl;
+    cout << p_5 << " - " << pp_21 << ": " << p_5 - pp_21 << endl;
+    cout << PolyPair(p_2, 5) << " - " << PolyPair(p_2, 3) << ": " << 
+            (PolyPair(p_2, 5) - PolyPair(p_2, 3)) << endl;
+    cout << PolyPair(p_2, 5) << " - " << PolyPair(p_3, 3) << ": " << 
+            (PolyPair(p_2, 5) - PolyPair(p_3, 3)) << endl;
+    cout << PolyPair(p_2, 5) << " - " << PolyPair(p_4, 3) << ": " << 
+            (PolyPair(p_2, 5) - PolyPair(p_4, 3)) << endl;
+    cout << PolyPair(p_2, 5) << " - " << PolyPair(p_5, 3) << ": " << 
+            (PolyPair(p_2, 5) - PolyPair(p_5, 3)) << endl;
+    cout << PolyPair(5, p_2) << " - " << PolyPair(3, p_2) << ": " << 
+            (PolyPair(5, p_2) - PolyPair(3, p_2)) << endl;
+    cout << PolyPair(5, p_2) << " - " << PolyPair(3, p_3) << ": " << 
+            (PolyPair(5, p_2) - PolyPair(3, p_3)) << endl;
+    cout << PolyPair(5, p_2) << " - " << PolyPair(3, p_4) << ": " << 
+            (PolyPair(5, p_2) - PolyPair(3, p_4)) << endl;
+    cout << PolyPair(5, p_2) << " - " << PolyPair(3, p_5) << ": " << 
+            (PolyPair(5, p_2) - PolyPair(3, p_5)) << endl;
+    cout << PolyPair(p_2, 5) << " - " << PolyPair(p_3, 5) << ": " << 
+            (PolyPair(p_2, 5) - PolyPair(p_3, 5)) << endl;
+    cout << PolyPair(5, p_2) << " - " << PolyPair(5, p_3) << ": " << 
+            (PolyPair(5, p_2) - PolyPair(5, p_3)) << endl;
+    cout << PolyPair(5*p_2, p_5) << " - " << PolyPair(3*p_3, p_4) << ": " << 
+            PolyPair(5*p_2, p_5) - PolyPair(3*p_3, p_4) << endl;
+    cout << PolyPair(p_5, 5*p_2) << " - " << PolyPair(p_4, 3*p_3) << ": " << 
+            PolyPair(p_5, 5*p_2) - PolyPair(p_4, 3*p_3) << endl;
+    cout << PolyPair(p_2, 3) << " - " << PolyPair(p_2, 5) << ": " << 
+            (PolyPair(p_2, 3) - PolyPair(p_2, 5)) << endl;
+    cout << PolyPair(p_3, 3) << " - " << PolyPair(p_2, 5) << ": " << 
+            (PolyPair(p_3, 3) - PolyPair(p_2, 5)) << endl;
+    cout << PolyPair(p_4, 3) << " - " << PolyPair(p_2, 5) << ": " << 
+            (PolyPair(p_4, 3) - PolyPair(p_2, 5)) << endl;
+    cout << PolyPair(p_5, 3) << " - " << PolyPair(p_2, 5) << ": " << 
+            (PolyPair(p_5, 3) - PolyPair(p_2, 5)) << endl;
+    cout << PolyPair(3, p_2) << " - " << PolyPair(5, p_2) << ": " << 
+            (PolyPair(3, p_2) - PolyPair(5, p_2)) << endl;
+    cout << PolyPair(3, p_3) << " - " << PolyPair(5, p_2) << ": " << 
+            (PolyPair(3, p_3) - PolyPair(5, p_2)) << endl;
+    cout << PolyPair(3, p_4) << " - " << PolyPair(5, p_2) << ": " << 
+            (PolyPair(3, p_4) - PolyPair(5, p_2)) << endl;
+    cout << PolyPair(3, p_5) << " - " << PolyPair(5, p_2) << ": " << 
+            (PolyPair(3, p_5) - PolyPair(5, p_2)) << endl;
+    cout << PolyPair(p_3, 5) << " - " << PolyPair(p_2, 5) << ": " << 
+            (PolyPair(p_3, 5) - PolyPair(p_2, 5)) << endl;
+    cout << PolyPair(p_3, 5) << " - " << PolyPair(p_2, -5) << ": " << 
+            (PolyPair(p_3, 5) - PolyPair(p_2, -5)) << endl;
+    cout << PolyPair(5, p_3) << " - " << PolyPair(5, p_2) << ": " << 
+            (PolyPair(5, p_3) - PolyPair(5, p_2)) << endl;
+    cout << PolyPair(5, p_3) << " - " << PolyPair(-5, p_2) << ": " << 
+            (PolyPair(5, p_3) - PolyPair(-5, p_2)) << endl;
+    cout << PolyPair(3*p_3, p_4) << " - " << PolyPair(5*p_2, p_5) << ": " << 
             PolyPair(3*p_3, p_4) - PolyPair(5*p_2, p_5) << endl;
-    cout << "PolyPair(p_4, 3*p_3) - PolyPair(p_5, 5*p_2): " << 
+    cout << PolyPair(p_4, 3*p_3) << " - " << PolyPair(p_5, 5*p_2) << ": " << 
             PolyPair(p_4, 3*p_3) - PolyPair(p_5, 5*p_2) << endl;
 
     cout << endl << "Testing *" << endl;
-    cout << "5 * pp_24: " << 5 * pp_24 << endl;
-    cout << "pp_24 * 5: " << pp_24 * 5 << endl;
-    cout << "5L * pp_24: " << 5L * pp_24 << endl;
-    cout << "pp_24 * 5L: " << pp_24 * 5L << endl;
-    cout << "mpz_class(5) * pp_24: " << mpz_class(5) * pp_24 << endl;
-    cout << "pp_24 * mpz_class(5): " << pp_24 * mpz_class(5) << endl;
-    cout << "pp_24 * p_5: " << pp_24 * p_5 << endl;
-    cout << "p_5 * pp_24: " << p_5 * pp_24 << endl;
-    cout << "pp_53 * pp_24: " << pp_53 * pp_24 << endl;
+    cout << "5 * " << pp_24 << ": " << 5 * pp_24 << endl;
+    cout << pp_24 << " * 5: " << pp_24 * 5 << endl;
+    cout << "5L * " << pp_24 << ": " << 5L * pp_24 << endl;
+    cout << pp_24 << " * 5L: " << pp_24 * 5L << endl;
+    cout << "mpz_class(5) * " << pp_24 << ": " << mpz_class(5) * pp_24 << endl;
+    cout << pp_24 << " * mpz_class(5): " << pp_24 * mpz_class(5) << endl;
+    cout << pp_24 << " * " << p_5 << ": " << pp_24 * p_5 << endl;
+    cout << p_5 << " * " << pp_24 << ": " << p_5 * pp_24 << endl;
+    cout << pp_53 << " * " << pp_24 << ": " << pp_53 * pp_24 << endl;
 
     cout << endl << "Testing to make sure changes don't cross objects" << endl;
     PolyPair tt = pp_21 + 5;
@@ -805,4 +821,18 @@ int main() {
     cout << "Should be pp_31 + 10: " << uu << endl;
     cout << "Should be pp_21 - 10: " << vv << endl;
     cout << "Should be pp_31 - 10: " << ww << endl;
+
+    cout << endl << "Testing .eval()" << endl;
+    cout << pp_00 << ".eval(0): " << pp_00.eval(0) << endl;
+    cout << pp_11 << ".eval(0): " << pp_11.eval(0) << endl;
+    cout << pp_22 << ".eval(0): " << pp_22.eval(0) << endl;
+    cout << pp_23 << ".eval(0): " << pp_23.eval(0) << endl;
+    cout << pp_32 << ".eval(0): " << pp_32.eval(0) << endl;
+    cout << pp_42 << ".eval(0): " << pp_42.eval(0) << endl;
+    cout << pp_24 << ".eval(0): " << pp_24.eval(0) << endl;
+    cout << pp_52 << ".eval(0): " << pp_52.eval(0) << endl;
+    cout << pp_25 << ".eval(0): " << pp_25.eval(0) << endl;
+    cout << pp_45 << ".eval(0): " << pp_45.eval(0) << endl;
+    cout << pp_54 << ".eval(0): " << pp_54.eval(0) << endl;
+
 }
