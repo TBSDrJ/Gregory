@@ -7,18 +7,15 @@
 
 using namespace std;
 
-Polynomial::Polynomial() {
-    vector<mpz_class> coeffs = {0};
-    this -> coeffs = coeffs;
-}
-
 Polynomial::Polynomial(mpz_class n) {
     vector<mpz_class> * coeffs = new vector<mpz_class>({n});
     this -> coeffs = *coeffs;
+    cout << "Polynomial constructor from mpz " << n << endl;
 }
 
 Polynomial::Polynomial(vector<mpz_class> new_coeffs) {
     this -> coeffs = new_coeffs;
+    cout << "Polynomial constructor from vector " << new_coeffs[0] << endl;
 }
 
 int Polynomial::deg() const {
@@ -127,27 +124,9 @@ ostream& operator<< (ostream& os, const Polynomial& p) {
     return os;
 }
 
-bool operator== (const Polynomial& p, const int& n) {
-    return p == mpz_class(n);
-}
-
-bool operator== (const int& n, const Polynomial& p) {
-    return p == mpz_class(n);
-}
-
-bool operator== (const Polynomial& p, const long& n) {
-    return p == mpz_class(n);
-}
-
-bool operator== (const long& n, const Polynomial& p) {
-    return p == mpz_class(n);
-}
-
 bool operator== (const Polynomial& p, const mpz_class& n) {
-    if ((p.deg() == 0) and p.coeffs[0] == n) {
-        return true;
-    }
-    return false;
+    Polynomial q = Polynomial(n);
+    return p.coeffs == q.coeffs;
 }
 
 bool operator== (const mpz_class& n, const Polynomial& p) {
@@ -158,50 +137,18 @@ bool operator== (const Polynomial& p, const Polynomial& q) {
     return p.coeffs == q.coeffs;
 }
 
-bool operator!= (const Polynomial& p, const int& n) {
-    return not(p == n);
-}
-
-bool operator!= (const int& n, const Polynomial& p) {
-    return not(p == n);
-}
-
-bool operator!= (const Polynomial& p, const long& n) {
-    return not(p == n);
-}
-
-bool operator!= (const long& n, const Polynomial& p) {
-    return not(p == n);
-}
-
 bool operator!= (const Polynomial& p, const mpz_class& n) {
-    return not(p == n);
+    Polynomial q = Polynomial(n);
+    return p.coeffs == q.coeffs;
 }
-
 
 bool operator!= (const mpz_class& n, const Polynomial& p) {
-    return not(p == n);
+    Polynomial q = Polynomial(n);
+    return p.coeffs == q.coeffs;
 }
-
 
 bool operator!= (const Polynomial& p, const Polynomial& q) {
     return not(p == q);
-}
-
-Polynomial& operator+ (const Polynomial& p, const int& n) {
-    return p + mpz_class(n);
-}
-
-Polynomial& operator+ (const int& n, const Polynomial& p) {
-    return p + mpz_class(n);
-}
-
-Polynomial& operator+ (const Polynomial& p, const long& n) {
-    return p + mpz_class(n);
-}
-
-Polynomial& operator+ (const long& n, const Polynomial& p) {
-    return p + mpz_class(n);
 }
 
 Polynomial& operator+ (const Polynomial& p, const mpz_class& n) {
@@ -235,23 +182,6 @@ Polynomial& operator+ (const Polynomial& p, const Polynomial& q) {
     return *r;
 }
 
-Polynomial& operator- (const Polynomial& p, const int& n) {
-    return p + (-n);
-}
-
-
-Polynomial& operator- (const int& n, const Polynomial& p) {
-    return p + (-n);
-}
-
-Polynomial& operator- (const Polynomial& p, const long& n) {
-    return p + (-n);
-}
-
-Polynomial& operator- (const long& n, const Polynomial& p) {
-    return p + (-n);
-}
-
 Polynomial& operator- (const Polynomial& p, const mpz_class& n) {
     return p + (-n);
 }
@@ -275,33 +205,6 @@ Polynomial& operator- (const Polynomial& p, const Polynomial& q) {
     }
     r -> eliminate_zeros();
     return *r;
-}
-
-Polynomial& operator* (const Polynomial& p, const int& n) {
-    return p * mpq_class(n, 1);
-}
-
-
-Polynomial& operator* (const int& n, const Polynomial& p) {
-    return p * mpq_class(n, 1);
-}
-
-Polynomial& operator* (const Polynomial& p, const long& n) {
-    return p * mpq_class(n, 1);
-}
-
-
-Polynomial& operator* (const long& n, const Polynomial& p) {
-    return p * mpq_class(n, 1);
-}
-
-Polynomial& operator* (const Polynomial& p, const mpz_class& n) {
-    return p * mpq_class(n, 1);
-}
-
-
-Polynomial& operator* (const mpz_class& n, const Polynomial& p) {
-    return p * mpq_class(n, 1);
 }
 
 Polynomial& operator* (const Polynomial& p, const mpq_class& f) {
