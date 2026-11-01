@@ -8,8 +8,9 @@ class RationalFn {
         Polynomial get_b();
         Polynomial get_c();
         Polynomial get_d();
-        RationalFn();
         RationalFn(PolyPair& pp, PolyPair& qq);
+        RationalFn():
+                RationalFn(PolyPair(), PolyPair()){}
         RationalFn(mpz_class& n): 
                 RationalFn(PolyPair(n, 1), PolyPair(1, 1)){}
         RationalFn(Polynomial& p): 
@@ -54,9 +55,41 @@ class RationalFn {
                 RationalFn(PolyPair(p, p), pp){}
         RationalFn(mpz_class& k, mpz_class& l, mpz_class& m, mpz_class& n):
                 RationalFn(PolyPair(k, l), PolyPair(m, n)){}
-       
-        
+        RationalFn(Polynomial& p, mpz_class& l, mpz_class& m, mpz_class& n):
+                RationalFn(PolyPair(p, l), PolyPair(m, n)){}
+        RationalFn(mpz_class& l, Polynomial& p, mpz_class& m, mpz_class& n):
+                RationalFn(PolyPair(l, p), PolyPair(m, n)){}
+        RationalFn(mpz_class& l, mpz_class& m, Polynomial& p, mpz_class& n):
+                RationalFn(PolyPair(l, m), PolyPair(p, n)){}
+        RationalFn(mpz_class& l, mpz_class& m, mpz_class& n, Polynomial& p):
+                RationalFn(PolyPair(l, m), PolyPair(n, p)){}
+        RationalFn(Polynomial& p, Polynomial& q, mpz_class& m, mpz_class& n):
+                RationalFn(PolyPair(p, q), PolyPair(m, n)){}
+        RationalFn(Polynomial& p, mpz_class& m, Polynomial& q, mpz_class& n):
+                RationalFn(PolyPair(p, m), PolyPair(q, n)){}
+        RationalFn(Polynomial& p, mpz_class& m, mpz_class& n, Polynomial& q):
+                RationalFn(PolyPair(p, m), PolyPair(n, q)){}
+        RationalFn(mpz_class& m, Polynomial& p, Polynomial& q, mpz_class& n):
+                RationalFn(PolyPair(m, p), PolyPair(q, n)){}
+        RationalFn(mpz_class& m, Polynomial& p, mpz_class& n, Polynomial& q):
+                RationalFn(PolyPair(m, p), PolyPair(n, q)){}
+        RationalFn(mpz_class& m, mpz_class& n, Polynomial& p, Polynomial& q):
+                RationalFn(PolyPair(m, n), PolyPair(p, q)){}
+        RationalFn(mpz_class& m, mpz_class& n, Polynomial& p, Polynomial& q):
+                RationalFn(PolyPair(m, n), PolyPair(p, q)){}
+        RationalFn(mpz_class& n, Polynomial& p, Polynomial& q, Polynomial& r):
+                RationalFn(PolyPair(n, p), PolyPair(q, r)){}
+        RationalFn(Polynomial& p, mpz_class& n, Polynomial& q, Polynomial& r):
+                RationalFn(PolyPair(p, n), PolyPair(q, r)){}
+        RationalFn(Polynomial& p, Polynomial& q, mpz_class& n, Polynomial& r):
+                RationalFn(PolyPair(p, q), PolyPair(n, r)){}
+        RationalFn(Polynomial& p, Polynomial& q, Polynomial& r, mpz_class& n):
+                RationalFn(PolyPair(p, q), PolyPair(r, n)){}
+        RationalFn(Polynomial& p, Polynomial& q, Polynomial& r, Polynomial& s):
+                RationalFn(PolyPair(p, q), PolyPair(r, s)){}
 
+
+    friend ostream& os operator<< (ostream& os; RationalFn rf);
 
 };
 
