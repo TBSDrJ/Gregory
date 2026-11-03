@@ -10,12 +10,10 @@ using namespace std;
 Polynomial::Polynomial(mpz_class n) {
     vector<mpz_class> * coeffs = new vector<mpz_class>({n});
     this -> coeffs = *coeffs;
-    cout << "Polynomial constructor from mpz " << n << endl;
 }
 
 Polynomial::Polynomial(vector<mpz_class> new_coeffs) {
     this -> coeffs = new_coeffs;
-    cout << "Polynomial constructor from vector " << new_coeffs[0] << endl;
 }
 
 int Polynomial::deg() const {
