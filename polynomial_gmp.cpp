@@ -65,14 +65,14 @@ mpq_class& Polynomial::proportional(const Polynomial& q) const {
         return *prop;
     }
     mpz_class rolling_gcd = this -> coeffs[p_deg];
-    p_deg--;
+    if (p_deg > 0) {p_deg--;}
     while (p_deg >= 0) {
         mpz_gcd(m.get_mpz_t(), this -> coeffs[p_deg].get_mpz_t(), 
             rolling_gcd.get_mpz_t());
         p_deg--;
     }
     rolling_gcd = q.coeffs[q_deg];
-    q_deg--;
+    if (q_deg > 0) {q_deg--;}
     while (q_deg >= 0) {
         mpz_gcd(n.get_mpz_t(), q.coeffs[q_deg].get_mpz_t(), 
             rolling_gcd.get_mpz_t());
@@ -329,6 +329,10 @@ int main() {
     s = Polynomial(3);
     t = Polynomial(5);
     cout << "(3q).proportional(5q) = " << (s*r).proportional(t*r) << endl;
+    s.coeffs[0] = 6; //s.coeffs.push_back(9);
+    t.coeffs[0] = 8; //t.coeffs.push_back(12);
+    cout << "(" << s << ").proportional(" << t << ") = " << s.proportional(t) 
+            << endl;
     cout << s*r << endl << t*r << endl;
     s.coeffs[0] = 1;
     s.coeffs.push_back(1);
