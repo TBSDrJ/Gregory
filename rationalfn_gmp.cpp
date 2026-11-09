@@ -32,6 +32,15 @@ RationalFn::RationalFn(const PolyPair& pp, const PolyPair& qq) {
     // TODO: if qq == 0, throw error
 }
 
+bool operator== (const RationalFn& rf, const mpz_class& n) {
+    mpz_class one = mpz_class(1);
+    return ((rf.ab == n) and (rf.cd == one));
+}
+
+bool operator== (const RationalFn& rf_0, const RationalFn& rf_1) {
+    return ((rf_0.ab == rf_1.ab) and (rf_0.cd == rf_1.cd));
+}
+
 ostream& operator<< (ostream& os, RationalFn& rf) {
     os << rf.ab << " / " << rf.cd;
     return os;
@@ -39,6 +48,7 @@ ostream& operator<< (ostream& os, RationalFn& rf) {
 
 int main() {
     vector<mpz_class> coeffs = {1, 1};
+    Polynomial p_1 = Polynomial(1);
     Polynomial p_2 = Polynomial(coeffs);
     coeffs = {-1, -1};
     Polynomial p_3 = Polynomial(coeffs);
@@ -47,6 +57,7 @@ int main() {
     coeffs = {0, 0, 0, 0, 0, 1};
     Polynomial p_5 = Polynomial(coeffs);
 
+    PolyPair pp_11 = PolyPair(1, 1);
     PolyPair pp_22 = PolyPair(p_2, p_2);
     PolyPair pp_33 = PolyPair(p_3, p_3);
 
@@ -137,4 +148,31 @@ int main() {
     cout << "rf_2223 = " << rf_2223 << endl;
     RationalFn rf_5115 = RationalFn(p_5, 1, 1, p_5);
     cout << "rf_5115 = " << rf_5115 << endl;
+    cout << "rf_5115.ab = " << rf_5115.ab << "  rf_5115.cd = " << rf_5115.cd 
+            << endl;
+    cout << "rf_5115.get_a() = " << rf_5115.get_a() 
+            << "  rf_5115.get_b() = " << rf_5115.get_b()
+            << "  rf_5115.get_c() = " << rf_5115.get_c()
+            << "  rf_5115.get_d() = " << rf_5115.get_d()
+            << endl;
+    
+    cout << endl << "Testing Operator ==" << endl;
+    cout << "Should all be true:" << endl;
+    nrf_1111 = RationalFn(-2, -3, -5, -7);
+    RationalFn nrf_1111_2 = RationalFn(6, 1, 35, 1);
+    cout << nrf_1111 << " == " << nrf_1111_2 << ": " << (nrf_1111 == nrf_1111_2)
+            << endl;
+    RationalFn nrf_2522 = RationalFn(-3, -2, 3*p_2, p_2);
+    RationalFn nrf_2533 = RationalFn(6, 1, p_3, 3*p_3);
+    cout << nrf_2522 << " == " << nrf_2533 << ": " 
+            << (nrf_2522 == nrf_2533) << endl;
+    nrf_1111 = RationalFn(-2, -3);
+    cout << nrf_1111 << " == " << 6*pp_11 << ": " << (nrf_1111 == 6*pp_11) 
+            << endl;
+    cout << nrf_1111 << " == Polynomial(" << 6*p_1 << "): " << (nrf_1111 == 6*p_1) 
+            << endl;
+    cout << nrf_1111 << " == " << 6 << ": " << (nrf_1111 == 6) << endl;
+    // This test is failing
+    nrf_1111 = RationalFn(-2, -3, 1, 2);
+    cout << nrf_1111 << " == " << 3 << ": " << (nrf_1111 == 3) << endl;
 }
