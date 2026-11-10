@@ -57,35 +57,37 @@ Polynomial& Polynomial::der() {
     return *q;
 }
 
+mpz_class& Polynomial::gcd() const {
+    int this_deg = this -> deg();
+    mpz_class* m = new mpz_class();
+    mpz_class rolling_gcd = this -> coeffs[this_deg];
+    if (this_deg > 0) {this_deg--;}
+    while (this_deg >= 0) {
+        mpz_gcd(m -> get_mpz_t(), this -> coeffs[this_deg].get_mpz_t(), 
+            rolling_gcd.get_mpz_t());
+        this_deg--;
+    }
+    return *m;
+}
+
 mpq_class& Polynomial::proportional(const Polynomial& q) const {
     mpq_class* prop = new mpq_class(0);
+    int this_deg = this -> deg();
+    int q_deg = q.deg();
     mpz_class m,n; // = gcd of the collection of coeffs of this, q resp.
-    int p_deg = this -> deg(), q_deg = q.deg();
-    if (p_deg != q_deg) {
+    if (this_deg != q_deg) {
         return *prop;
     }
-    mpz_class rolling_gcd = this -> coeffs[p_deg];
-    if (p_deg > 0) {p_deg--;}
-    while (p_deg >= 0) {
-        mpz_gcd(m.get_mpz_t(), this -> coeffs[p_deg].get_mpz_t(), 
-            rolling_gcd.get_mpz_t());
-        p_deg--;
-    }
-    rolling_gcd = q.coeffs[q_deg];
-    if (q_deg > 0) {q_deg--;}
-    while (q_deg >= 0) {
-        mpz_gcd(n.get_mpz_t(), q.coeffs[q_deg].get_mpz_t(), 
-            rolling_gcd.get_mpz_t());
-        q_deg--;
-    }
+    m = this -> gcd();
+    n = q.gcd();
     if (m == 0 or n == 0) {
         return *prop; // Still = 0 from initialization
     }
-    if ((this -> coeffs[this -> deg()] < 0 and q.coeffs[q.deg()] > 0) or 
-            (this -> coeffs[this -> deg()] > 0 and q.coeffs[q.deg()] < 0)) {
+    if ((this -> coeffs[this_deg] < 0 and q.coeffs[q_deg] > 0) or 
+            (this -> coeffs[this_deg] > 0 and q.coeffs[q_deg] < 0)) {
         n *= -1;
     }
-    for (int i=0; i<this -> deg(); i++) {
+    for (int i=0; i< this_deg; i++) {
         if ((this -> coeffs[i] / m) != (q.coeffs[i] / n)) {
             return *prop;
         }
@@ -333,7 +335,8 @@ int main() {
     t.coeffs[0] = 8; //t.coeffs.push_back(12);
     cout << "(" << s << ").proportional(" << t << ") = " << s.proportional(t) 
             << endl;
-    cout << s*r << endl << t*r << endl;
+    cout << "(" << s*r << ").proportional(" << t*r << "): " << 
+            (s*r).proportional(t*r) << endl;
     s.coeffs[0] = 1;
     s.coeffs.push_back(1);
     t.coeffs[0] = -1;

@@ -16,6 +16,7 @@ class Polynomial {
         void eliminate_zeros();
         mpz_class eval(mpz_class x);
         Polynomial& der();
+        mpz_class& gcd() const;
         // .proportional returns n/m where m divides all coeffs of p, and n
         //  divides all coeffs of q.
         mpq_class& proportional(const Polynomial& q) const;
