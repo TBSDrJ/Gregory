@@ -32,12 +32,13 @@ RationalFn::RationalFn(const PolyPair& pp, const PolyPair& qq) {
     // TODO: if qq == 0, throw error
 }
 
-bool operator== (const RationalFn& rf, const mpz_class& n) {
+bool operator== (const RationalFn& rf_0, const mpz_class& n) {
     mpz_class one = mpz_class(1);
-    return ((rf.ab == n) and (rf.cd == one));
+    RationalFn rf_1 = RationalFn(n);
+    return ((rf_0.ab == n) and (rf_0.cd == one));
 }
 
-bool operator== (const RationalFn& rf_0, const RationalFn& rf_1) {
+bool operator== (const RationalFn& rf_0, const RationalFn& rf_1) {    
     return ((rf_0.ab == rf_1.ab) and (rf_0.cd == rf_1.cd));
 }
 
@@ -172,7 +173,11 @@ int main() {
     cout << nrf_1111 << " == Polynomial(" << 6*p_1 << "): " << (nrf_1111 == 6*p_1) 
             << endl;
     cout << nrf_1111 << " == " << 6 << ": " << (nrf_1111 == 6) << endl;
-    // This test is failing
+    // These tests are failing.
     nrf_1111 = RationalFn(-2, -3, 1, 2);
     cout << nrf_1111 << " == " << 3 << ": " << (nrf_1111 == 3) << endl;
+    nrf_2533 = RationalFn(2, 1, p_3, p_3);
+    cout << nrf_2522 << " == " << nrf_2533 << ": " 
+            << (nrf_2522 == nrf_2533) << endl;
+
 }
