@@ -13,12 +13,12 @@ class PolyPair {
     public:
         Polynomial a, b;
         PolyPair(): PolyPair(0, 0){}
-        explicit PolyPair(const mpz_class& n): PolyPair(n, 1){}
-        explicit PolyPair(const Polynomial& new_a): PolyPair(new_a, 1){}
-        explicit PolyPair(const mpz_class& m, const mpz_class& n);
-        explicit PolyPair(const mpz_class& n, const Polynomial& new_b);
-        explicit PolyPair(const Polynomial& new_a, const mpz_class& n);
-        explicit PolyPair(const Polynomial& new_a, const Polynomial& new_b);
+        PolyPair(const mpz_class& n): PolyPair(n, 1){}
+        PolyPair(const Polynomial& new_a): PolyPair(new_a, 1){}
+        PolyPair(const mpz_class& m, const mpz_class& n);
+        PolyPair(const mpz_class& n, const Polynomial& new_b);
+        PolyPair(const Polynomial& new_a, const mpz_class& n);
+        PolyPair(const Polynomial& new_a, const Polynomial& new_b);
         // This is a test to see if addition/subtracton is possible.
         bool common_factor(const mpz_class& n) const;
         bool common_factor(const Polynomial& q) const;
@@ -51,6 +51,7 @@ class PolyPair {
     friend PolyPair& operator* (const PolyPair& pp, const Polynomial& p);
     friend PolyPair& operator* (const Polynomial& p, const PolyPair& pp);
     friend PolyPair& operator* (const PolyPair& pp, const PolyPair& qq);
+
     friend std::ostream& operator<< (std::ostream& os, const PolyPair& pp);
 };
 
