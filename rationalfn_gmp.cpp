@@ -84,6 +84,47 @@ void RationalFn::eliminate_zeros() {
             this -> cd = PolyPair(this -> get_c(), Polynomial(d_coeffs));
         }
     }
+    // Now eliminate factors of (x+1) or (L+1).  (x+1) factors are naturally
+    //  created in the derivatives, so it worth looking for these specifically.
+    if ((this -> get_a().deg() != 0) and (this -> get_c().deg() != 0)) {
+        while ((this -> get_a().eval(-1) == 0) and 
+                (this -> get_c().eval(-1) == 0)) {
+            vector<mpz_class> a_coeffs(this -> get_a().deg());
+            vector<mpz_class> c_coeffs(this -> get_c().deg());
+            mpz_class running = this -> get_a().coeffs[this -> get_a().deg()];
+            for (int i=(this -> get_a().deg()-1); i>=0; i--) {
+                a_coeffs[i] = running;
+                running = this -> get_a().coeffs[i] - running;
+            }
+            this -> ab = PolyPair(Polynomial(a_coeffs), this -> get_b());
+            running = this -> get_c().coeffs[this -> get_c().deg()];
+            for (int i=(this -> get_c().deg()-1); i>=0; i--) {
+                c_coeffs[i] = running;
+                running = this -> get_c().coeffs[i] - running;
+            }
+            cout << Polynomial(c_coeffs) << endl;
+            this -> cd = PolyPair(Polynomial(c_coeffs), this -> get_d());
+        }
+    }
+    if ((this -> get_b().deg() != 0) and (this -> get_d().deg() != 0)) {
+        while ((this -> get_b().eval(-1) == 0) and 
+                (this -> get_d().eval(-1) == 0)) {
+            vector<mpz_class> b_coeffs(this -> get_b().deg());
+            vector<mpz_class> d_coeffs(this -> get_d().deg());
+            mpz_class running = this -> get_b().coeffs[this -> get_b().deg()];
+            for (int i=(this -> get_b().deg()-1); i>=0; i--) {
+                b_coeffs[i] = running;
+                running = this -> get_b().coeffs[i] - running;
+            }
+            this -> ab = PolyPair(this -> get_a(), Polynomial(b_coeffs));
+            running = this -> get_d().coeffs[this -> get_d().deg()];
+            for (int i=(this -> get_d().deg()-1); i>=0; i--) {
+                d_coeffs[i] = running;
+                running = this -> get_d().coeffs[i] - running;
+            }
+            this -> cd = PolyPair(this -> get_c(), Polynomial(d_coeffs));
+        }
+    }
 }
 
 bool operator== (const RationalFn& rf_0, const mpz_class& n) {
@@ -630,4 +671,16 @@ int main() {
     cout << "(" << rf_2233 << ")/" << pp_33 << ": " << rf_2233/pp_33 << endl;
     cout << "(" << rf_2233 << ")/(" << rf_5121 << "): " << rf_2233/rf_5121 
             << endl;
+
+    cout << endl << "Testing .eliminate_zeros() a bit more (c.f. +,-):" << endl;
+    vector<mpz_class>a_coeffs = {0,0,3,15,12};
+    vector<mpz_class>b_coeffs = {0,0,0,1,5,10,10,5,1};
+    vector<mpz_class>c_coeffs = {0,0,1,4,6,4,1};
+    vector<mpz_class>d_coeffs = {0,2,5,6,3};
+    Polynomial a = Polynomial(a_coeffs), b = Polynomial(b_coeffs), 
+            c = Polynomial(c_coeffs), d = Polynomial(d_coeffs);
+    RationalFn x = RationalFn(a, b, c, d);
+    cout << "x: " << x << endl;
+    x.eliminate_zeros();
+    cout << "After eliminating zeros: " << endl << x << endl;
 }
