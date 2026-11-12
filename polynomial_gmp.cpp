@@ -239,12 +239,8 @@ Polynomial& operator* (const Polynomial& p, const Polynomial& q) {
 Polynomial& operator/ (const Polynomial& p, const mpz_class n) {
     vector<mpz_class> r_coeffs(p.deg() + 1);
     Polynomial * r = new Polynomial(r_coeffs);
-    mpz_class m;
     for (int i=0; i<p.deg() + 1; i++) {
-        // p_i = p.coeffs[i];
-        // Gotta determine if n divides each coefficient of p before dividing.
-        mpz_gcd(m.get_mpz_t(), p.coeffs[i].get_mpz_t(), n.get_mpz_t());
-        if (m == n) {
+        if (p.coeffs[i] % n == 0) {
             r -> coeffs[i] = p.coeffs[i] / n;
         } else {
             delete &(r -> coeffs);
