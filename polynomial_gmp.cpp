@@ -243,7 +243,6 @@ Polynomial& operator/ (const Polynomial& p, const mpz_class n) {
         if (p.coeffs[i] % n == 0) {
             r -> coeffs[i] = p.coeffs[i] / n;
         } else {
-            delete &(r -> coeffs);
             delete r;
             r = new Polynomial();
             break;
@@ -253,11 +252,20 @@ Polynomial& operator/ (const Polynomial& p, const mpz_class n) {
 }
 
 Polynomial& operator/ (const Polynomial& p, const Polynomial& q) {
-    Polynomial * r = new Polynomial();
     if (q.deg() > 0) {
+        Polynomial * r = new Polynomial();
         return *r;
     }
     return p / q.coeffs[0];
+}
+
+Polynomial& operator/ (const mpz_class& n, const Polynomial& p) {
+    Polynomial * r = new Polynomial();
+    if ((p.deg() > 0) or (n % p.coeffs[0] != 0)) {
+        return *r;
+    }
+    r -> coeffs[0] = n / p.coeffs[0];
+    return *r;
 }
 
 int main() {
@@ -421,4 +429,9 @@ int main() {
             (s*4)/Polynomial(2) << endl;
     cout << "t: " << t << " (t*4)/2: " << (t*4)/2 << " | " << 
             (t*4)/Polynomial(2) << endl;
+    cout << "Polynomial(111)/3: " << Polynomial(111)/3 << endl;
+    cout << "111/Polynomial(3): " << 111/Polynomial(3) << endl;
+    // If den does not divide num, just return 0.
+    cout << "Polynomial(101)/3: " << Polynomial(101)/3 << endl;
+    cout << "101/Polynomial(3): " << 101/Polynomial(3) << endl;
 }
