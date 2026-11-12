@@ -434,4 +434,7 @@ int main() {
     // If den does not divide num, just return 0.
     cout << "Polynomial(101)/3: " << Polynomial(101)/3 << endl;
     cout << "101/Polynomial(3): " << 101/Polynomial(3) << endl;
+    // This should crash because division by zero
+    cout << "1/Polynomial(0): " << 1/Polynomial(0) << endl;
+    cout << "Polynomial(1)/0: " << Polynomial(1)/0 << endl;
 }
