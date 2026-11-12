@@ -52,6 +52,40 @@ bool RationalFn::can_add_sub(const RationalFn& rf_1) {
     return (this -> ab*rf_1.cd).common_factor(this -> cd*rf_1.ab);
 }
 
+void RationalFn::eliminate_zeros() {
+    // First, eliminate factors of x or L
+    if ((this -> get_a().deg() != 0) and (this -> get_c().deg() != 0)) {
+        while ((this -> get_a().coeffs[0] == 0) and 
+                (this -> get_c().coeffs[0] == 0)) {
+            vector<mpz_class> a_coeffs(this -> get_a().deg());
+            vector<mpz_class> c_coeffs(this -> get_c().deg());
+            for (int i=0; i<(this -> get_a().deg()); i++) {
+                a_coeffs[i] = this -> get_a().coeffs[i+1];
+            }
+            this -> ab = PolyPair(Polynomial(a_coeffs), this -> get_b());
+            for (int i=0; i<(this -> get_c().deg()); i++) {
+                c_coeffs[i] = this -> get_c().coeffs[i+1];
+            }
+            this -> cd = PolyPair(Polynomial(c_coeffs), this -> get_d());
+        }
+    }
+    if ((this -> get_b().deg() != 0) and (this -> get_d().deg() != 0)) {
+        while ((this -> get_b().coeffs[0] == 0) and 
+                (this -> get_d().coeffs[0] == 0)) {
+            vector<mpz_class> b_coeffs(this -> get_b().deg());
+            vector<mpz_class> d_coeffs(this -> get_d().deg());
+            for (int i=0; i<(this -> get_b().deg()); i++) {
+                b_coeffs[i] = this -> get_b().coeffs[i+1];
+            }
+            this -> ab = PolyPair(this -> get_a(), Polynomial(b_coeffs));
+            for (int i=0; i<(this -> get_d().deg()); i++) {
+                d_coeffs[i] = this -> get_d().coeffs[i+1];
+            }
+            this -> cd = PolyPair(this -> get_c(), Polynomial(d_coeffs));
+        }
+    }
+}
+
 bool operator== (const RationalFn& rf_0, const mpz_class& n) {
     if (rf_0.get_const_a().deg() != 0) {return false;}
     if (rf_0.get_const_b().deg() != 0) {return false;}
@@ -134,6 +168,7 @@ RationalFn& operator+ (const RationalFn& rf_0, const RationalFn& rf_1) {
                 rf_0_cd*rf_1_cd);
     }
     if (result -> ab == 0) {result -> cd = PolyPair(1, 1);}
+    result -> eliminate_zeros();
     return *result;
 }
 
@@ -506,6 +541,14 @@ int main() {
     cout << " (check that leading zeros don't get passed along) ";
     cout << " result.get_a().deg(): " << (rf_4121 + nrf_5121).get_a().deg();
     cout << endl;
+    RationalFn rf_1515 = RationalFn(1, p_5, 1, p_5);
+    RationalFn rf_2515 = RationalFn(p_2, p_5, 1, p_5);
+    cout << rf_1515 << " + " << rf_2515 << ": ";
+    if ((rf_1515).can_add_sub(rf_2515)) {cout << rf_1515 + rf_2515;}
+    else {cout << "Can't add these.";}
+    cout << " (check that leading zeros don't get passed along) ";
+    cout << " result.get_b().deg(): " << (rf_4121 + nrf_5121).get_b().deg();
+    cout << endl;
 
     cout << endl << "Testing -:" << endl;
     cout << 1 << " - " << nrf_1111 << ": " << 1 - nrf_1111 << endl;
@@ -561,6 +604,12 @@ int main() {
     else {cout << "Can't subtract these.";}
     cout << " (check that leading zeros don't get passed along) ";
     cout << " result.get_a().deg(): " << (rf_4121 - rf_5121).get_a().deg();
+    cout << endl;
+    cout << rf_1515 << " - " << rf_2515 << ": ";
+    if ((rf_1515).can_add_sub(rf_2515)) {cout << rf_1515 - rf_2515;}
+    else {cout << "Can't subtract these.";}
+    cout << " (check that leading zeros don't get passed along) ";
+    cout << " result.get_b().deg(): " << (rf_4121 + nrf_5121).get_b().deg();
     cout << endl;
 
     cout << endl << "Testing *:" << endl;

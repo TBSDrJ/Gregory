@@ -105,6 +105,7 @@ class RationalFn {
         RationalFn(Polynomial& p, Polynomial& q, Polynomial& r, Polynomial& s):
                 RationalFn(PolyPair(p, q), PolyPair(r, s)){}
         bool can_add_sub(const RationalFn& rf_1);
+        void eliminate_zeros();
     friend bool operator== (const RationalFn& rf_0, const mpz_class& n);
     friend bool operator== (const RationalFn& rf_0, const RationalFn& rf_1);
     friend bool operator!= (const RationalFn& rf_0, const mpz_class& n);
