@@ -37,6 +37,7 @@ class Polynomial {
     friend Polynomial& operator* (const mpz_class& n, const Polynomial& p);
     friend Polynomial& operator* (const Polynomial& p, const Polynomial& q);
     friend Polynomial& operator/ (const Polynomial& p, const mpz_class n);
+    // With Polynomial in denominator, only handles if degree = 0, so just int
     friend Polynomial& operator/ (const mpz_class& n, const Polynomial& p);
     friend Polynomial& operator/ (const Polynomial& p, const Polynomial& q);
 };
