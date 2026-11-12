@@ -82,6 +82,15 @@ bool operator== (const RationalFn& rf_0, const RationalFn& rf_1) {
     return num == den;
 }
 
+bool operator!= (const RationalFn& rf_0, const mpz_class& n) {
+    return not(rf_0 == n);
+}
+
+bool operator!= (const RationalFn& rf_0, const RationalFn& rf_1) {
+    return not(rf_0 == rf_1);
+}
+
+
 ostream& operator<< (ostream& os, RationalFn& rf) {
     os << rf.ab << " / " << rf.cd;
     return os;
@@ -196,7 +205,7 @@ int main() {
             << "  rf_5115.get_c() = " << rf_5115.get_c()
             << "  rf_5115.get_d() = " << rf_5115.get_d()
             << endl;
-    
+
     cout << endl << "Testing Operator ==" << endl;
     cout << "Should all be true:" << endl;
     nrf_1111 = RationalFn(-2, -3, -5, -7);
@@ -237,4 +246,46 @@ int main() {
     nrf_2522_2 = RationalFn(-3, -2*p_4, 3*p_2, p_2);
     cout << nrf_2522 << " == " << nrf_2522_2 << ": " << (nrf_2522 ==
             nrf_2522_2) << endl;
+
+    cout << endl << "Testing Operator !=" << endl;
+    cout << "Should all be false:" << endl;
+    nrf_1111 = RationalFn(-2, -3, -5, -7);
+    nrf_1111_2 = RationalFn(6, 1, 35, 1);
+    cout << nrf_1111 << " != " << nrf_1111_2 << ": " << (nrf_1111 != nrf_1111_2)
+            << endl;
+    nrf_2522 = RationalFn(-3, -2*p_5, 3*p_2, p_2);
+    nrf_2533 = RationalFn(6, p_5, p_3, 3*p_3);
+    cout << nrf_2522 << " != " << nrf_2533 << ": " 
+            << (nrf_2522 != nrf_2533) << endl;
+    nrf_1111 = RationalFn(-2, -3);
+    cout << nrf_1111 << " != " << 6*pp_11 << ": " << (nrf_1111 != 6*pp_11) 
+            << endl;
+    cout << nrf_1111 << " != Polynomial(" << 6*p_1 << "): " << 
+            (nrf_1111 != 6*p_1) << endl;
+    cout << nrf_1111 << " != " << 6 << ": " << (nrf_1111 != 6) << endl;
+    // These tests are failing.
+    nrf_1111 = RationalFn(2, -3, 1, -2);
+    cout << nrf_1111 << " != " << -3 << ": " << (nrf_1111 != 3) << endl;
+    nrf_1111 = RationalFn(-12, -3, -30, -7);
+    nrf_1111_2 = RationalFn(6, 1, 35, 1);
+    cout << nrf_1111 << " != " << nrf_1111_2 << ": " << (nrf_1111 != nrf_1111_2)
+            << endl;
+    nrf_2533 = RationalFn(2, p_5, p_3, p_3);
+    cout << nrf_2522 << " != " << nrf_2533 << ": " 
+            << (nrf_2522 != nrf_2533) << endl;
+    cout << "Should all be true:" << endl;
+    cout << rf_5115 << " != " << rf_5111 << ": " << (rf_5115 != rf_5111) 
+            << endl;
+    rf_5151 = RationalFn(p_5, 1, p_5, 1);
+    cout << rf_5115 << " != " << rf_5151 << ": " << (rf_5115 != rf_5151) 
+            << endl;
+    cout << rf_2311 << " != " << rf_2211 << ": " << (rf_2311 != rf_2211) 
+            << endl;
+    nrf_2522_2 = RationalFn(-3, -2*p_5, 3*p_2, 7*p_2);
+    cout << nrf_2522 << " != " << nrf_2522_2 << ": " << (nrf_2522 !=
+            nrf_2522_2) << endl;
+    nrf_2522_2 = RationalFn(-3, -2*p_4, 3*p_2, p_2);
+    cout << nrf_2522 << " != " << nrf_2522_2 << ": " << (nrf_2522 !=
+            nrf_2522_2) << endl;
+
 }
