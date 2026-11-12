@@ -159,7 +159,8 @@ bool operator== (const PolyPair& pp, const PolyPair& qq) {
     mpq_class factor_a = pp.a.proportional(qq.a);
     mpq_class factor_b = pp.b.proportional(qq.b);
     mpq_class prod = factor_a * factor_b;
-    if ((pp.a * factor_a == qq.a) and (pp.b * factor_b == qq.b) and 
+    if (((pp.a * factor_a.get_num())/factor_a.get_den() == qq.a) and 
+            ((pp.b * factor_b.get_num())/factor_b.get_den() == qq.b) and 
             (prod.get_num() == prod.get_den())) {
         return true;
     }
@@ -268,18 +269,14 @@ PolyPair& operator+ (const PolyPair& pp, const PolyPair& qq) {
     } else {
         mpq_class prop = pp.a.proportional(qq.a);
         if (prop.get_num()) {
-            // 1/prop.get_den() * pp.a should be same as 1/prop_get_num() * qq.a
-            result -> a = mpq_class(1, prop.get_den())*pp.a;
-            // Need to cast as mpq_class to avoid ambiguous overload
-            result -> b = mpq_class(prop.get_den(),1) * pp.b + 
-                    mpq_class(prop.get_num(), 1) * qq.b;
+            // pp.a/prop.get_den() should be same as qq.a/prop_get_num()
+            result -> a = pp.a/prop.get_den();
+            result -> b = prop.get_den()*pp.b + prop.get_num()*qq.b;
         } else {
             prop = pp.b.proportional(qq.b);
-            // 1/prop.get_den() * pp.b should be same as 1/prop_get_num() * qq.b
-            result -> b = mpq_class(1, prop.get_den())*pp.b;
-            // Need to cast as mpq_class to avoid ambiguous overload
-            result -> a = mpq_class(prop.get_den(), 1) * pp.a + 
-                    mpq_class(prop.get_num(), 1) * qq.a;
+            // pp.b/prop.get_den() should be same as qq.b/prop_get_num()
+            result -> b = pp.b/prop.get_den();
+            result -> a = prop.get_den()*pp.a + prop.get_num()*qq.a;
         }
     }
     result -> a.eliminate_zeros();
@@ -337,11 +334,11 @@ PolyPair& operator- (const PolyPair& pp, const PolyPair& qq) {
     return pp + (-1)*qq;
 }
 
-PolyPair& operator* (const PolyPair& pp, const mpq_class& n) {
+PolyPair& operator* (const PolyPair& pp, const mpz_class& n) {
     return *(new PolyPair(pp.a * n, pp.b));
 }
 
-PolyPair& operator* (const mpq_class& n, const PolyPair& pp) {
+PolyPair& operator* (const mpz_class& n, const PolyPair& pp) {
     return pp * n;
 }
 
