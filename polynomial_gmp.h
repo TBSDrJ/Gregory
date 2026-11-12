@@ -18,7 +18,7 @@ class Polynomial {
         Polynomial& der();
         mpz_class& gcd() const;
         // .proportional returns n/m where m divides all coeffs of p, and n
-        //  divides all coeffs of q.
+        //  divides all coeffs of q.  Returns 0 if they are not proportional
         mpq_class& proportional(const Polynomial& q) const;
     friend std::ostream& operator<< (std::ostream& os, const Polynomial& p);
     friend bool operator== (const Polynomial& p, const mpz_class& n);
