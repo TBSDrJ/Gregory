@@ -176,6 +176,35 @@ RationalFn& operator* (const mpz_class& n, const RationalFn& rf) {
     return rf * n;
 }
 
+RationalFn& operator* (const RationalFn& rf, const Polynomial& p) {
+    RationalFn * result = new RationalFn();
+    result -> ab = p * rf.ab;
+    result -> cd = rf.cd;
+    return (*result);
+}
+
+RationalFn& operator* (const Polynomial& p, const RationalFn& rf) {
+    return rf * p;
+}
+
+RationalFn& operator* (const RationalFn& rf, const PolyPair& pp) {
+    RationalFn * result = new RationalFn();
+    result -> ab = pp * rf.ab;
+    result -> cd = rf.cd;
+    return (*result);
+}
+
+RationalFn& operator* (const PolyPair& pp, const RationalFn& rf) {
+    return rf * pp;
+}
+
+RationalFn& operator* (const RationalFn& rf_0, const RationalFn& rf_1) {
+    RationalFn * result = new RationalFn();
+    result -> ab = rf_0.ab * rf_1.ab;
+    result -> cd = rf_0.cd * rf_1.cd;
+    return (*result);
+}
+
 ostream& operator<< (ostream& os, RationalFn& rf) {
     os << rf.ab << " / " << rf.cd;
     return os;
@@ -484,4 +513,13 @@ int main() {
     cout << " (check that leading zeros don't get passed along) ";
     cout << " result.get_a().deg(): " << (rf_4121 - rf_5121).get_a().deg();
     cout << endl;
+
+    cout << endl << "Testing *:" << endl;
+    cout << "(" << 3 << ")*" << rf_2233 << ": " << 3*rf_2233 << endl;
+    cout << rf_2233 << "*(" << 3 << "): " << 3*rf_2233 << endl;
+    cout << "(" << p_3 << ")*" << rf_2233 << ": " << p_3*rf_2233 << endl;
+    cout << rf_2233 << "*(" << p_3 << "): " << p_3*rf_2233 << endl;
+    cout << pp_33 << "*" << rf_2233 << ": " << pp_33*rf_2233 << endl;
+    cout << rf_2233 << "*" << pp_33 << ": " << pp_33*rf_2233 << endl;
+    cout << rf_2233 << "*" << rf_5121 << ": " << rf_2233*rf_5121 << endl;
 }
