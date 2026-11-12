@@ -8,6 +8,10 @@ class RationalFn {
         Polynomial get_b();
         Polynomial get_c();
         Polynomial get_d();
+        Polynomial get_const_a() const;
+        Polynomial get_const_b() const;
+        Polynomial get_const_c() const;
+        Polynomial get_const_d() const;
         RationalFn(const PolyPair& pp, const PolyPair& qq);
         RationalFn():
                 RationalFn(PolyPair(), PolyPair()){}

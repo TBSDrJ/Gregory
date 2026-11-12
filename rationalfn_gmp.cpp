@@ -26,6 +26,22 @@ Polynomial RationalFn::get_d() {
     return this -> cd.b;
 }
 
+Polynomial RationalFn::get_const_a() const {
+    return this -> ab.a;
+}
+
+Polynomial RationalFn::get_const_b() const {
+    return this -> ab.b;
+}
+
+Polynomial RationalFn::get_const_c() const {
+    return this -> cd.a;
+}
+
+Polynomial RationalFn::get_const_d() const {
+    return this -> cd.b;
+}
+
 RationalFn::RationalFn(const PolyPair& pp, const PolyPair& qq) {
     this -> ab = pp;
     this -> cd = qq;
@@ -33,13 +49,37 @@ RationalFn::RationalFn(const PolyPair& pp, const PolyPair& qq) {
 }
 
 bool operator== (const RationalFn& rf_0, const mpz_class& n) {
-    mpz_class one = mpz_class(1);
-    RationalFn rf_1 = RationalFn(n);
-    return ((rf_0.ab == n) and (rf_0.cd == one));
+    if (rf_0.get_const_a().deg() != 0) {return false;}
+    if (rf_0.get_const_b().deg() != 0) {return false;}
+    if (rf_0.get_const_c().deg() != 0) {return false;}
+    if (rf_0.get_const_d().deg() != 0) {return false;}
+    mpz_class num = rf_0.get_const_a().coeffs[0] * rf_0.get_const_b().coeffs[0],
+            den = rf_0.get_const_c().coeffs[0] * rf_0.get_const_d().coeffs[0];
+    if (num % den != 0) {return false;}
+    return (num/den) == n;
 }
 
-bool operator== (const RationalFn& rf_0, const RationalFn& rf_1) {    
-    return ((rf_0.ab == rf_1.ab) and (rf_0.cd == rf_1.cd));
+bool operator== (const RationalFn& rf_0, const RationalFn& rf_1) {  
+    // Do some quick and easy checks before doing more computation.  
+    if ((rf_0.ab == rf_1.ab) and (rf_0.cd == rf_1.cd)) {return true;}
+    if (rf_0.get_const_a().deg() != rf_1.get_const_a().deg()) {return false;}
+    if (rf_0.get_const_b().deg() != rf_1.get_const_b().deg()) {return false;}
+    if (rf_0.get_const_c().deg() != rf_1.get_const_c().deg()) {return false;}
+    if (rf_0.get_const_d().deg() != rf_1.get_const_d().deg()) {return false;}
+    // These all require calculating the gcd of the coeffs of two polynomials. 
+    mpq_class a = rf_0.get_const_a().proportional(rf_1.get_const_a());
+    if (a == 0) {return false;}
+    mpq_class b = rf_0.get_const_b().proportional(rf_1.get_const_b());
+    if (b == 0) {return false;}
+    mpq_class c = rf_0.get_const_c().proportional(rf_1.get_const_c());
+    if (c == 0) {return false;}
+    mpq_class d = rf_0.get_const_d().proportional(rf_1.get_const_d());
+    if (d == 0) {return false;}
+    // Cross-multiply to see if cancellation happens.
+    // This is because mpq_class == doesn't recognize equivalent fractions.
+    mpz_class num = a.get_num() * b.get_num() * c.get_den() * d.get_den();
+    mpz_class den = a.get_den() * b.get_den() * c.get_num() * d.get_num();
+    return num == den;
 }
 
 ostream& operator<< (ostream& os, RationalFn& rf) {
@@ -65,7 +105,7 @@ int main() {
     // I'll follow the constructors in order instead using subscript order
     // Main constructor
     RationalFn rf_2233 = RationalFn(pp_22, pp_33);
-    cout << "rf_0000 = " << rf_2233 << endl;
+    cout << "rf_2233 = " << rf_2233 << endl;
     // No inputs
     RationalFn rf_0000 = RationalFn();
     cout << "rf_0000 = " << rf_0000 << endl;
@@ -163,21 +203,38 @@ int main() {
     RationalFn nrf_1111_2 = RationalFn(6, 1, 35, 1);
     cout << nrf_1111 << " == " << nrf_1111_2 << ": " << (nrf_1111 == nrf_1111_2)
             << endl;
-    RationalFn nrf_2522 = RationalFn(-3, -2, 3*p_2, p_2);
-    RationalFn nrf_2533 = RationalFn(6, 1, p_3, 3*p_3);
+    RationalFn nrf_2522 = RationalFn(-3, -2*p_5, 3*p_2, p_2);
+    RationalFn nrf_2533 = RationalFn(6, p_5, p_3, 3*p_3);
     cout << nrf_2522 << " == " << nrf_2533 << ": " 
             << (nrf_2522 == nrf_2533) << endl;
     nrf_1111 = RationalFn(-2, -3);
     cout << nrf_1111 << " == " << 6*pp_11 << ": " << (nrf_1111 == 6*pp_11) 
             << endl;
-    cout << nrf_1111 << " == Polynomial(" << 6*p_1 << "): " << (nrf_1111 == 6*p_1) 
-            << endl;
+    cout << nrf_1111 << " == Polynomial(" << 6*p_1 << "): " << 
+            (nrf_1111 == 6*p_1) << endl;
     cout << nrf_1111 << " == " << 6 << ": " << (nrf_1111 == 6) << endl;
     // These tests are failing.
-    nrf_1111 = RationalFn(-2, -3, 1, 2);
-    cout << nrf_1111 << " == " << 3 << ": " << (nrf_1111 == 3) << endl;
-    nrf_2533 = RationalFn(2, 1, p_3, p_3);
+    nrf_1111 = RationalFn(2, -3, 1, -2);
+    cout << nrf_1111 << " == " << -3 << ": " << (nrf_1111 == 3) << endl;
+    nrf_1111 = RationalFn(-12, -3, -30, -7);
+    nrf_1111_2 = RationalFn(6, 1, 35, 1);
+    cout << nrf_1111 << " == " << nrf_1111_2 << ": " << (nrf_1111 == nrf_1111_2)
+            << endl;
+    nrf_2533 = RationalFn(2, p_5, p_3, p_3);
     cout << nrf_2522 << " == " << nrf_2533 << ": " 
             << (nrf_2522 == nrf_2533) << endl;
-
+    cout << "Should all be false:" << endl;
+    cout << rf_5115 << " == " << rf_5111 << ": " << (rf_5115 == rf_5111) 
+            << endl;
+    RationalFn rf_5151 = RationalFn(p_5, 1, p_5, 1);
+    cout << rf_5115 << " == " << rf_5151 << ": " << (rf_5115 == rf_5151) 
+            << endl;
+    cout << rf_2311 << " == " << rf_2211 << ": " << (rf_2311 == rf_2211) 
+            << endl;
+    RationalFn nrf_2522_2 = RationalFn(-3, -2*p_5, 3*p_2, 7*p_2);
+    cout << nrf_2522 << " == " << nrf_2522_2 << ": " << (nrf_2522 ==
+            nrf_2522_2) << endl;
+    nrf_2522_2 = RationalFn(-3, -2*p_4, 3*p_2, p_2);
+    cout << nrf_2522 << " == " << nrf_2522_2 << ": " << (nrf_2522 ==
+            nrf_2522_2) << endl;
 }
