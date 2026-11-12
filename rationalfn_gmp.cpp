@@ -127,6 +127,26 @@ void RationalFn::eliminate_zeros() {
     }
 }
 
+RationalFn& RationalFn::der_0() {
+    RationalFn * rf = new RationalFn();
+    vector<mpz_class> coeff = {1,1};
+    rf -> ab = PolyPair(this -> get_a(), this -> get_b().der()*this -> get_d() -
+            this -> get_b()*this -> get_d().der());
+    rf -> cd = PolyPair(Polynomial(coeff)*this -> get_c(), this -> get_d() * 
+            this -> get_d());
+    rf -> eliminate_zeros();
+    return *rf;
+}
+
+RationalFn& RationalFn::der_1() {
+    RationalFn * rf = new RationalFn();
+    rf -> ab = PolyPair(this -> get_a().der()*this -> get_c() - this -> get_a()*
+            this -> get_c().der(), this -> get_b());
+    rf -> cd = PolyPair(this -> get_c()*this -> get_c(), this -> get_d());
+    rf -> eliminate_zeros();
+    return *rf;
+}
+
 bool operator== (const RationalFn& rf_0, const mpz_class& n) {
     if (rf_0.get_const_a().deg() != 0) {return false;}
     if (rf_0.get_const_b().deg() != 0) {return false;}
@@ -683,4 +703,10 @@ int main() {
     cout << "x: " << x << endl;
     x.eliminate_zeros();
     cout << "After eliminating zeros: " << endl << x << endl;
+
+    cout << endl << "Testing .der_0() and .der_1():" << endl;
+    cout << rf_1231 << ".der_0(): " << rf_1231.der_0() << endl;
+    cout << rf_5115 << ".der_0(): " << rf_5115.der_0() << endl;
+    cout << rf_1231 << ".der_1(): " << rf_1231.der_1() << endl;
+    cout << rf_5115 << ".der_1(): " << rf_5115.der_1() << endl;
 }

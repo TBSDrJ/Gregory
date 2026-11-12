@@ -106,6 +106,8 @@ class RationalFn {
                 RationalFn(PolyPair(p, q), PolyPair(r, s)){}
         bool can_add_sub(const RationalFn& rf_1);
         void eliminate_zeros();
+        RationalFn& der_0();
+        RationalFn& der_1();
     friend bool operator== (const RationalFn& rf_0, const mpz_class& n);
     friend bool operator== (const RationalFn& rf_0, const RationalFn& rf_1);
     friend bool operator!= (const RationalFn& rf_0, const mpz_class& n);
