@@ -48,6 +48,10 @@ RationalFn::RationalFn(const PolyPair& pp, const PolyPair& qq) {
     // TODO: if qq == 0, throw error
 }
 
+bool RationalFn::can_add_sub(const RationalFn& rf_1) {
+    return (this -> ab*rf_1.cd).common_factor(this -> cd*rf_1.ab);
+}
+
 bool operator== (const RationalFn& rf_0, const mpz_class& n) {
     if (rf_0.get_const_a().deg() != 0) {return false;}
     if (rf_0.get_const_b().deg() != 0) {return false;}
@@ -90,6 +94,87 @@ bool operator!= (const RationalFn& rf_0, const RationalFn& rf_1) {
     return not(rf_0 == rf_1);
 }
 
+RationalFn& operator+ (const RationalFn& rf, const mpz_class& n) {
+    return (rf + RationalFn(n));
+}
+
+RationalFn& operator+ (const mpz_class& n, const RationalFn& rf) {
+    return (rf + RationalFn(n));
+}
+
+RationalFn& operator+ (const RationalFn& rf, const Polynomial& p) {
+    return (rf + RationalFn(p));
+}
+
+RationalFn& operator+ (const Polynomial& p, const RationalFn& rf) {
+    return (rf + RationalFn(p));
+}
+
+RationalFn& operator+ (const RationalFn& rf, const PolyPair& pp) {
+    return (rf + RationalFn(pp));
+}
+
+RationalFn& operator+ (const PolyPair& pp, const RationalFn& rf) {
+    return (rf + RationalFn(pp));
+}
+
+RationalFn& operator+ (const RationalFn& rf_0, const RationalFn& rf_1) {
+    RationalFn * result = new RationalFn(); 
+    bool found_result = false;
+    PolyPair rf_0_ab = PolyPair(rf_0.get_const_a(), rf_0.get_const_b()),
+        rf_0_cd = PolyPair(rf_0.get_const_c(), rf_0.get_const_d()),
+        rf_1_ab = PolyPair(rf_1.get_const_a(), rf_1.get_const_b()),
+        rf_1_cd = PolyPair(rf_1.get_const_c(), rf_1.get_const_d());
+    if (rf_0_cd == rf_1_cd) {
+        *result = RationalFn(rf_0_ab + rf_1_ab, rf_0_cd);
+        found_result = true;
+    }
+    if (not found_result) {
+        *result = RationalFn(rf_0_ab*rf_1_cd + rf_0_cd*rf_1_ab, 
+                rf_0_cd*rf_1_cd);
+    }
+    if (result -> ab == 0) {result -> cd = PolyPair(1, 1);}
+    return *result;
+}
+
+RationalFn& operator- (const RationalFn& rf, const mpz_class& n) {
+    return rf + (-1)*n;
+}
+
+RationalFn& operator- (const mpz_class& n, const RationalFn& rf) {
+    return (-1)*rf + n;
+}
+
+RationalFn& operator- (const RationalFn& rf, const Polynomial& p) {
+    return rf + (-1)*p;
+}
+
+RationalFn& operator- (const Polynomial& p, const RationalFn& rf) {
+    return (-1)*rf + p;
+}
+
+RationalFn& operator- (const RationalFn& rf, const PolyPair& pp) {
+    return rf + (-1)*pp;
+}
+
+RationalFn& operator- (const PolyPair& pp, const RationalFn& rf) {
+    return (-1)*rf + pp;
+}
+
+RationalFn& operator- (const RationalFn& rf_0, const RationalFn& rf_1) {
+    return rf_0 + (-1)*rf_1;
+}
+
+RationalFn& operator* (const RationalFn& rf, const mpz_class& n) {
+    RationalFn * result = new RationalFn();
+    result -> ab = n * rf.ab;
+    result -> cd = rf.cd;
+    return (*result);
+}
+
+RationalFn& operator* (const mpz_class& n, const RationalFn& rf) {
+    return rf * n;
+}
 
 ostream& operator<< (ostream& os, RationalFn& rf) {
     os << rf.ab << " / " << rf.cd;
@@ -288,4 +373,115 @@ int main() {
     cout << nrf_2522 << " != " << nrf_2522_2 << ": " << (nrf_2522 !=
             nrf_2522_2) << endl;
 
+    cout << endl << "Testing +:" << endl;
+    cout << 1 << " + " << nrf_1111 << ": " << 1 + nrf_1111 << endl;
+    cout << nrf_1111 << " + " << 1 << ": " << nrf_1111 + 1 << endl;
+    cout << "(" << p_2 << ") + " << rf_1223 << ": " << p_2 + rf_1223 << endl;
+    cout << rf_1223 << " + (" << p_2 << "): " << rf_1223 + p_2 << endl;
+    cout << pp_11 << " + " << rf_1112 << ": " << pp_11 + rf_1112 << endl;
+    cout << rf_1112 << " + " << pp_11 << ": " << rf_1112 + pp_11 << endl;
+    cout << rf_2111 << " + " << rf_3111 << ": ";
+    if ((rf_2111).can_add_sub(rf_3111)) {cout << rf_2111 + rf_3111;}
+    else {cout << "Can't add these.";}
+    cout << endl;
+    cout << rf_2111 << " + " << rf_2111 << ": ";
+    if ((rf_2111).can_add_sub(rf_2111)) {cout << rf_2111 + rf_2111;}
+    else {cout << "Can't add these.";}
+    cout << endl;
+    cout << rf_2121 << " + " << rf_2131 << ": ";
+    if ((rf_2121).can_add_sub(rf_2131)) {cout << rf_2121 + rf_2131;}
+    else {cout << "Can't add these.";}
+    cout << endl;
+    cout << rf_5151 << " + " << rf_2111 << ": ";
+    if ((rf_5151).can_add_sub(rf_2111)) {cout << rf_5151 + rf_2111;}
+    else {cout << "Can't add these.";}
+    cout << endl;
+    cout << rf_5115 << " + " << rf_5111 << ": ";
+    if ((rf_5115).can_add_sub(rf_5111)) {cout << rf_5115 + rf_5111;}
+    else {cout << "Can't add these.";}
+    cout << endl;
+    cout << rf_5115 << " + " << rf_5115 << ": ";
+    if ((rf_5115).can_add_sub(rf_5115)) {cout << rf_5115 + rf_5115;}
+    else {cout << "Can't add these.";}
+    cout << endl;
+    cout << rf_2231 << " + " << rf_1311 << ": ";
+    if ((rf_2231).can_add_sub(rf_1311)) {cout << rf_2231 + rf_1311;}
+    else {cout << "Can't add these.";}
+    cout << endl;
+    cout << rf_1223 << " + " << rf_1231 << ": ";
+    if ((rf_1223).can_add_sub(rf_1231)) {cout << rf_1223 + rf_1231;}
+    else {cout << "Can't add these.";}
+    cout << endl;
+    cout << rf_1223 << " + " << rf_1311 << ": ";
+    if ((rf_1223).can_add_sub(rf_1311)) {cout << rf_1223 + rf_1311;}
+    else {cout << "Can't add these.";}
+    cout << endl;
+    cout << rf_1223 << " + " << rf_2231 << ": ";
+    if ((rf_1223).can_add_sub(rf_2231)) {cout << rf_1223 + rf_2231;}
+    else {cout << "Can't add these.";}
+    cout << endl;
+    RationalFn rf_4121 = RationalFn(p_4, 1, p_2);
+    RationalFn nrf_5121 = RationalFn((-1)*p_5, 1, p_2);
+    cout << rf_4121 << " + " << nrf_5121 << ": ";
+    if ((rf_4121).can_add_sub(nrf_5121)) {cout << rf_4121 + nrf_5121;}
+    else {cout << "Can't add these.";}
+    cout << " (check that leading zeros don't get passed along) ";
+    cout << " result.get_a().deg(): " << (rf_4121 + nrf_5121).get_a().deg();
+    cout << endl;
+
+    cout << endl << "Testing -:" << endl;
+    cout << 1 << " - " << nrf_1111 << ": " << 1 - nrf_1111 << endl;
+    cout << nrf_1111 << " - " << 1 << ": " << nrf_1111 - 1 << endl;
+    cout << "(" << p_2 << ") - " << rf_1223 << ": " << p_2 - rf_1223 << endl;
+    cout << rf_1223 << " - (" << p_2 << "): " << rf_1223 - p_2 << endl;
+    cout << pp_11 << " - " << rf_1112 << ": " << pp_11 - rf_1112 << endl;
+    cout << rf_1112 << " - " << pp_11 << ": " << rf_1112 - pp_11 << endl;
+    cout << rf_2111 << " - " << rf_3111 << ": ";
+    if ((rf_2111).can_add_sub(rf_3111)) {cout << rf_2111 - rf_3111;}
+    else {cout << "Can't subtract these.";}
+    cout << endl;
+    cout << rf_2111 << " - " << rf_2111 << ": ";
+    if ((rf_2111).can_add_sub(rf_2111)) {cout << rf_2111 - rf_2111;}
+    else {cout << "Can't subtract these.";}
+    cout << endl;
+    cout << rf_2121 << " - " << rf_2131 << ": ";
+    if ((rf_2121).can_add_sub(rf_2131)) {cout << rf_2121 - rf_2131;}
+    else {cout << "Can't subtract these.";}
+    cout << endl;
+    cout << rf_5151 << " - " << rf_2111 << ": ";
+    if ((rf_5151).can_add_sub(rf_2111)) {cout << rf_5151 - rf_2111;}
+    else {cout << "Can't subtract these.";}
+    cout << endl;
+    cout << rf_5115 << " - " << rf_5111 << ": ";
+    if ((rf_5115).can_add_sub(rf_5111)) {cout << rf_5115 - rf_5111;}
+    else {cout << "Can't subtract these.";}
+    cout << endl;
+    cout << rf_5115 << " - " << rf_5115 << ": ";
+    if ((rf_5115).can_add_sub(rf_5115)) {cout << rf_5115 - rf_5115;}
+    else {cout << "Can't subtract these.";}
+    cout << endl;
+    cout << rf_2231 << " - " << rf_1311 << ": ";
+    if ((rf_2231).can_add_sub(rf_1311)) {cout << rf_2231 - rf_1311;}
+    else {cout << "Can't subtract these.";}
+    cout << endl;
+    cout << rf_1223 << " - " << rf_1231 << ": ";
+    if ((rf_1223).can_add_sub(rf_1231)) {cout << rf_1223 - rf_1231;}
+    else {cout << "Can't subtract these.";}
+    cout << endl;
+    cout << rf_1223 << " - " << rf_1311 << ": ";
+    if ((rf_1223).can_add_sub(rf_1311)) {cout << rf_1223 - rf_1311;}
+    else {cout << "Can't subtract these.";}
+    cout << endl;
+    cout << rf_1223 << " - " << rf_2231 << ": ";
+    if ((rf_1223).can_add_sub(rf_2231)) {cout << rf_1223 - rf_2231;}
+    else {cout << "Can't subtract these.";}
+    cout << endl;
+    rf_4121 = RationalFn(p_4, 1, p_2);
+    RationalFn rf_5121 = RationalFn(p_5, 1, p_2);
+    cout << rf_4121 << " - " << rf_5121 << ": ";
+    if ((rf_4121).can_add_sub(rf_5121)) {cout << rf_4121 - rf_5121;}
+    else {cout << "Can't subtract these.";}
+    cout << " (check that leading zeros don't get passed along) ";
+    cout << " result.get_a().deg(): " << (rf_4121 - rf_5121).get_a().deg();
+    cout << endl;
 }

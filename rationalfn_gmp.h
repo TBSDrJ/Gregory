@@ -104,11 +104,31 @@ class RationalFn {
                 RationalFn(PolyPair(p, q), PolyPair(r, n)){}
         RationalFn(Polynomial& p, Polynomial& q, Polynomial& r, Polynomial& s):
                 RationalFn(PolyPair(p, q), PolyPair(r, s)){}
-
+        bool can_add_sub(const RationalFn& rf_1);
     friend bool operator== (const RationalFn& rf_0, const mpz_class& n);
     friend bool operator== (const RationalFn& rf_0, const RationalFn& rf_1);
     friend bool operator!= (const RationalFn& rf_0, const mpz_class& n);
     friend bool operator!= (const RationalFn& rf_0, const RationalFn& rf_1);
+    // All the other types are really not great because the .can_add_sub() 
+    //  method can't run first to make sure that it won't crash.  ::shrug::
+    friend RationalFn& operator+ (const RationalFn& rf, const mpz_class& n);
+    friend RationalFn& operator+ (const mpz_class& n, const RationalFn& rf);
+    friend RationalFn& operator+ (const RationalFn& rf, const Polynomial& p);
+    friend RationalFn& operator+ (const Polynomial& p, const RationalFn& rf);
+    friend RationalFn& operator+ (const RationalFn& rf, const PolyPair& pp);
+    friend RationalFn& operator+ (const PolyPair& pp, const RationalFn& rf);
+    friend RationalFn& operator+ (const RationalFn& rf_0, 
+            const RationalFn& rf_1);
+    friend RationalFn& operator- (const RationalFn& rf, const mpz_class& n);
+    friend RationalFn& operator- (const mpz_class& n, const RationalFn& rf);
+    friend RationalFn& operator- (const RationalFn& rf, const Polynomial& p);
+    friend RationalFn& operator- (const Polynomial& p, const RationalFn& rf);
+    friend RationalFn& operator- (const RationalFn& rf, const PolyPair& pp);
+    friend RationalFn& operator- (const PolyPair& pp, const RationalFn& rf);
+    friend RationalFn& operator- (const RationalFn& rf_0, 
+            const RationalFn& rf_1);
+    friend RationalFn& operator* (const RationalFn& rf, const mpz_class& n);
+    friend RationalFn& operator* (const mpz_class& n, const RationalFn& rf);
     friend std::ostream& operator<< (std::ostream& os, RationalFn& rf);
 
 };
