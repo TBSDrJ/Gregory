@@ -207,26 +207,17 @@ Polynomial& operator- (const Polynomial& p, const Polynomial& q) {
     return *r;
 }
 
-Polynomial& operator* (const Polynomial& p, const mpq_class& f) {
-    vector<mpq_class> rq_coeffs(p.deg() + 1);
+Polynomial& operator* (const Polynomial& p, const mpz_class& n) {
     vector<mpz_class> r_coeffs(p.deg() + 1);
-    Polynomial * r = new Polynomial(r_coeffs);
     for (int i=0; i<p.deg() + 1; i++) {
-        rq_coeffs[i] = f * p.coeffs[i];
-        // Coerce fraction to integer which truncates if denominator != 0
-        r -> coeffs[i] = rq_coeffs[i];
-        if (r -> coeffs[i] != rq_coeffs[i]) {
-            string msg;
-            msg += "Can only mutiply a Polynomial by a fraction if the ";
-            msg += "product is\nan integer in all places.\n";
-            throw runtime_error(msg);
-        }
+        r_coeffs[i] = n * p.coeffs[i];
     }
+    Polynomial * r = new Polynomial(r_coeffs);
     return *r;
 }
 
-Polynomial& operator* (const mpq_class& f, const Polynomial& p) {
-    return p * f;
+Polynomial& operator* (const mpz_class& n, const Polynomial& p) {
+    return p * n;
 }
 
 Polynomial& operator* (const Polynomial& p, const Polynomial& q) {
@@ -242,6 +233,26 @@ Polynomial& operator* (const Polynomial& p, const Polynomial& q) {
         }
     }
     r -> eliminate_zeros();
+    return *r;
+}
+
+Polynomial& operator/ (const Polynomial& p, const mpz_class n) {
+    vector<mpz_class> r_coeffs(p.deg() + 1);
+    Polynomial * r = new Polynomial(r_coeffs);
+    mpz_class m;
+    for (int i=0; i<p.deg() + 1; i++) {
+        // p_i = p.coeffs[i];
+        // Gotta determine if n divides each coefficient of p before dividing.
+        mpz_gcd(m.get_mpz_t(), p.coeffs[i].get_mpz_t(), n.get_mpz_t());
+        if (m == n) {
+            r -> coeffs[i] = p.coeffs[i] / n;
+        } else {
+            delete &(r -> coeffs);
+            delete r;
+            r = new Polynomial();
+            break;
+        }
+    }
     return *r;
 }
 
@@ -346,7 +357,8 @@ int main() {
 
     s.coeffs.pop_back();
     s.coeffs[0] = -3;
-    t.coeffs.pop_back();
+    t.coeffs.pop_back();    cout << "p: " << p << " (p*4)/2: " << (p*4)/2 << endl;
+
     t.coeffs[0] = 5;
     cout << endl << "Testing ==" << endl;
     cout << "p == p: " << (p == p) << endl;
@@ -394,14 +406,11 @@ int main() {
     cout << "s: " << s << " s*5: " << s*5 << endl;
     cout << "t: " << t << " t*5: " << t*5 << endl;
 
-    cout << endl << "Testing * with mpq_class" << endl;
-    mpq_class f(1,2);
-    cout << "p: " << p << " p*4*½: " << p*4*f << endl;
-    cout << "q: " << q << " q*4*½: " << q*4*f << endl;
-    cout << "r: " << r << " r*4*½: " << r*4*f << endl;
-    cout << "s: " << s << " s*4*½: " << s*4*f << endl;
-    cout << "t: " << t << " t*4*½: " << t*4*f << endl;
-    cout << "This one should crash:" << endl;
-    cout << "q: " << q << " q*5*½: " << flush << q*5*f << endl;
+    cout << endl << "Testing / with integers" << endl;
+    cout << "p: " << p << " (p*4)/2: " << (p*4)/2 << endl;
+    cout << "q: " << q << " (q*4)/2: " << (q*4)/2 << endl;
+    cout << "r: " << r << " (r*4)/2: " << (r*4)/2 << endl;
+    cout << "s: " << s << " (s*4)/2: " << (s*4)/2 << endl;
+    cout << "t: " << t << " (t*4)/2: " << (t*4)/2 << endl;
 
 }
