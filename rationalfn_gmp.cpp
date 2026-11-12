@@ -205,6 +205,55 @@ RationalFn& operator* (const RationalFn& rf_0, const RationalFn& rf_1) {
     return (*result);
 }
 
+RationalFn& operator/ (const RationalFn& rf, const mpz_class& n) {
+    RationalFn * result = new RationalFn();
+    result -> ab = rf.ab;
+    result -> cd = n * rf.cd;
+    return (*result);
+}
+
+RationalFn& operator/ (const mpz_class& n, const RationalFn& rf) {
+    RationalFn * result = new RationalFn();
+    result -> ab = n * rf.cd;
+    result -> cd = rf.ab;
+    return (*result);
+}
+
+RationalFn& operator/ (const RationalFn& rf, const Polynomial& p) {
+    RationalFn * result = new RationalFn();
+    result -> ab = rf.ab;
+    result -> cd = p * rf.cd;
+    return (*result);
+}
+
+RationalFn& operator/ (const Polynomial& p, const RationalFn& rf) {
+    RationalFn * result = new RationalFn();
+    result -> ab = p * rf.cd;
+    result -> cd = rf.ab;
+    return (*result);
+}
+
+RationalFn& operator/ (const RationalFn& rf, const PolyPair& pp) {
+    RationalFn * result = new RationalFn();
+    result -> ab = rf.ab;
+    result -> cd = pp * rf.cd;
+    return (*result);
+}
+
+RationalFn& operator/ (const PolyPair& pp, const RationalFn& rf) {
+    RationalFn * result = new RationalFn();
+    result -> ab = pp * rf.cd;
+    result -> cd = rf.ab;
+    return (*result);
+}
+
+RationalFn& operator/ (const RationalFn& rf_0, const RationalFn& rf_1) {
+    RationalFn * result = new RationalFn();
+    result -> ab = rf_0.ab * rf_1.cd;
+    result -> cd = rf_0.cd * rf_1.ab;
+    return (*result);
+}
+
 ostream& operator<< (ostream& os, RationalFn& rf) {
     os << rf.ab << " / " << rf.cd;
     return os;
@@ -522,4 +571,14 @@ int main() {
     cout << pp_33 << "*" << rf_2233 << ": " << pp_33*rf_2233 << endl;
     cout << rf_2233 << "*" << pp_33 << ": " << pp_33*rf_2233 << endl;
     cout << rf_2233 << "*" << rf_5121 << ": " << rf_2233*rf_5121 << endl;
+
+    cout << endl << "Testing /:" << endl;
+    cout << "(" << 3 << ")/(" << rf_2233 << "): " << 3/rf_2233 << endl;
+    cout << "(" << rf_2233 << ")/(" << 3 << "): " << rf_2233/3 << endl;
+    cout << "(" << p_3 << ")/(" << rf_2233 << "): " << p_3/rf_2233 << endl;
+    cout << "(" << rf_2233 << ")/(" << p_3 << "): " << rf_2233/p_3 << endl;
+    cout << pp_33 << "/(" << rf_2233 << "): " << pp_33/rf_2233 << endl;
+    cout << "(" << rf_2233 << ")/" << pp_33 << ": " << rf_2233/pp_33 << endl;
+    cout << "(" << rf_2233 << ")/(" << rf_5121 << "): " << rf_2233/rf_5121 
+            << endl;
 }
