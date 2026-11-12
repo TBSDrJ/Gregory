@@ -354,6 +354,53 @@ PolyPair& operator* (const PolyPair& pp, const PolyPair& qq) {
     return *(new PolyPair(pp.a*qq.a, pp.b*qq.b));
 }
 
+PolyPair& operator/ (const PolyPair& pp, const mpz_class& n) {
+    // The challenge here is that we might need to break n into two factors
+    //  i,j so that pp.a/i and pp.b/j, e.g. (3x)(2L)/6
+    mpz_class k = pp.a.gcd(), m = pp.b.gcd(), i, j;
+    PolyPair * qq = new PolyPair();
+    if ((k*m) % n != 0) {return (*qq);}
+    mpz_gcd(i.get_mpz_t(), k.get_mpz_t(), n.get_mpz_t());
+    vector<mpz_class> a = pp.a.coeffs, b = pp.b.coeffs;
+    Polynomial qq_a = Polynomial(a), qq_b = Polynomial(b);
+    j = n/i;
+    qq -> a = qq_a / i;
+    qq -> b = qq_b / j;
+    return *qq; 
+}
+
+mpz_class& operator/ (const mpz_class& n, const PolyPair& pp) {
+    mpz_class * m = new mpz_class(0);
+    if ((pp.a.deg() > 0) or (pp.b.deg() > 0)) {
+        return *m;
+    }
+    *m =  n / (pp.a.coeffs[0] * pp.b.coeffs[0]);
+    return *m;
+}
+
+PolyPair& operator/ (const PolyPair& pp, const Polynomial& p) {
+    if (p.deg() > 0) {
+        PolyPair * qq = new PolyPair();
+        return *qq;
+    }
+    return pp / p.coeffs[0];
+}
+
+Polynomial& operator/ (const Polynomial& p, const PolyPair& pp) {
+    if ((pp.a.deg() > 0) or (pp.b.deg() > 0)) {
+        Polynomial * q = new Polynomial();
+        return *q;
+    }
+    return p / (pp.a.coeffs[0] * pp.b.coeffs[0]);
+}
+
+PolyPair& operator/ (const PolyPair& pp, const PolyPair& qq) {
+    if ((qq.a.deg() > 0) or (qq.b.deg() > 0)) {
+        PolyPair * rr = new PolyPair();
+        return *rr;
+    }
+    return pp / (qq.a.coeffs[0] * qq.b.coeffs[0]);
+}
 
 ostream& operator<< (ostream& os, const PolyPair& pp) {
     string s;
@@ -710,6 +757,18 @@ int main() {
     cout << pp_24 << " * " << p_5 << ": " << pp_24 * p_5 << endl;
     cout << p_5 << " * " << pp_24 << ": " << p_5 * pp_24 << endl;
     cout << pp_53 << " * " << pp_24 << ": " << pp_53 * pp_24 << endl;
+
+    cout << endl << "Testing /" << endl;
+    cout << "(6 * " << pp_24 << ")/3: " << (6 * pp_24)/3 << endl;
+    cout << PolyPair(3*p_2, 2*p_5) << "/6: " << PolyPair(3*p_2, 2*p_5)/6 
+            << endl;
+    cout << "30/PolyPair(3,2): " <<30/PolyPair(3,2) << endl;
+    cout << PolyPair(3*p_2, 10*p_5) << "/Polynomial(6): " 
+            << PolyPair(3*p_2, 10*p_5)/Polynomial(6) << endl;
+    cout << "(" << 30*p_3 << ")/PolyPair(-2,3): " << 30*p_3/PolyPair(-2,3) 
+            << endl;
+    cout << PolyPair(3*p_2, 10*p_5) << "/PolyPair(-2,3): " 
+            << PolyPair(3*p_2, 10*p_5)/PolyPair(-2,3) << endl;
 
     // cout << endl << "Testing to make sure changes don't cross objects" << endl;
     // PolyPair tt = pp_21 + 5;
