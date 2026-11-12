@@ -256,6 +256,14 @@ Polynomial& operator/ (const Polynomial& p, const mpz_class n) {
     return *r;
 }
 
+Polynomial& operator/ (const Polynomial& p, const Polynomial& q) {
+    Polynomial * r = new Polynomial();
+    if (q.deg() > 0) {
+        return *r;
+    }
+    return p / q.coeffs[0];
+}
+
 int main() {
     cout << "Testing constructor and << overload" << endl;
     Polynomial p;
@@ -406,11 +414,15 @@ int main() {
     cout << "s: " << s << " s*5: " << s*5 << endl;
     cout << "t: " << t << " t*5: " << t*5 << endl;
 
-    cout << endl << "Testing / with integers" << endl;
-    cout << "p: " << p << " (p*4)/2: " << (p*4)/2 << endl;
-    cout << "q: " << q << " (q*4)/2: " << (q*4)/2 << endl;
-    cout << "r: " << r << " (r*4)/2: " << (r*4)/2 << endl;
-    cout << "s: " << s << " (s*4)/2: " << (s*4)/2 << endl;
-    cout << "t: " << t << " (t*4)/2: " << (t*4)/2 << endl;
-
+    cout << endl << "Testing / with integers and Polynomials" << endl;
+    cout << "p: " << p << " (p*4)/2: " << (p*4)/2 << " | " << 
+            (p*4)/Polynomial(2) << endl;
+    cout << "q: " << q << " (q*4)/2: " << (q*4)/2 << " | " << 
+            (q*4)/Polynomial(2) << endl;
+    cout << "r: " << r << " (r*4)/2: " << (r*4)/2 << " | " << 
+            (r*4)/Polynomial(2) << endl;
+    cout << "s: " << s << " (s*4)/2: " << (s*4)/2 << " | " << 
+            (s*4)/Polynomial(2) << endl;
+    cout << "t: " << t << " (t*4)/2: " << (t*4)/2 << " | " << 
+            (t*4)/Polynomial(2) << endl;
 }
