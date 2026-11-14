@@ -147,6 +147,13 @@ RationalFn& RationalFn::der_1() {
     return *rf;
 }
 
+mpq_class& RationalFn::eval(mpz_class& x) {
+    mpq_class * q = new mpq_class();
+    q -> get_num() = this -> ab.a.eval(x) * this -> ab.b.eval(x);
+    q -> get_den() = this -> cd.a.eval(x) * this -> cd.b.eval(x);
+    return *q;
+}
+
 bool operator== (const RationalFn& rf_0, const mpz_class& n) {
     if (rf_0.get_const_a().deg() != 0) {return false;}
     if (rf_0.get_const_b().deg() != 0) {return false;}
@@ -699,14 +706,22 @@ int main() {
     vector<mpz_class>d_coeffs = {0,2,5,6,3};
     Polynomial a = Polynomial(a_coeffs), b = Polynomial(b_coeffs), 
             c = Polynomial(c_coeffs), d = Polynomial(d_coeffs);
-    RationalFn x = RationalFn(a, b, c, d);
-    cout << "x: " << x << endl;
-    x.eliminate_zeros();
-    cout << "After eliminating zeros: " << endl << x << endl;
+    RationalFn r = RationalFn(a, b, c, d);
+    cout << "r: " << r << endl;
+    r.eliminate_zeros();
+    cout << "After eliminating zeros: " << endl << r << endl;
 
     cout << endl << "Testing .der_0() and .der_1():" << endl;
     cout << rf_1231 << ".der_0(): " << rf_1231.der_0() << endl;
     cout << rf_5115 << ".der_0(): " << rf_5115.der_0() << endl;
     cout << rf_1231 << ".der_1(): " << rf_1231.der_1() << endl;
     cout << rf_5115 << ".der_1(): " << rf_5115.der_1() << endl;
+
+    coeffs = {0,1};
+    Polynomial p = Polynomial(coeffs);
+    RationalFn rf_0 = RationalFn(p, 1, 1, p);
+    mpz_class x = mpz_class(0);
+
+    cout << endl << "Testing .eval():" << endl;
+    cout << rf_0 << ".eval(0): " << rf_0.eval(x) << endl;
 }
