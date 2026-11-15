@@ -102,7 +102,6 @@ void RationalFn::eliminate_zeros() {
                 c_coeffs[i] = running;
                 running = this -> get_c().coeffs[i] - running;
             }
-            cout << Polynomial(c_coeffs) << endl;
             this -> cd = PolyPair(Polynomial(c_coeffs), this -> get_d());
         }
     }
@@ -154,7 +153,8 @@ mpq_class& RationalFn::eval(mpz_class& x) {
     return *q;
 }
 
-mpq_class& RationalFn::lhôpitals_0_over_0(bool& success, mpz_class& x) {
+mpq_class& RationalFn::lhôpitals_0_over_0(bool& success, mpz_class& x, 
+        const PolyPair& addl_num_term) {
     this -> eliminate_zeros();
     // I'm a little surprised but mpq has no problem with e.g. 0/0 or 1/0.
     mpq_class * result = new mpq_class();
@@ -172,6 +172,7 @@ mpq_class& RationalFn::lhôpitals_0_over_0(bool& success, mpz_class& x) {
     Polynomial x_plus_1 = Polynomial(x_plus_1_coeff);
     PolyPair qq = PolyPair();
     numer_before.push_back(this -> ab);
+    if (addl_num_term != 0) {numer_before.push_back(addl_num_term);}
     denom_before.push_back(this -> cd);
     while ((result -> get_num() == 0) and (result -> get_den() == 0)) {
         result -> get_num() = 0;
@@ -201,21 +202,21 @@ mpq_class& RationalFn::lhôpitals_0_over_0(bool& success, mpz_class& x) {
             }
         }
         // multiply numerator and denominator by (x+1)
-        cout << endl;
+        // cout << endl;
         for (int i=0; i<numer_after.size(); i++) {
             if (not numer_1xp1[i]) {
                 numer_after[i].a = numer_after[i].a * x_plus_1;
             }
-            cout << numer_after[i] << " | ";
+            // cout << numer_after[i] << " | ";
         }
-        cout << endl;
+        // cout << endl;
         for (int i=0; i<denom_after.size(); i++) {
             if (not denom_1xp1[i]) {
                 denom_after[i].a = denom_after[i].a * x_plus_1;
             }
-            cout << denom_after[i] << " | ";
+            // cout << denom_after[i] << " | ";
         }
-        cout << endl;
+        // cout << endl;
         for (PolyPair pp: numer_after) {
             result -> get_num() += pp.eval(x);
         }
@@ -228,12 +229,16 @@ mpq_class& RationalFn::lhôpitals_0_over_0(bool& success, mpz_class& x) {
         denom_after.clear();
         numer_1xp1.clear();
         denom_1xp1.clear();
-        cout << *result << " " << flush;
+        numer_after.reserve(numer_before.size() * 2);
+        denom_after.reserve(denom_before.size() * 2);
+        numer_1xp1.reserve(numer_before.size() * 2);
+        denom_1xp1.reserve(denom_before.size() * 2);
+        // cout << *result << " " << flush;
     }
     if (result -> get_den() != 0) {
         result -> canonicalize();   
     }
-    cout << *result << endl;
+    // cout << *result << endl;
     success = true;
     return *result;
 }
@@ -836,4 +841,48 @@ int main() {
     cout << rf_2 << ".lhôpitals_0_over_0(): " 
             << rf_2.lhôpitals_0_over_0(success, x) 
             << " (result should be 1). Success: " << success << endl << endl;
+    coeffs = {0, 0, -2};
+    p = Polynomial(coeffs);
+    coeffs = {0, 0, 0, 1};
+    Polynomial q = Polynomial(coeffs);
+    RationalFn rf_3 = RationalFn(p, 1, p_2, q);
+    coeffs = {0, 2, 2};
+    p = Polynomial(coeffs);
+    coeffs = {0, 1};
+    q = Polynomial(coeffs);
+    PolyPair pp = PolyPair(p, q);
+    coeffs = {0, 0, 0, 0, 0, 0, 0, 0, 1};
+    p = Polynomial(coeffs);
+    RationalFn rf_4 = RationalFn(p, 1, 1, p);
+    RationalFn rf_5 = rf_4.der_0();
+    RationalFn rf_6 = rf_4.der_1();
+    coeffs = {0, 1};
+    pp = PolyPair(p_2, Polynomial(coeffs));
+    rf_6.ab = rf_6.ab * pp;
+    coeffs = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+    p = Polynomial(coeffs);
+    RationalFn rf_7 = RationalFn(p, 1, 1, p);
+    RationalFn rf_8 = rf_7.der_0();
+    RationalFn rf_9 = rf_7.der_1();
+    coeffs = {0, 1};
+    pp = PolyPair(p_2, Polynomial(coeffs));
+    rf_9.ab = rf_9.ab * pp;
+    // This test is the k=1 term for the 2nd Gregory numbers 
+    success = false;
+    cout << rf_3 << " with addl numerator term " << pp << 
+            "  lhôpitals_0_over_0(): " << rf_3.lhôpitals_0_over_0(success, x, 
+            pp) << "  Should get 6/6 = 1" << endl << "Success? " << success 
+            << endl;
+    // This test is the k=1 term for the 8th Gregory numbers 
+    success = false;
+    cout << endl << rf_5 << " with addl numerator term " << rf_6.ab << 
+            "  lhôpitals_0_over_0(): " << rf_5.lhôpitals_0_over_0(success, x, 
+            rf_6.ab) << "  Should get 4." << endl << "Success? " << success 
+            << endl;
+    // This test is the k=1 term for the 9th Gregory numbers 
+    success = false;
+    cout << endl << rf_8 << " with addl numerator term " << rf_9.ab << 
+            "  lhôpitals_0_over_0(): " << rf_8.lhôpitals_0_over_0(success, x, 
+            rf_9.ab) << "  Should get 9/2." << endl << "Success? " << success 
+            << endl;
 }

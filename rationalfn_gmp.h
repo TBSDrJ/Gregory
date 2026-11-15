@@ -110,7 +110,10 @@ class RationalFn {
         RationalFn& der_1();
         // .eval() *can* return e.g. 0/0 or 1/0.
         mpq_class& eval(mpz_class& x);
-        mpq_class& lhôpitals_0_over_0(bool& success, mpz_class& x);
+        // The goal of the addl term is to take in all of the derivative of
+        //  a RationalFn at once.
+        mpq_class& lhôpitals_0_over_0(bool& success, mpz_class& x,
+                const PolyPair& addl_num_term = PolyPair());
     friend bool operator== (const RationalFn& rf_0, const mpz_class& n);
     friend bool operator== (const RationalFn& rf_0, const RationalFn& rf_1);
     friend bool operator!= (const RationalFn& rf_0, const mpz_class& n);
