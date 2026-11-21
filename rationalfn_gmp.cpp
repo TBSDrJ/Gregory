@@ -153,96 +153,6 @@ mpq_class& RationalFn::eval(mpz_class& x) {
     return *q;
 }
 
-mpq_class& RationalFn::lhôpitals_0_over_0(bool& success, mpz_class& x, 
-        const PolyPair& addl_num_term) {
-    this -> eliminate_zeros();
-    // I'm a little surprised but mpq has no problem with e.g. 0/0 or 1/0.
-    mpq_class * result = new mpq_class();
-    // It is possible that eliminating zeros makes L'Hôpitals unnecessary
-    //  or that a RationalFn that never needed this got here anyway.
-    result -> get_num() = this -> ab.eval(x);
-    result -> get_den() = this -> cd.eval(x);
-    if ((result -> get_num() != 0) or (result -> get_den() != 0)) {
-        return *result;
-    }
-    vector<PolyPair> numer_before, numer_after, denom_before, denom_after;
-    // Use these to keep track of which terms get 1/(x+1) in the derivative
-    vector<bool> numer_1xp1, denom_1xp1;
-    vector<mpz_class> x_plus_1_coeff = {1, 1};
-    Polynomial x_plus_1 = Polynomial(x_plus_1_coeff);
-    PolyPair qq = PolyPair();
-    numer_before.push_back(this -> ab);
-    if (addl_num_term != 0) {numer_before.push_back(addl_num_term);}
-    denom_before.push_back(this -> cd);
-    while ((result -> get_num() == 0) and (result -> get_den() == 0)) {
-        result -> get_num() = 0;
-        result -> get_den() = 0;
-        for (PolyPair pp: numer_before) {
-            qq = PolyPair(pp.a, pp.b.der());
-            if (qq != 0) {
-                numer_after.push_back(qq);
-                numer_1xp1.push_back(true);
-            }
-            qq = PolyPair(pp.a.der(),pp.b);
-            if (qq != 0) {
-                numer_after.push_back(qq);
-                numer_1xp1.push_back(false);
-            }
-        }
-        for (PolyPair pp: denom_before) {
-            qq = PolyPair(pp.a, pp.b.der());
-            if (qq != 0) {
-                denom_after.push_back(qq);
-                denom_1xp1.push_back(true);
-            }
-            qq = PolyPair(pp.a.der(),pp.b);
-            if (qq != 0) {
-                denom_after.push_back(qq);
-                denom_1xp1.push_back(false);
-            }
-        }
-        // multiply numerator and denominator by (x+1)
-        // cout << endl;
-        for (int i=0; i<numer_after.size(); i++) {
-            if (not numer_1xp1[i]) {
-                numer_after[i].a = numer_after[i].a * x_plus_1;
-            }
-            // cout << numer_after[i] << " | ";
-        }
-        // cout << endl;
-        for (int i=0; i<denom_after.size(); i++) {
-            if (not denom_1xp1[i]) {
-                denom_after[i].a = denom_after[i].a * x_plus_1;
-            }
-            // cout << denom_after[i] << " | ";
-        }
-        // cout << endl;
-        for (PolyPair pp: numer_after) {
-            result -> get_num() += pp.eval(x);
-        }
-        for (PolyPair pp: denom_after) {
-            result -> get_den() += pp.eval(x);
-        }
-        numer_before.swap(numer_after);
-        denom_before.swap(denom_after);
-        numer_after.clear();
-        denom_after.clear();
-        numer_1xp1.clear();
-        denom_1xp1.clear();
-        numer_after.reserve(numer_before.size() * 2);
-        denom_after.reserve(denom_before.size() * 2);
-        numer_1xp1.reserve(numer_before.size() * 2);
-        denom_1xp1.reserve(denom_before.size() * 2);
-        // cout << *result << " " << flush;
-    }
-    if (result -> get_den() != 0) {
-        result -> canonicalize();   
-    }
-    // cout << *result << endl;
-    success = true;
-    return *result;
-}
-
 bool operator== (const RationalFn& rf_0, const mpz_class& n) {
     if (rf_0.get_const_a().deg() != 0) {return false;}
     if (rf_0.get_const_b().deg() != 0) {return false;}
@@ -449,6 +359,95 @@ RationalFn& operator/ (const RationalFn& rf_0, const RationalFn& rf_1) {
 ostream& operator<< (ostream& os, RationalFn& rf) {
     os << rf.ab << " / " << rf.cd;
     return os;
+}
+
+mpq_class& lhôpitals_0_over_0(bool& success, mpz_class& x,
+            vector<PolyPair>& numer_before, PolyPair& denom) {
+    // I'm a little surprised but mpq has no problem with e.g. 0/0 or 1/0.
+    mpq_class * result = new mpq_class();
+    // It is possible that eliminating zeros makes L'Hôpitals unnecessary
+    //  or that a RationalFn that never needed this got here anyway.
+    for (PolyPair pp: numer_before) {
+        result -> get_num() += pp.eval(x);
+    }
+    result -> get_den() = denom.eval(x);
+    if ((result -> get_num() != 0) or (result -> get_den() != 0)) {
+        return *result;
+    }
+    vector<PolyPair> numer_after, denom_before, denom_after;
+    // Use these to keep track of which terms get 1/(x+1) in the derivative
+    vector<bool> numer_1xp1, denom_1xp1;
+    vector<mpz_class> x_plus_1_coeff = {1, 1};
+    Polynomial x_plus_1 = Polynomial(x_plus_1_coeff);
+    PolyPair qq = PolyPair();
+    denom_before.push_back(denom);
+    while ((result -> get_num() == 0) and (result -> get_den() == 0)) {
+        result -> get_num() = 0;
+        result -> get_den() = 0;
+        for (PolyPair pp: numer_before) {
+            qq = PolyPair(pp.a, pp.b.der());
+            if (qq != 0) {
+                numer_after.push_back(qq);
+                numer_1xp1.push_back(true);
+            }
+            qq = PolyPair(pp.a.der(),pp.b);
+            if (qq != 0) {
+                numer_after.push_back(qq);
+                numer_1xp1.push_back(false);
+            }
+        }
+        for (PolyPair pp: denom_before) {
+            qq = PolyPair(pp.a, pp.b.der());
+            if (qq != 0) {
+                denom_after.push_back(qq);
+                denom_1xp1.push_back(true);
+            }
+            qq = PolyPair(pp.a.der(),pp.b);
+            if (qq != 0) {
+                denom_after.push_back(qq);
+                denom_1xp1.push_back(false);
+            }
+        }
+        // multiply numerator and denominator by (x+1)
+        // cout << endl;
+        for (int i=0; i<numer_after.size(); i++) {
+            if (not numer_1xp1[i]) {
+                numer_after[i].a = numer_after[i].a * x_plus_1;
+            }
+            // cout << numer_after[i] << " | ";
+        }
+        // cout << endl;
+        for (int i=0; i<denom_after.size(); i++) {
+            if (not denom_1xp1[i]) {
+                denom_after[i].a = denom_after[i].a * x_plus_1;
+            }
+            // cout << denom_after[i] << " | ";
+        }
+        // cout << endl;
+        for (PolyPair pp: numer_after) {
+            result -> get_num() += pp.eval(x);
+        }
+        for (PolyPair pp: denom_after) {
+            result -> get_den() += pp.eval(x);
+        }
+        numer_before.swap(numer_after);
+        denom_before.swap(denom_after);
+        numer_after.clear();
+        denom_after.clear();
+        numer_1xp1.clear();
+        denom_1xp1.clear();
+        numer_after.reserve(numer_before.size() * 2);
+        denom_after.reserve(denom_before.size() * 2);
+        numer_1xp1.reserve(numer_before.size() * 2);
+        denom_1xp1.reserve(denom_before.size() * 2);
+        // cout << *result << " " << flush;
+    }
+    if (result -> get_den() != 0) {
+        result -> canonicalize();   
+    }
+    // cout << *result << endl;
+    success = true;
+    return *result;
 }
 
 int main() {
@@ -820,26 +819,31 @@ int main() {
     cout << endl << "Testing .eval():" << endl;
     cout << rf_0 << ".eval(0): " << rf_0.eval(x) << endl;
     
-    cout << endl << "Testing .lhôpitals_0_over_0():" << endl;
+    cout << endl << "Testing lhôpitals_0_over_0():" << endl;
     bool success = false;
-    cout << rf_0 << ".lhôpitals_0_over_0(): " 
-            << rf_0.lhôpitals_0_over_0(success, x) 
+    vector<PolyPair> numer = {rf_0.ab};
+    cout << "lim_{x->0} " << rf_0 << ": " 
+            << lhôpitals_0_over_0(success, x, numer, rf_0.cd) 
             << " (result should be 1). Success: " << success << endl << endl;
     success = false;
-    cout << rf_1 << ".lhôpitals_0_over_0(): " 
-            << rf_1.lhôpitals_0_over_0(success, x) 
+    numer = {rf_1.ab};
+    cout << "lim_{x->0} " << rf_1 << ": "  
+            << lhôpitals_0_over_0(success, x, numer, rf_1.cd) 
             << " (result should be 1). Success: " << success << endl << endl;
     success = false;
-    cout << rf_1.der_0() << ".lhôpitals_0_over_0(): "
-            << (rf_1.der_0()).lhôpitals_0_over_0(success, x)
+    RationalFn rf = rf_1.der_0();
+    PolyPair pp, qq = rf.cd;
+    numer = {rf.ab};
+    cout << "lim_{x->0} " << numer[0] << " / " << qq << ": " 
+            << lhôpitals_0_over_0(success, x, numer, qq)
             << " (result should be -4/0). Success: " << success << endl << endl;
-    success = false;
-    cout << rf_1.der_1() << ".lhôpitals_0_over_0(): "
-            << (rf_1.der_1()).lhôpitals_0_over_0(success, x)
+    success = false; rf = rf_1.der_1(); numer = {rf.ab}; qq = rf.cd;
+    cout << "lim_{x->0} " << numer[0] << " / " << qq << ": " 
+            << lhôpitals_0_over_0(success, x, numer, qq)
             << " (result should be 2/0). Success: " << success << endl << endl;
-    success = false;
-    cout << rf_2 << ".lhôpitals_0_over_0(): " 
-            << rf_2.lhôpitals_0_over_0(success, x) 
+    success = false; numer = {rf_2.ab}; qq = rf_2.cd;
+    cout << "lim_{x->0} " << numer[0] << " / " << qq << ": " 
+            << lhôpitals_0_over_0(success, x, numer, qq)
             << " (result should be 1). Success: " << success << endl << endl;
     coeffs = {0, 0, -2};
     p = Polynomial(coeffs);
@@ -850,7 +854,7 @@ int main() {
     p = Polynomial(coeffs);
     coeffs = {0, 1};
     q = Polynomial(coeffs);
-    PolyPair pp = PolyPair(p, q);
+    pp = PolyPair(p, q);
     coeffs = {0, 0, 0, 0, 0, 0, 0, 0, 1};
     p = Polynomial(coeffs);
     RationalFn rf_4 = RationalFn(p, 1, 1, p);
@@ -859,30 +863,48 @@ int main() {
     coeffs = {0, 1};
     pp = PolyPair(p_2, Polynomial(coeffs));
     rf_6.ab = rf_6.ab * pp;
+    rf_6.cd = rf_6.cd * pp;
     coeffs = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
     p = Polynomial(coeffs);
     RationalFn rf_7 = RationalFn(p, 1, 1, p);
     RationalFn rf_8 = rf_7.der_0();
     RationalFn rf_9 = rf_7.der_1();
     coeffs = {0, 1};
-    pp = PolyPair(p_2, Polynomial(coeffs));
+    p = Polynomial(coeffs);
+    pp = PolyPair(p_2, p);
     rf_9.ab = rf_9.ab * pp;
+    rf_9.cd = rf_9.cd * pp;
+    // // This test is the k=1 term for the 9th Gregory numbers 
+    // success = false;
+    // cout << endl << rf_8 << " with addl numerator term " << rf_9.ab << 
+    //         "  lhôpitals_0_over_0(): " << rf_8.lhôpitals_0_over_0(success, x, 
+    //         rf_9.ab) << "  Should get 9/2." << endl << "Success? " << success 
+    //         << endl;
+
+    cout << endl << "Testing new lhôpitals_0_over_0() with vector in numerator:"
+            << endl;
     // This test is the k=1 term for the 2nd Gregory numbers 
+    vector<PolyPair> numer_2_1 = {rf_3.ab, pp};
     success = false;
-    cout << rf_3 << " with addl numerator term " << pp << 
-            "  lhôpitals_0_over_0(): " << rf_3.lhôpitals_0_over_0(success, x, 
-            pp) << "  Should get 6/6 = 1" << endl << "Success? " << success 
-            << endl;
+    mpq_class result = lhôpitals_0_over_0(success, x, numer_2_1, rf_3.cd);
+    cout << "lim_{x->0} (" << rf_3.ab << " + " << pp << " / " << rf_3.cd <<
+            ") = " << result << " (result should be 1). Success: " << 
+            success << endl;
     // This test is the k=1 term for the 8th Gregory numbers 
+    vector<PolyPair> numer_8_1 = {rf_5.ab, rf_6.ab};
     success = false;
-    cout << endl << rf_5 << " with addl numerator term " << rf_6.ab << 
-            "  lhôpitals_0_over_0(): " << rf_5.lhôpitals_0_over_0(success, x, 
-            rf_6.ab) << "  Should get 4." << endl << "Success? " << success 
-            << endl;
+    result = lhôpitals_0_over_0(success, x, numer_8_1, rf_5.cd);
+    cout << "lim_{x->0} (" << rf_5.ab << " + " << rf_6.ab << " / " << rf_5.cd <<
+            ") = " << result << " (result should be 4). Success: " << 
+            success << endl;
     // This test is the k=1 term for the 9th Gregory numbers 
+    vector<PolyPair> numer_9_1 = {rf_8.ab, rf_9.ab};
     success = false;
-    cout << endl << rf_8 << " with addl numerator term " << rf_9.ab << 
-            "  lhôpitals_0_over_0(): " << rf_8.lhôpitals_0_over_0(success, x, 
-            rf_9.ab) << "  Should get 9/2." << endl << "Success? " << success 
-            << endl;
+    result = lhôpitals_0_over_0(success, x, numer_9_1, rf_8.cd);
+    cout << "lim_{x->0} (" << rf_8.ab << " + " << rf_9.ab << " / " << rf_8.cd <<
+            ") = " << result << " (result should be 9/2). Success: " << 
+            success << endl;
+    cout << rf_7 << endl;
+    cout << rf_8 << endl;
+    cout << rf_9 << endl;
 }
