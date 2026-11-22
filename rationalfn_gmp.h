@@ -156,9 +156,9 @@ class RationalFn {
     friend RationalFn& operator/ (const RationalFn& rf_0, 
             const RationalFn& rf_1);
     friend std::ostream& operator<< (std::ostream& os, RationalFn& rf);
-    friend mpq_class& lhôpitals_0_over_0(bool& success, mpz_class& x,
-            std::vector<PolyPair>& numer, PolyPair& denom);
-
 };
+
+mpq_class& lhôpitals_0_over_0(bool& success, mpz_class& x,
+            std::vector<PolyPair>& numer, PolyPair& denom);
 
 #endif
