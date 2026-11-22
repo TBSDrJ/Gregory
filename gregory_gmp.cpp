@@ -1,5 +1,6 @@
 #include<iostream>
 #include<vector>
+#include<string>
 
 #include<gmp.h>
 #include<gmpxx.h>
@@ -10,9 +11,11 @@
 
 using namespace std;
 
-#define EXP 8
-
-int main() {
+int main(int argc, char** argv) {
+    string * exp = new string();
+    *exp = *argv[1];
+    int EXP = atoi((*exp).c_str());
+    cout << "Gregory Numbers of degree " << EXP << endl;
     vector<mpz_class> coeffs;
     for (int i=0; i<EXP; i++) {
         coeffs.push_back(mpz_class(0));
