@@ -22,36 +22,49 @@ int main() {
     RationalFn gregory = RationalFn(g, 1, 1, g), d_0, d_1;
     cout << gregory << endl;
     vector<RationalFn> g_n = {gregory}, after = {};
+    vector<PolyPair> numers = {gregory.ab}, denoms = {gregory.cd};
     mpq_class gregory_number, q;
-    RationalFn denoms;
+    RationalFn two_denoms;
     PolyPair addl;
     mpz_class zero = mpz_class(0);
     bool success;
-    cout << 0 << " " << gregory.lhôpitals_0_over_0(success, zero) << endl;
-    for (int n=1; n<10; n++) {
+    cout << 0 << " " << lhôpitals_0_over_0(success, zero, numers, denoms[0]) 
+            << endl;
+    for (int n=1; n<100; n++) {
         cout << n << " ";
-        gregory_number = mpq_class(0, 1);
+        numers.clear();
+        denoms.clear();
+        numers.reserve(g_n.size() * 2);
+        denoms.reserve(g_n.size());
         for (RationalFn rf: g_n) {
             d_0 = rf.der_0();
             d_1 = rf.der_1();
-            denoms = RationalFn(d_0.cd, d_1.cd);
-            denoms.eliminate_zeros();
-            addl = d_1.ab * denoms.ab;
-            d_0.ab = d_0.ab * denoms.cd;
-            d_0.cd = d_0.cd * denoms.cd;
+            two_denoms = RationalFn(d_0.cd, d_1.cd);
+            two_denoms.eliminate_zeros();
+            numers.push_back(d_1.ab * two_denoms.ab);
+            numers.push_back(d_0.ab * two_denoms.cd);
+            denoms.push_back(d_0.cd * two_denoms.cd);
             success = false;
-            q = d_0.lhôpitals_0_over_0(success, zero, addl);
-            cout << q << " ";
-            gregory_number += q;
-            if (not success) {
-                cout << endl << "[ERROR] Failed lhôpitals_0_over_0()!! " 
-                        << EXP << " " << n << endl << endl;
-            }
-            d_0.eliminate_zeros();
             after.push_back(d_0);
             after.push_back(d_1);
         }
-        cout << gregory_number << endl;
+        for (int i=0; i<g_n.size()-1; i++) {
+            two_denoms = RationalFn(denoms[i], denoms[i+1]);
+            two_denoms.eliminate_zeros();
+            denoms[i+1] = two_denoms.ab * denoms[i+1];
+            numers[2*i] = numers[2*i] * two_denoms.cd;
+            numers[2*i+1] = numers[2*i+1] * two_denoms.cd;
+            numers[2*i+2] = numers[2*i+2] * two_denoms.ab;
+            numers[2*i+3] = numers[2*i+3] * two_denoms.ab;
+        }
+        success = false;
+        gregory_number = lhôpitals_0_over_0(success, zero, numers, 
+                denoms[g_n.size()-1]);
+        if (success) {
+            cout << gregory_number << endl;
+        } else {
+            cout << "FAILED CALCULATION" << endl;
+        }
         g_n.swap(after);
         after.clear();
         after.reserve(g_n.size() * 2);
